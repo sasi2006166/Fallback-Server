@@ -1,0 +1,4 @@
+name: FallBackServer
+version: ${project.version}
+main: me.candiesjar.fallbackserver.FallbackServer
+author: CandiesJar

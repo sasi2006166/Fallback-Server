@@ -1,0 +1,33 @@
+# ███████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗    ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗
+# ██╔════╝██╔══██╗██║     ██║     ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝    ██╔════╝██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗
+# █████╗  ███████║██║     ██║     ██████╔╝███████║██║     █████╔╝     ███████╗█████╗  ██████╔╝██║   ██║█████╗  ██████╔╝
+# ██╔══╝  ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗     ╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
+# ██║     ██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗    ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
+# ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝
+# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: zWhitening99#0347 | Telegram: @CandyCods
+
+Fallback:
+  LobbyServer: "Lobby" # Pick this from your config.yml of bungeecord, is case sensitive
+  MainPermission: "fallback.admin" # This is permission for doing /fs
+  ReloadMessage: "&aReloaded successfully!" # Output message when you reload the configuration file
+  NoPermission: "&7[&c!&7] &cYou are lacking permission %permission% &7[&c!&7]" # %permission% will display the main permission
+  NotPlayer: "&cOnly players can execute this command!"  # This will be displayed if console runs a player only command
+  AlreadyConnected: "&cYou're already in hub!"  # Will be displayed if player does /hub into lobby
+  HubMessage: "&7Connecting to &bhub&7..."  # Will be displayed when a player does /hub
+  CorrectSyntax: "&cCorrect syntax: /fs <version> / <reload>"  # Correct syntax that will be displayed if doesn't recognize a command
+  ServerCrash: "&cServer %server% crashed, server teleported you to hub." # Will be displayed when someone gets teleported to hub
+  MainCommand: #Main command that will display only if player has permission
+    - "&8&m-----&8[&bFallback Server&8]&m-----"
+    - ""
+    - "&b/fs reload &7| This command is used for reload config files."
+    - "&b/fs version &7| Displays the plugin version"
+    - ""
+    - "&8&m---------------------------"
+
+Title: # Everything is in seconds!
+  Enabled: true
+  FadeIn: 1 # The time for showing the title
+  FadeOut: 1  # Time for making title go away
+  Stay: 3 # Time for making title stay in
+  Title: "&cServer crashed!"
+  SubTitle: "&7You've been moved to lobby."
