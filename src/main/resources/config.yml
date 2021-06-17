@@ -15,7 +15,7 @@ Fallback:
   AlreadyConnected: "&cYou're already in hub!"  # Will be displayed if player does /hub into lobby
   HubMessage: "&7Connecting to &bhub&7..."  # Will be displayed when a player does /hub
   CorrectSyntax: "&cCorrect syntax: /fs <version> / <reload>"  # Correct syntax that will be displayed if doesn't recognize a command
-  ServerCrash: "&cServer %server% crashed, server teleported you to hub." # Will be displayed when someone gets teleported to hub
+  ServerCrash: "&cServer %server% crashed, you were teleported you to hub." # Will be displayed when someone gets teleported to hub
   MainCommand: #Main command that will display only if player has permission
     - "&8&m-----&8[&bFallback Server&8]&m-----"
     - ""

@@ -7,6 +7,7 @@ import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -23,15 +24,15 @@ public class FallbackListener implements Listener {
     @EventHandler
     public void onServerKickEvent(ServerKickEvent event) {
         ServerInfo kickedFrom;
-        ServerInfo serverPlaceholder = event.getPlayer().getServer().getInfo();
-        if (event.getPlayer().getServer() != null) {
-            kickedFrom = event.getPlayer().getServer().getInfo();
+        ProxiedPlayer player = event.getPlayer();
+        if (player.getServer() != null) {
+            kickedFrom = player.getServer().getInfo();
         } else if (plugin.getProxy().getReconnectHandler() != null) {
-            kickedFrom = plugin.getProxy().getReconnectHandler().getServer(event.getPlayer());
+            kickedFrom = plugin.getProxy().getReconnectHandler().getServer(player);
         } else {
-            kickedFrom = AbstractReconnectHandler.getForcedHost(event.getPlayer().getPendingConnection());
+            kickedFrom = AbstractReconnectHandler.getForcedHost(player.getPendingConnection());
             if (kickedFrom == null) {
-                kickedFrom = ProxyServer.getInstance().getServerInfo(event.getPlayer().getPendingConnection().getListener().getDefaultServer());
+                kickedFrom = ProxyServer.getInstance().getServerInfo(player.getPendingConnection().getListener().getDefaultServer());
             }
         }
         if (kickedFrom != null && kickedFrom.equals(ProxyServer.getInstance().getServerInfo(Fields.LOBBYSERVER.getString()))) {
@@ -40,10 +41,9 @@ public class FallbackListener implements Listener {
         event.setCancelled(true);
         event.setCancelServer(ProxyServer.getInstance().getServerInfo(Fields.LOBBYSERVER.getString()));
         if (Fields.USETITLE.getBoolean()) {
-            titleManager.sendTitle(event.getPlayer());
-        } else {
-            event.getPlayer().sendMessage(new TextComponent(Fields.CONNECTEDTOFALLBACK.getFormattedString()
-                    .replace("%server%", serverPlaceholder.getName())));
-        }
+            titleManager.sendTitle(player);
+        } else if (kickedFrom != null)
+            player.sendMessage(new TextComponent(Fields.CONNECTEDTOFALLBACK.getFormattedString().replace("%server%", kickedFrom.getName())));
+        else player.sendMessage(new TextComponent(Fields.CONNECTEDTOFALLBACK.getFormattedString()));
     }
 }
