@@ -4,30 +4,54 @@
 # ██╔══╝  ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗     ╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
 # ██║     ██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗    ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
 # ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝
-# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: zWhitening99#0347 | Telegram: @CandyCods
+# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: discord.candydevelopment.eu | Telegram: @CandiesJar
 
-Fallback:
-  LobbyServer: "Lobby" # Pick this from your config.yml of bungeecord, is case sensitive
-  MainPermission: "fallback.admin" # This is permission for doing /fs
-  ReloadMessage: "&aReloaded successfully!" # Output message when you reload the configuration file
-  NoPermission: "&7[&c!&7] &cYou are lacking permission %permission% &7[&c!&7]" # %permission% will display the main permission
-  NotPlayer: "&cOnly players can execute this command!"  # This will be displayed if console runs a player only command
-  AlreadyConnected: "&cYou're already in hub!"  # Will be displayed if player does /hub into lobby
-  HubMessage: "&7Connecting to &bhub&7..."  # Will be displayed when a player does /hub
-  CorrectSyntax: "&cCorrect syntax: /fs <version> / <reload>"  # Correct syntax that will be displayed if doesn't recognize a command
-  ServerCrash: "&cServer %server% crashed, you were teleported you to hub." # Will be displayed when someone gets teleported to hub
-  MainCommand: #Main command that will display only if player has permission
-    - "&8&m-----&8[&bFallback Server&8]&m-----"
-    - ""
-    - "&b/fs reload &7| This command is used for reload config files."
-    - "&b/fs version &7| Displays the plugin version"
-    - ""
-    - "&8&m---------------------------"
+Fallback_Server:
+  use_stats: true # Enabling this will make me know how many people is using my plugin.
+  command_tab_complete: true
+  command_without_permission: false # Hide /fs command when a player doesn't have permission
+  check_updates: true
+  command_permission: "fallback.admin"
+  max_players: 10
+  spread_mode: PROGRESSIVE
 
-Title: # Everything is in seconds!
-  Enabled: true
-  FadeIn: 1 # The time for showing the title
-  FadeOut: 1  # Time for making title go away
-  Stay: 3 # Time for making title stay in
-  Title: "&cServer crashed!"
-  SubTitle: "&7You've been moved to lobby."
+Hub:
+  commands:
+    enable_command: true # Use this if you want to use hub command (REQUIRES PROXY REBOOT).
+    command_aliases: # Add command aliases here. (REQUIRES PROXY REBOOT)
+      - lobby
+      - hub
+  enable_disabled_servers: true # Will disable the hub command for specified servers. (REQUIRES PROXY REBOOT).
+  disabled_servers:
+    hack_control: # Add server here that shouldn't have command enabled, don't forget to add also hub aliases under it.
+      - lobby
+      - hub
+    hack_control_2:
+      - lobby
+      - hub
+# TOP feature, you can disable any command you want in specified servers! Just add it without / under the server name!
+
+# This will redirect unknown servers to the group listed here:
+unknown-group: lobby
+
+# Server groups and their settings
+groups:
+  lobby:
+    # If kicked from this server group, no redirects will happen.
+    bottom-kick: true
+    # Spread redirected people over the servers.
+    spread: true
+    # Spread mode, if spread is enabled, use the following spread mode (will overwrite global if used).
+    spread-mode: PROGRESSIVE
+    # The minimal amount of players that are on a server before the next server gets selected. (only used for PROGRESSIVE spread)
+    progressive-minimal: 10
+    # Parent group - If none of the servers are available, the parent group will be used.
+    # Set to none if none. If the parent server group is needed the player will be kicked instead.
+    parent-group: none
+    servers:
+      - lobby1
+      - lobby2
+    servers-regex: 'none'
+    # Servers that are connected to this group, but they won't be redirected to:
+    connected: {}
+    connected-regex: 'none'

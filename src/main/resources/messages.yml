@@ -1,0 +1,35 @@
+MESSAGES:
+  prefix: "&7&lF&b&lS &8&l» "
+  correct_syntax: "%prefix% &cCorrect syntax: /fs <version:reload>"
+  reload_message: "%prefix% &aReloaded successfully!"
+  only_player: "%prefix% &cOnly players can execute this command!"
+  already_in_hub: "&cYou're already in hub!"
+  connecting_to_hub: "&7Connecting to &bhub&7..."
+  server_crash: "&cServer %server% crashed, you were teleported you to hub."
+  disabled_command: "%prefix% &cSorry, this command is disabled."
+  new_update: "%prefix% &7A new update is &bavailable, &7check it out at https://www.spigotmc.org/resources/86398"
+  fallback_command:
+    - "&8&m-----&8[&bFallback Server&8]&m-----"
+    - ""
+    - "&b/fs reload &7| Command for reload configuration."
+    - "&b/fs version &7| Displays plugin build."
+    - ""
+    - "&7Running version &b%version%"
+    - "&8&m---------------------------"
+
+
+TITLES: # Everything in seconds.
+  fallback:
+    enabled: true
+    fade_in: 1 # The time for showing the title
+    fade_out: 1  # Time for making title go away
+    stay: 3 # Time for making title stay in
+    fallback_title: "&cServer crashed!"
+    fallback_sub_title: "&7You've been moved to lobby."
+  lobby:
+    enabled: true
+    fade_in: 1
+    fade_out: 1
+    stay: 3
+    lobby_title: "&a&lConnecting to hub..."
+    lobby_sub_title: "&7Please wait!"
