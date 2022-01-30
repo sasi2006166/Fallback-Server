@@ -12,10 +12,13 @@ Fallback_Server:
   command_without_permission: false # Hide /fs command when a player doesn't have permission
   check_updates: true
   command_permission: "fallback.admin"
-  max_players: 10
-  spread_mode: PROGRESSIVE
 
 Hub:
+  lobbies:
+    server_list:
+      - lobby1
+      - lobby2
+      - lobby3
   commands:
     enable_command: true # Use this if you want to use hub command (REQUIRES PROXY REBOOT).
     command_aliases: # Add command aliases here. (REQUIRES PROXY REBOOT)
@@ -30,28 +33,3 @@ Hub:
       - lobby
       - hub
 # TOP feature, you can disable any command you want in specified servers! Just add it without / under the server name!
-
-# This will redirect unknown servers to the group listed here:
-unknown-group: lobby
-
-# Server groups and their settings
-groups:
-  lobby:
-    # If kicked from this server group, no redirects will happen.
-    bottom-kick: true
-    # Spread redirected people over the servers.
-    spread: true
-    # Spread mode, if spread is enabled, use the following spread mode (will overwrite global if used).
-    spread-mode: PROGRESSIVE
-    # The minimal amount of players that are on a server before the next server gets selected. (only used for PROGRESSIVE spread)
-    progressive-minimal: 10
-    # Parent group - If none of the servers are available, the parent group will be used.
-    # Set to none if none. If the parent server group is needed the player will be kicked instead.
-    parent-group: none
-    servers:
-      - lobby1
-      - lobby2
-    servers-regex: 'none'
-    # Servers that are connected to this group, but they won't be redirected to:
-    connected: {}
-    connected-regex: 'none'

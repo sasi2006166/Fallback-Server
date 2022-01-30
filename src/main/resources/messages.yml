@@ -17,7 +17,6 @@ MESSAGES:
     - "&7Running version &b%version%"
     - "&8&m---------------------------"
 
-
 TITLES: # Everything in seconds.
   fallback:
     enabled: true

@@ -45,6 +45,9 @@ public enum MessagesFields {
     public String getFormattedString() {
         return ChatColor.translateAlternateColorCodes('&', FallbackServerBungee.getInstance().getMessagesConfig().getString(path));
     }
+    public static String getFormattedString(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
+    }
 
     public List<String> getStringList() {
         return FallbackServerBungee.getInstance().getMessagesConfig().getStringList(path);

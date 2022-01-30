@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserver.bungee.utils;
 
-import me.candiesjar.fallbackserver.bungee.enums.ConfigFields;
 import me.candiesjar.fallbackserver.bungee.enums.MessagesFields;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;

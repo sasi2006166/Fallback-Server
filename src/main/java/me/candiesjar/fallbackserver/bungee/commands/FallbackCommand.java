@@ -34,6 +34,11 @@ public class FallbackCommand extends Command implements TabExecutor {
                         sender.sendMessage(new TextComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar §8§l«"
                                 .replace("%version%", FallbackServerBungee.getInstance().getDescription().getVersion())));
                         break;
+                    case "add":
+                        // TODO 3.1 Update
+                        break;
+                    case "set":
+                        // TODO 3.1- 3.1.2 Update
                     default:
                         sender.sendMessage(new TextComponent(MessagesFields.PARAMETERS.getFormattedString()
                                 .replace("%prefix%", MessagesFields.PREFIX.getFormattedString())));
@@ -42,7 +47,7 @@ public class FallbackCommand extends Command implements TabExecutor {
             }
         } else if (sender.hasPermission(ConfigFields.PERMISSION.getString())) {
             for (String mainCommand : MessagesFields.MAIN_COMMAND.getStringList())
-                sender.sendMessage(new TextComponent(ConfigFields.getFormattedString(mainCommand)
+                sender.sendMessage(new TextComponent(MessagesFields.getFormattedString(mainCommand)
                         .replace("%version%", FallbackServerBungee.getInstance().getDescription().getVersion())));
         } else {
             sender.sendMessage(new TextComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar §8§l«"
@@ -57,6 +62,8 @@ public class FallbackCommand extends Command implements TabExecutor {
                 List<String> data = new ArrayList<>();
                 data.add("reload");
                 data.add("version");
+                data.add("add");
+                data.add("set");
                 Collections.sort(data);
                 return data;
             }
