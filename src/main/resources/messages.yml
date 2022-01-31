@@ -1,6 +1,14 @@
+# ███████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗    ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗
+# ██╔════╝██╔══██╗██║     ██║     ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝    ██╔════╝██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗
+# █████╗  ███████║██║     ██║     ██████╔╝███████║██║     █████╔╝     ███████╗█████╗  ██████╔╝██║   ██║█████╗  ██████╔╝
+# ██╔══╝  ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗     ╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
+# ██║     ██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗    ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
+# ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝
+# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
+
 MESSAGES:
   prefix: "&7&lF&b&lS &8&l» "
-  correct_syntax: "%prefix% &cCorrect syntax: /fs <version:reload>"
+  correct_syntax: "%prefix% &cCorrect syntax: /fs <reload:set:add>"
   reload_message: "%prefix% &aReloaded successfully!"
   only_player: "%prefix% &cOnly players can execute this command!"
   already_in_hub: "&cYou're already in hub!"
@@ -8,6 +16,7 @@ MESSAGES:
   server_crash: "&cServer %server% crashed, you were teleported you to hub."
   disabled_command: "%prefix% &cSorry, this command is disabled."
   new_update: "%prefix% &7A new update is &bavailable, &7check it out at https://www.spigotmc.org/resources/86398"
+  missing_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
   fallback_command:
     - "&8&m-----&8[&bFallback Server&8]&m-----"
     - ""

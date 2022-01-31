@@ -1,8 +1,8 @@
 package me.candiesjar.fallbackserver.bungee;
 
 import com.google.common.io.ByteStreams;
-import me.candiesjar.fallbackserver.bungee.commands.FallbackCommand;
 import me.candiesjar.fallbackserver.bungee.commands.HubCommand;
+import me.candiesjar.fallbackserver.bungee.commands.SubCommandManager;
 import me.candiesjar.fallbackserver.bungee.enums.ConfigFields;
 import me.candiesjar.fallbackserver.bungee.enums.MessagesFields;
 import me.candiesjar.fallbackserver.bungee.listeners.ChatListener;
@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 public final class FallbackServerBungee extends Plugin {
 
     private static FallbackServerBungee instance;
-    private final Utils utils = new Utils();
     private Configuration config;
     private Configuration messagesConfig;
     private final List<ServerInfo> availableServers = new ArrayList<>();
@@ -74,7 +73,7 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void loadCommands() {
-        getProxy().getPluginManager().registerCommand(this, new FallbackCommand());
+        getProxy().getPluginManager().registerCommand(this, new SubCommandManager());
         if (ConfigFields.USE_HUB_COMMAND.getBoolean()) {
             getProxy().getPluginManager().registerCommand(this, new HubCommand());
         }
@@ -138,7 +137,7 @@ public final class FallbackServerBungee extends Plugin {
 
     private void startCheck() {
         if (ConfigFields.UPDATE_CHECKER.getBoolean())
-            if (utils.getUpdates())
+            if (Utils.getUpdates())
                 getLogger().info(MessagesFields.NEW_UPDATE.getFormattedString()
                         .replace("%prefix%", MessagesFields.PREFIX.getFormattedString()));
     }
@@ -165,12 +164,6 @@ public final class FallbackServerBungee extends Plugin {
     public Configuration getMessagesConfig() {
         return messagesConfig;
     }
-
-    public boolean isOffline(ServerInfo server) {
-        return !availableServers.contains(server);
-    }
-
-
 
     public void reloadConfig() {
         loadConfig();

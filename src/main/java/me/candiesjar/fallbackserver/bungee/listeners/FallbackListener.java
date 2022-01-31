@@ -31,7 +31,7 @@ public class FallbackListener implements Listener {
 
         event.setCancelled(true);
 
-        LinkedList<FallingServer> lobbies = new LinkedList<>(FallingServer.getServers());
+        final LinkedList<FallingServer> lobbies = new LinkedList<>(FallingServer.getServers());
         lobbies.remove(lobbies.get(0));
 
         lobbies.sort(Comparator.reverseOrder());

@@ -7,6 +7,7 @@ import java.util.List;
 public enum ConfigFields {
 
     PERMISSION("Fallback_Server.command_permission"),
+    RELOAD_PERMISSION("Fallback_Server.reload_permission"),
     TAB_COMPLETE("Fallback_Server.command_tab_complete"),
     COMMAND_WITHOUT_PERMISSION("Fallback_Server.command_without_permission"),
     STATS("Fallback_Server.use_stats"),
@@ -14,7 +15,7 @@ public enum ConfigFields {
 
     USE_HUB_COMMAND("Hub.commands.enable_command"),
     HUB_COMMANDS("Hub.commands.command_aliases"),
-    LOBBIES("Hub.lobbies.server_list"),
+    LOBBIES("Hub.server_list"),
     DISABLE_SERVERS("Hub.enable_disabled_servers");
 
     private final String path;

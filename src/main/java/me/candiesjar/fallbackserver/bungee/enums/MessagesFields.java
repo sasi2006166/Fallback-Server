@@ -17,6 +17,7 @@ public enum MessagesFields {
     BLOCKED_COMMAND("MESSAGES.disabled_command"),
     NEW_UPDATE("MESSAGES.new_update"),
     MAIN_COMMAND("MESSAGES.fallback_command"),
+    NO_PERMISSION("MESSAGES.missing_permission"),
 
     USE_FALLBACK_TITLE("TITLES.fallback.enabled"),
     FADE_IN("TITLES.fallback.fade_in"),

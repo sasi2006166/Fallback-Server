@@ -11,8 +11,6 @@ import net.md_5.bungee.event.EventHandler;
 
 public class ChatListener implements Listener {
 
-    private final Utils utils = new Utils();
-
     @EventHandler(priority = 64)
     public void onChat(ChatEvent event) {
         final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
@@ -22,7 +20,7 @@ public class ChatListener implements Listener {
             String[] args = message.split(" ");
             message = args[0];
         }
-        final boolean checkMessage = utils.checkMessage(message, playerServer);
+        final boolean checkMessage = Utils.checkMessage(message, playerServer);
         if (!player.hasPermission(ConfigFields.PERMISSION.getString()))
             if (checkMessage) {
                 event.setCancelled(true);

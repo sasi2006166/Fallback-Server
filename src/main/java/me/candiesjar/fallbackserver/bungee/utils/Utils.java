@@ -10,7 +10,7 @@ import java.net.URLConnection;
 
 public class Utils {
 
-    public boolean getUpdates() {
+    public static boolean getUpdates() {
         try {
             URLConnection connection = new URL("https://api.spigotmc.org/legacy/update.php?resource=86398").openConnection();
             String response = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
@@ -21,7 +21,7 @@ public class Utils {
         return false;
     }
 
-    public boolean checkMessage(String message, String name) {
+    public static boolean checkMessage(String message, String name) {
         for (String text : FallbackServerBungee.getInstance().getConfig().getStringList("Hub.disabled_servers." + name)) {
             text = "/" + text;
             if (text.equalsIgnoreCase(message)) {
