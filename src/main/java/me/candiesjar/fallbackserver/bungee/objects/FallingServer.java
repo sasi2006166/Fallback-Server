@@ -1,22 +1,23 @@
 package me.candiesjar.fallbackserver.bungee.objects;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.config.ServerInfo;
 
-import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 public class FallingServer implements Comparable<FallingServer> {
 
-    private static final List<FallingServer> servers = Lists.newArrayList();
+    private static final Map<ServerInfo, FallingServer> servers = Maps.newHashMap();
     private final ServerInfo serverInfo;
+
 
     public FallingServer(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
-        servers.add(this);
+        servers.put(serverInfo, this);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class FallingServer implements Comparable<FallingServer> {
         return Integer.compare(getServerInfo().getPlayers().size(), o.getServerInfo().getPlayers().size());
     }
 
-    public static List<FallingServer> getServers() {
+    public static Map<ServerInfo, FallingServer> getServers() {
         return servers;
     }
 }

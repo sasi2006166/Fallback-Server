@@ -20,7 +20,7 @@ public class HubCommand extends Command {
 
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
-            sender.sendMessage(new TextComponent(MessagesFields.NOT_PLAYER.getFormattedString()
+            sender.sendMessage(new TextComponent(MessagesFields.ONLY_PLAYER.getFormattedString()
                     .replace("%prefix%", MessagesFields.PREFIX.getFormattedString())));
             return;
         }

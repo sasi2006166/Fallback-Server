@@ -23,7 +23,7 @@ public class ReloadSubCommand implements SubCommand {
     @Override
     public void perform(CommandSender sender, String[] arguments) {
         FallbackServerBungee.getInstance().reloadConfig();
-        sender.sendMessage(new TextComponent(MessagesFields.RELOAD_MESSAGE.getFormattedString()
+        sender.sendMessage(new TextComponent(MessagesFields.RELOAD.getFormattedString()
                 .replace("%prefix%", MessagesFields.PREFIX.getFormattedString())));
     }
 }

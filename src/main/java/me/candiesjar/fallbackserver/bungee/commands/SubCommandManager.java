@@ -62,7 +62,7 @@ public class SubCommandManager extends Command implements TabExecutor {
         }
 
         if (subCommand.getType() == SubCommandType.ONLY_PLAYER && !(sender instanceof ProxiedPlayer)) {
-            sender.sendMessage(new TextComponent(MessagesFields.NOT_PLAYER.getFormattedString()
+            sender.sendMessage(new TextComponent(MessagesFields.ONLY_PLAYER.getFormattedString()
                     .replace("%prefix%", MessagesFields.PREFIX.getFormattedString())));
             return;
         }
