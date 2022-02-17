@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserver.bungee.listeners;
 
 import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
 import me.candiesjar.fallbackserver.bungee.api.FallbackAPI;
-import me.candiesjar.fallbackserver.bungee.enums.MessagesFields;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.objects.FallingServer;
 import me.candiesjar.fallbackserver.bungee.utils.TitleUtil;
 import net.md_5.bungee.api.ProxyServer;
@@ -46,15 +46,15 @@ public class FallbackListener implements Listener {
         try {
             ServerInfo serverInfo = lobbies.get(0).getServerInfo();
             event.setCancelServer(serverInfo);
-            if (MessagesFields.USE_FALLBACK_TITLE.getBoolean())
+            if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean())
                 titleUtil.sendFallbackTitle(player);
             else
-                player.sendMessage(new TextComponent(MessagesFields.CONNECTED.getFormattedString()
+                player.sendMessage(new TextComponent(BungeeMessages.CONNECTED.getFormattedString()
                         .replace("%server%", kickedFrom.getName())));
             plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom));
         } catch (IndexOutOfBoundsException ignored) {
-            player.disconnect(new TextComponent(MessagesFields.NO_SERVER.getFormattedString()
-                    .replace("%prefix%", MessagesFields.PREFIX.getFormattedString())));
+            player.disconnect(new TextComponent(BungeeMessages.NO_SERVER.getFormattedString()
+                    .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString())));
         }
     }
 }

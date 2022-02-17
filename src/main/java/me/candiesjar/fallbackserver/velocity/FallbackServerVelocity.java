@@ -8,7 +8,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import me.candiesjar.fallbackserver.velocity.commands.FallbackVelocityCommand;
 import me.candiesjar.fallbackserver.velocity.commands.HubCommand;
 import me.candiesjar.fallbackserver.velocity.stats.VelocityMetrics;
-import org.simpleyaml.configuration.file.YamlFile;
+import me.candiesjar.fallbackserver.velocity.utils.ConfigurationUtil;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -24,25 +24,9 @@ import java.nio.file.Path;
 public class FallbackServerVelocity {
 
     private static FallbackServerVelocity instance;
-    private YamlFile configFile;
 
     public static FallbackServerVelocity getInstance() {
         return instance;
-    }
-
-    private void saveConfiguration(Path path) {
-        configFile = new YamlFile(path.toFile() + "/velocity-config.yml");
-        try {
-            if (!configFile.exists()) {
-                configFile.createNewFile(true);
-            }
-            configFile.load();
-            configFile.addDefault("Messages.not_player", "&cYou are not a player!");
-            configFile.save();
-            configFile.load();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
     }
 
     @Inject
@@ -51,11 +35,11 @@ public class FallbackServerVelocity {
         // Instances
         logger.info("§7[§b!§7] Loading configuration §7[§b!§7]");
         instance = this;
-        saveConfiguration(path);
+        ConfigurationUtil.saveConfiguration(path);
 
         CommandMeta hubCommand = commandManager.metaBuilder("hub").build();
         CommandMeta fallbackCommand = commandManager.metaBuilder("fsv")
-                .aliases(getConfigFile().getStringList("")
+                .aliases(ConfigurationUtil.getConfigFile().getStringList("")
                         .toArray(new String[0]))
                 .build();
         commandManager.register(hubCommand, new HubCommand());
@@ -71,15 +55,4 @@ public class FallbackServerVelocity {
         factory.make(this, 12602);
     }
 
-    public YamlFile getConfigFile() {
-        return configFile;
-    }
-
-    public void reloadConfig() {
-        try {
-            configFile.load();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

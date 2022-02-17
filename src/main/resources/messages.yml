@@ -17,7 +17,7 @@ MESSAGES:
   disabled_command: "%prefix% &cSorry, this command is disabled."
   new_update: "%prefix% &7A new update is &bavailable, &7check it out at https://www.spigotmc.org/resources/86398"
   missing_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
-  no_server: ""
+  no_server: "%prefix% &cNo lobby available as fallback."
   fallback_command:
     - "&8&m-----&8[&bFallback Server&8]&m-----"
     - ""

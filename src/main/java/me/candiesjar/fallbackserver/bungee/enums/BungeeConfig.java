@@ -4,13 +4,12 @@ import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
 
 import java.util.List;
 
-public enum ConfigFields {
+public enum BungeeConfig {
 
     PERMISSION("Fallback_Server.command_permission"),
     RELOAD_PERMISSION("Fallback_Server.reload_permission"),
     TAB_COMPLETE("Fallback_Server.command_tab_complete"),
     COMMAND_WITHOUT_PERMISSION("Fallback_Server.command_without_permission"),
-    STATS("Fallback_Server.use_stats"),
     UPDATE_CHECKER("Fallback_Server.check_updates"),
 
     USE_HUB_COMMAND("Hub.commands.enable_command"),
@@ -20,7 +19,7 @@ public enum ConfigFields {
 
     private final String path;
 
-    ConfigFields(String path) {
+    BungeeConfig(String path) {
         this.path = path;
     }
 

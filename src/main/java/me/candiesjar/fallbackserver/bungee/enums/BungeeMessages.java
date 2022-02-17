@@ -5,7 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 
 import java.util.List;
 
-public enum MessagesFields {
+public enum BungeeMessages {
 
     PREFIX("MESSAGES.prefix"),
     PARAMETERS("MESSAGES.correct_syntax"),
@@ -36,7 +36,7 @@ public enum MessagesFields {
 
     private final String path;
 
-    MessagesFields(String path) {
+    BungeeMessages(String path) {
         this.path = path;
     }
 

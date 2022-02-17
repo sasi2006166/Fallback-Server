@@ -7,7 +7,6 @@
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
 
 Fallback_Server:
-  use_stats: true # Enabling this will make me know how many people is using my plugin.
   command_tab_complete: true
   command_without_permission: false # Hide /fs command when a player doesn't have permission
   check_updates: true

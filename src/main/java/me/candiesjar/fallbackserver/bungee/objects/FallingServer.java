@@ -14,7 +14,6 @@ public class FallingServer implements Comparable<FallingServer> {
     private static final Map<ServerInfo, FallingServer> servers = Maps.newHashMap();
     private final ServerInfo serverInfo;
 
-
     public FallingServer(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
         servers.put(serverInfo, this);

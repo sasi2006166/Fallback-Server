@@ -3,8 +3,8 @@ package me.candiesjar.fallbackserver.bungee;
 import com.google.common.io.ByteStreams;
 import me.candiesjar.fallbackserver.bungee.commands.HubCommand;
 import me.candiesjar.fallbackserver.bungee.commands.SubCommandManager;
-import me.candiesjar.fallbackserver.bungee.enums.ConfigFields;
-import me.candiesjar.fallbackserver.bungee.enums.MessagesFields;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.listeners.ChatListener;
 import me.candiesjar.fallbackserver.bungee.listeners.FallbackListener;
 import me.candiesjar.fallbackserver.bungee.metrics.Metrics;
@@ -34,47 +34,48 @@ public final class FallbackServerBungee extends Plugin {
 
     public void onEnable() {
 
-        // Instances
-        getLogger().info("§7[§b!§7] Loading configuration §7[§b!§7]");
-        instance = this;
-        loadConfig();
-        loadMessages();
-
-        // Listeners
-        getLogger().info("§7[§b!§7] Loading listeners §7[§b!§7]");
-        loadListeners();
-
-        // Commands
-        getLogger().info("§7[§b!§7] Loading commands §7[§b!§7]");
-        loadCommands();
-
-        // Stats
-        getLogger().info("§7[§b!§7] Loading stats §7[§b!§7]");
-        startMetrics();
-
-        // Setup
-        getLogger().info("§7[§b!§7] Loading plugin §7[§b!§7]");
-
         getLogger().info("§b __________      ________________              ______      ________                               ");
         getLogger().info("§b ___  ____/_____ ___  /__  /__  /_______ _________  /__    __  ___/______________   ______________");
         getLogger().info("§b __  /_   _  __ `/_  /__  /__  __ \\  __ `/  ___/_  //_/    _____ \\_  _ \\_  ___/_ | / /  _ \\_  ___/");
         getLogger().info("§b _  __/   / /_/ /_  / _  / _  /_/ / /_/ // /__ _  ,<       ____/ //  __/  /   __ |/ //  __/  /    ");
         getLogger().info("§b /_/      \\__,_/ /_/  /_/  /_.___/\\__,_/ \\___/ /_/|_|      /____/ \\___//_/    _____/ \\___//_/     ");
-        getLogger().info("§7Loaded successfully, for any doubts see the config.yml file!");
 
-        startCheck();
+        // Instances
+        getLogger().info("§7[§b!§7] Creating configuration files... §7[§b!§7]");
+        instance = this;
+        loadConfig();
+        loadMessages();
+
+        // Listeners
+        getLogger().info("§7[§b!§7] Starting all listeners... §7[§b!§7]");
+        loadListeners();
+
+        // Commands
+        getLogger().info("§7[§b!§7] Preparing commands... §7[§b!§7]");
+        loadCommands();
+
+        // Stats
+        getLogger().info("§7[§b!§7] Starting stats service... §7[§b!§7]");
+        startMetrics();
+
+        // Setup
+        getLogger().info("§7[§b!§7] Final steps... §7[§b!§7]");
+
+        checkUpdates();
         checkLobbies();
+
+        getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
     }
 
     public void onDisable() {
         instance = null;
         availableServers.clear();
-        getLogger().info("§7[§c!§7] §cDisabling FallbackServer §7[§c!§7]");
+        getLogger().info("§7[§c!§7] §cDisabling plugin... §7[§c!§7]");
     }
 
     private void loadCommands() {
         getProxy().getPluginManager().registerCommand(this, new SubCommandManager());
-        if (ConfigFields.USE_HUB_COMMAND.getBoolean()) {
+        if (BungeeConfig.USE_HUB_COMMAND.getBoolean()) {
             getProxy().getPluginManager().registerCommand(this, new HubCommand());
         }
     }
@@ -119,7 +120,7 @@ public final class FallbackServerBungee extends Plugin {
     private void checkLobbies() {
         getProxy().getScheduler().schedule(this, () -> {
             FallingServer.getServers().clear();
-            for (String serverName : ConfigFields.LOBBIES.getStringList()) {
+            for (String serverName : BungeeConfig.LOBBIES.getStringList()) {
                 ServerInfo serverInfo = getProxy().getServerInfo(serverName);
 
                 if (serverInfo == null) {
@@ -135,26 +136,25 @@ public final class FallbackServerBungee extends Plugin {
         }, 0, 5, TimeUnit.SECONDS);
     }
 
-    private void startCheck() {
-        if (ConfigFields.UPDATE_CHECKER.getBoolean())
+    private void checkUpdates() {
+        if (BungeeConfig.UPDATE_CHECKER.getBoolean())
             if (Utils.getUpdates())
-                getLogger().info(MessagesFields.NEW_UPDATE.getFormattedString()
-                        .replace("%prefix%", MessagesFields.PREFIX.getFormattedString()));
+                getLogger().info(BungeeMessages.NEW_UPDATE.getFormattedString()
+                        .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString()));
     }
 
     private void loadListeners() {
         getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
-        if (ConfigFields.DISABLE_SERVERS.getBoolean())
+        if (BungeeConfig.DISABLE_SERVERS.getBoolean())
             getProxy().getPluginManager().registerListener(this, new ChatListener());
     }
 
     private void startMetrics() {
-        if (ConfigFields.STATS.getBoolean())
-            new Metrics(this, 11817);
+        new Metrics(this, 11817);
     }
 
     public boolean isHub(ServerInfo server) {
-        return ConfigFields.LOBBIES.getStringList().contains(server.getName());
+        return BungeeConfig.LOBBIES.getStringList().contains(server.getName());
     }
 
     public Configuration getConfig() {

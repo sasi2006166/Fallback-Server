@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.bungee.listeners;
 
-import me.candiesjar.fallbackserver.bungee.enums.ConfigFields;
-import me.candiesjar.fallbackserver.bungee.enums.MessagesFields;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.utils.Utils;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -21,11 +21,11 @@ public class ChatListener implements Listener {
             message = args[0];
         }
         final boolean checkMessage = Utils.checkMessage(message, playerServer);
-        if (!player.hasPermission(ConfigFields.PERMISSION.getString()))
+        if (!player.hasPermission(BungeeConfig.PERMISSION.getString()))
             if (checkMessage) {
                 event.setCancelled(true);
-                player.sendMessage(new TextComponent(MessagesFields.BLOCKED_COMMAND.getFormattedString()
-                        .replace("%prefix%", MessagesFields.PREFIX.getFormattedString())));
+                player.sendMessage(new TextComponent(BungeeMessages.BLOCKED_COMMAND.getFormattedString()
+                        .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString())));
             }
     }
 }
