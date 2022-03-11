@@ -6,6 +6,8 @@ import net.md_5.bungee.api.CommandSender;
 
 public class SetSubCommand implements SubCommand {
 
+    // Like Pokemon games, code is here, but not activated.
+
     @Override
     public SubCommandType getType() {
         return SubCommandType.UNIVERSAL;
@@ -13,11 +15,12 @@ public class SetSubCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return null;
+        return "fallback.internal.test";
     }
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
+
 
 
 

@@ -12,12 +12,12 @@ import me.candiesjar.fallbackserver.velocity.utils.ConfigurationUtil;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
-
+import java.util.Arrays;
 
 @Plugin(
         id = "fallbackservervelocity",
         name = "FallbackServerVelocity",
-        version = "UNDEFINED",
+        version = "3.0.0",
         url = "github.com/sasi2006166",
         authors = "CandiesJar"
 )
@@ -36,14 +36,8 @@ public class FallbackServerVelocity {
         logger.info("§7[§b!§7] Loading configuration §7[§b!§7]");
         instance = this;
         ConfigurationUtil.saveConfiguration(path);
-
-        CommandMeta hubCommand = commandManager.metaBuilder("hub").build();
-        CommandMeta fallbackCommand = commandManager.metaBuilder("fsv")
-                .aliases(ConfigurationUtil.getConfigFile().getStringList("")
-                        .toArray(new String[0]))
-                .build();
-        commandManager.register(hubCommand, new HubCommand());
-        commandManager.register(fallbackCommand, new FallbackVelocityCommand());
+        commandManager.register(Arrays.toString(ConfigurationUtil.getConfig().getStringList("").toArray(new String[0])), new HubCommand());
+        commandManager.register("fsv", new FallbackVelocityCommand());
 
         loadStats(metricsFactory);
 
@@ -53,6 +47,13 @@ public class FallbackServerVelocity {
 
     private void loadStats(VelocityMetrics.Factory factory) {
         factory.make(this, 12602);
+    }
+
+    private void loadCommands(CommandManager commandManager) {
+        CommandMeta commandMeta = commandManager.metaBuilder("")
+                .aliases(ConfigurationUtil.getConfig().getStringList("").toArray(new String[0]))
+                .build();
+        commandManager.register(commandMeta, new HubCommand());
     }
 
 }

@@ -8,8 +8,9 @@
 
 Fallback_Server:
   command_tab_complete: true
-  command_without_permission: false # Hide /fs command when a player doesn't have permission
+  command_without_permission: false # False: player without permission cannot see if the plugin is installed.
   check_updates: true
+  task_period: 5 # Leave this value, change only if you know what are you doing. (In seconds)
   command_permission: "fallback.admin"
   reload_permission: "fallback.reload"
 
@@ -19,11 +20,11 @@ Hub:
     - lobby2
     - lobby3
   commands:
-    enable_command: true # This flag requires a proxy reboot!
-    command_aliases: # Customize /hub command, requires reboot!
+    enable_command: true # This flag requires a proxy reboot.
+    command_aliases: # Customize /hub command, requires reboot.
       - lobby
       - hub
-  enable_disabled_servers: true # Will disable the hub command for specified servers. (REQUIRES PROXY REBOOT).
+  enable_disabled_servers: true # Will disable hub command (aliases) in specified servers, requires reboot.
   disabled_servers:
     hack_control: # Add server name with all command aliases or what command you want to disable, like /bungee
       - lobby

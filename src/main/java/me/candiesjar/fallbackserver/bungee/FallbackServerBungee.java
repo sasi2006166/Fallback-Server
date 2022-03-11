@@ -26,6 +26,7 @@ public final class FallbackServerBungee extends Plugin {
     private static FallbackServerBungee instance;
     private Configuration config;
     private Configuration messagesConfig;
+    private List<String> serverList = new ArrayList<>();
     private final List<ServerInfo> availableServers = new ArrayList<>();
 
     public static FallbackServerBungee getInstance() {
@@ -45,6 +46,7 @@ public final class FallbackServerBungee extends Plugin {
         instance = this;
         loadConfig();
         loadMessages();
+        serverList = BungeeConfig.LOBBIES.getStringList();
 
         // Listeners
         getLogger().info("§7[§b!§7] Starting all listeners... §7[§b!§7]");
@@ -65,6 +67,7 @@ public final class FallbackServerBungee extends Plugin {
         checkLobbies();
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
+
     }
 
     public void onDisable() {
@@ -133,7 +136,7 @@ public final class FallbackServerBungee extends Plugin {
                     }
                 });
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, BungeeConfig.TASK_PERIOD.getInt(), TimeUnit.SECONDS);
     }
 
     private void checkUpdates() {
@@ -145,7 +148,7 @@ public final class FallbackServerBungee extends Plugin {
 
     private void loadListeners() {
         getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
-        if (BungeeConfig.DISABLE_SERVERS.getBoolean())
+        if (BungeeConfig.DISABLED_SERVERS.getBoolean())
             getProxy().getPluginManager().registerListener(this, new ChatListener());
     }
 
@@ -168,5 +171,19 @@ public final class FallbackServerBungee extends Plugin {
     public void reloadConfig() {
         loadConfig();
         loadMessages();
+    }
+
+    public void saveConfiguration() {
+        try {
+            ConfigurationProvider.getProvider(YamlConfiguration.class)
+                    .save(config, new File(getDataFolder() + "/" + "config.yml"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    public List<String> getServerList() {
+        return serverList;
     }
 }

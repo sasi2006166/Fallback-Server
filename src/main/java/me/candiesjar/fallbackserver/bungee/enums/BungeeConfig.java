@@ -11,16 +11,21 @@ public enum BungeeConfig {
     TAB_COMPLETE("Fallback_Server.command_tab_complete"),
     COMMAND_WITHOUT_PERMISSION("Fallback_Server.command_without_permission"),
     UPDATE_CHECKER("Fallback_Server.check_updates"),
+    TASK_PERIOD("Fallback_Server.task_period"),
 
     USE_HUB_COMMAND("Hub.commands.enable_command"),
     HUB_COMMANDS("Hub.commands.command_aliases"),
     LOBBIES("Hub.server_list"),
-    DISABLE_SERVERS("Hub.enable_disabled_servers");
+    DISABLED_SERVERS("Hub.enable_disabled_servers");
 
     private final String path;
 
     BungeeConfig(String path) {
         this.path = path;
+    }
+
+    public int getInt() {
+        return FallbackServerBungee.getInstance().getConfig().getInt(path);
     }
 
     public boolean getBoolean() {

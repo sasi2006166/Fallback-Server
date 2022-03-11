@@ -27,6 +27,13 @@ public enum BungeeMessages {
     FALLBACK_TITLE("TITLES.fallback.fallback_title"),
     FALLBACK_SUB_TITLE("TITLES.fallback.fallback_sub_title"),
 
+    // 3.1 UPDATE - Start
+    EMPTY_SERVER("MESSAGES.empty_server"),
+    SERVER_IS_ADDED("MESSAGES.server_is_added"),
+    SERVER_NOT_AVAILABLE("MESSAGES.server_not_available"),
+    SERVER_ADDED("MESSAGES.server_added"),
+
+
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),
     HUB_TITLE_FADE_OUT("TITLES.lobby.fade_out"),

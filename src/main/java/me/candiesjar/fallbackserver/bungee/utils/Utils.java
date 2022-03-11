@@ -30,4 +30,10 @@ public class Utils {
         }
         return false;
     }
+
+    public static void writeToServerList(String section, Object object) {
+        FallbackServerBungee.getInstance().getServerList().add(object.toString());
+        FallbackServerBungee.getInstance().getConfig().set(section, FallbackServerBungee.getInstance().getServerList());
+        FallbackServerBungee.getInstance().saveConfiguration();
+    }
 }

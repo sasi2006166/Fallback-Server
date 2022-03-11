@@ -5,7 +5,6 @@ import me.candiesjar.fallbackserver.bungee.api.FallbackAPI;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.objects.FallingServer;
 import me.candiesjar.fallbackserver.bungee.utils.TitleUtil;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -34,10 +33,9 @@ public class FallbackListener implements Listener {
 
         event.setCancelled(true);
 
-        ServerInfo currentServer = ProxyServer.getInstance().getServerInfo(player.getServer().getInfo().getName());
         Map<ServerInfo, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());
 
-        clonedMap.remove(currentServer);
+        clonedMap.remove(kickedFrom);
 
         LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
         lobbies.sort(FallingServer::compareTo);

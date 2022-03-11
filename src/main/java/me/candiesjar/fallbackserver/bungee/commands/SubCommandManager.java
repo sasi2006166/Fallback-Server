@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.bungee.commands;
 
 import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
+import me.candiesjar.fallbackserver.bungee.commands.subCommands.AddSubCommand;
 import me.candiesjar.fallbackserver.bungee.commands.subCommands.ReloadSubCommand;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
@@ -55,9 +56,9 @@ public class SubCommandManager extends Command implements TabExecutor {
         SubCommand subCommand = subCommands.get(args[0].toLowerCase());
 
         if (!sender.hasPermission(subCommand.getPermission())) {
-            BungeeMessages.NO_PERMISSION.getFormattedString()
-                    .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString()
-                            .replace("%permission%", subCommand.getPermission()));
+            sender.sendMessage(new TextComponent(BungeeMessages.NO_PERMISSION.getFormattedString()
+                    .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString())
+                    .replace("%permission%", subCommand.getPermission())));
             return;
         }
 

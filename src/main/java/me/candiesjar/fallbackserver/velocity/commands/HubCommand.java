@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserver.velocity.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.velocity.enums.VelocityMessages;
 
 public class HubCommand implements SimpleCommand {
