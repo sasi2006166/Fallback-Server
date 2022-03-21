@@ -6,13 +6,27 @@
 # ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
 
-Fallback_Server:
+settings:
+
+  # Only players with permission will be able to tab-complete the command.
   command_tab_complete: true
-  command_without_permission: false # False: player without permission cannot see if the plugin is installed.
+
+  # False: Only players with permission will be able to see main command output.
+  # True: Players without permission will receive the output message of main command (limited).
+  command_without_permission: true
+
+  # As it says, enables updates checking.
   check_updates: true
-  task_period: 5 # Leave this value, change only if you know what are you doing. (In seconds)
-  command_permission: "fallback.admin"
-  reload_permission: "fallback.reload"
+
+  # Checks the lobby list every 5 seconds, recommended staying with default value.
+  task_period: 5
+
+commands:
+  permissions:
+    command_permission: "fallback.admin"
+    reload_permission: "fallback.admin.reload"
+    add_permission: "fallback.admin.add"
+    reset_permission: "fallback.admin.reset"
 
 Hub:
   server_list:

@@ -11,9 +11,9 @@ public class TitleUtil {
     private final Title title = ProxyServer.getInstance().createTitle();
 
     public void sendFallbackTitle(ProxiedPlayer player) {
-        title.fadeIn(BungeeMessages.FADE_IN.getInt() * 20);
-        title.fadeOut(BungeeMessages.FADE_OUT.getInt() * 20);
-        title.stay(BungeeMessages.STAY.getInt() * 20);
+        title.fadeIn(BungeeMessages.FALLBACK_FADE_IN.getInt() * 20);
+        title.fadeOut(BungeeMessages.FALLBACK_FADE_OUT.getInt() * 20);
+        title.stay(BungeeMessages.FALLBACK_STAY.getInt() * 20);
         title.title(new TextComponent(BungeeMessages.FALLBACK_TITLE.getFormattedString()));
         title.subTitle(new TextComponent(BungeeMessages.FALLBACK_SUB_TITLE.getFormattedString()));
         title.send(player);

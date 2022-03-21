@@ -17,7 +17,7 @@ public class ReloadSubCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return BungeeConfig.RELOAD_PERMISSION.getString();
+        return BungeeConfig.RELOAD_COMMAND_PERMISSION.getString();
     }
 
     @Override

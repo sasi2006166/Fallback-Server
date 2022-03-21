@@ -6,12 +6,15 @@ import java.util.List;
 
 public enum BungeeConfig {
 
-    PERMISSION("Fallback_Server.command_permission"),
-    RELOAD_PERMISSION("Fallback_Server.reload_permission"),
-    TAB_COMPLETE("Fallback_Server.command_tab_complete"),
-    COMMAND_WITHOUT_PERMISSION("Fallback_Server.command_without_permission"),
-    UPDATE_CHECKER("Fallback_Server.check_updates"),
-    TASK_PERIOD("Fallback_Server.task_period"),
+    TAB_COMPLETE("settings.command_tab_complete"),
+    COMMAND_WITHOUT_PERMISSION("settings.command_without_permission"),
+    UPDATE_CHECKER("settings.check_updates"),
+    TASK_PERIOD("settings.task_period"),
+
+    ADMIN_PERMISSION("commands.permissions.command_permission"),
+    RELOAD_COMMAND_PERMISSION("commands.permissions.reload_permission"),
+    ADD_COMMAND_PERMISSION("commands.permissions.add_permission"),
+    RESET_COMMAND_PERMISSION("commands.permissions.reset_permission"),
 
     USE_HUB_COMMAND("Hub.commands.enable_command"),
     HUB_COMMANDS("Hub.commands.command_aliases"),

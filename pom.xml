@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.0.0-Beta</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>
@@ -37,7 +37,7 @@
             </resource>
         </resources>
         <directory>C:\Users\marco\Desktop\LocalHost\BungeeCord\plugins</directory>
-        <finalName>FallBackServer</finalName>
+        <finalName>FallBackServer_3.0.0</finalName>
     </build>
 
     <repositories>

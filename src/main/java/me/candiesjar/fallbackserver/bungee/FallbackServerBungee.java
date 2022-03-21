@@ -73,6 +73,7 @@ public final class FallbackServerBungee extends Plugin {
     public void onDisable() {
         instance = null;
         availableServers.clear();
+        serverList.clear();
         getLogger().info("§7[§c!§7] §cDisabling plugin... §7[§c!§7]");
     }
 
@@ -153,6 +154,7 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void startMetrics() {
+
         new Metrics(this, 11817);
     }
 
@@ -182,6 +184,23 @@ public final class FallbackServerBungee extends Plugin {
         }
     }
 
+    public void reCreateConfig(String resource) {
+        File file = new File(getDataFolder(), resource);
+        if (file.exists()) {
+            file.delete();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try (InputStream in = getResourceAsStream(resource);
+                 OutputStream out = new FileOutputStream(file)) {
+                ByteStreams.copy(in, out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public List<String> getServerList() {
         return serverList;

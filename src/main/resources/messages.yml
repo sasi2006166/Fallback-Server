@@ -23,6 +23,24 @@ MESSAGES:
   server_not_available: "%prefix% &b%server% &7isn't contained in BungeeCord configuration."
   server_added: "%prefix% &b%server% &7has been added to configuration."
 
+  config_warn:
+    - "&7(&c!&7) &4Warning! &7(&c!&7)"
+    - ""
+    - "&7Executing this command will &c&lRESET &7your"
+    - "&configuration file, are you sure you want to proceed?"
+    - ""
+    - "&7Re-run the command again for &cproceed&7."
+  configuration_restored: "%prefix% &7Configuration file successfully &bre-created&7."
+
+  messages_warn:
+    - "&7(&c!&7) &4Warning! &7(&c!&7)"
+    - ""
+    - "&7Executing this command will &c&lRESET &7your"
+    - "&messages file, are you sure you want to proceed?"
+    - ""
+    - "&7Re-run the command again for &cproceed&7."
+  messages_restored: "%prefix% &Messages file successfully &bre-created&7."
+
   fallback_command:
     - "&8&m-----&8[&bFallback Server&8]&m-----"
     - ""

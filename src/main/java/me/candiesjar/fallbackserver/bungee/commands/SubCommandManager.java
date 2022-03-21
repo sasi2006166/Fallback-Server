@@ -1,8 +1,8 @@
 package me.candiesjar.fallbackserver.bungee.commands;
 
 import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
-import me.candiesjar.fallbackserver.bungee.commands.subCommands.AddSubCommand;
 import me.candiesjar.fallbackserver.bungee.commands.subCommands.ReloadSubCommand;
+import me.candiesjar.fallbackserver.bungee.commands.subCommands.ResetSubCommand;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.enums.SubCommandType;
@@ -25,16 +25,15 @@ public class SubCommandManager extends Command implements TabExecutor {
         super("fs");
 
         subCommands.put("reload", new ReloadSubCommand());
-
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
 
-        if (!BungeeConfig.COMMAND_WITHOUT_PERMISSION.getBoolean() && !sender.hasPermission(BungeeConfig.PERMISSION.getString()))
+        if (!BungeeConfig.COMMAND_WITHOUT_PERMISSION.getBoolean() && !sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString()))
             return;
 
-        if (!sender.hasPermission(BungeeConfig.PERMISSION.getString())) {
+        if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
             sender.sendMessage(new TextComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar"
                     .replace("%version%", FallbackServerBungee.getInstance().getDescription().getVersion())));
             return;
@@ -72,7 +71,7 @@ public class SubCommandManager extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(BungeeConfig.PERMISSION.getString()))
+        if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString()))
             return null;
         if (BungeeConfig.TAB_COMPLETE.getBoolean())
             if (args.length == 1) {
@@ -80,6 +79,7 @@ public class SubCommandManager extends Command implements TabExecutor {
                 data.add("reload");
                 data.add("add");
                 data.add("set");
+                data.add("reset");
                 Collections.sort(data);
                 return data;
             }

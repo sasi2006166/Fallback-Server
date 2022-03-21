@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserver.bungee.commands.subCommands;
 
 import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
 import me.candiesjar.fallbackserver.bungee.commands.SubCommand;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.enums.SubCommandType;
 import me.candiesjar.fallbackserver.bungee.utils.Utils;
@@ -20,7 +21,7 @@ public class AddSubCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "fallback.internal.test";
+            return BungeeConfig.ADD_COMMAND_PERMISSION.getString();
     }
 
     @Override
@@ -46,6 +47,5 @@ public class AddSubCommand implements SubCommand {
         sender.sendMessage(new TextComponent(BungeeMessages.SERVER_ADDED.getFormattedString()
                 .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString())
                 .replace("%server%", arguments[1])));
-
     }
 }

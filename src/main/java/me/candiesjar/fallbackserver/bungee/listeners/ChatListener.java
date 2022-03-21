@@ -21,7 +21,7 @@ public class ChatListener implements Listener {
             message = args[0];
         }
         final boolean checkMessage = Utils.checkMessage(message, playerServer);
-        if (!player.hasPermission(BungeeConfig.PERMISSION.getString()))
+        if (!player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString()))
             if (checkMessage) {
                 event.setCancelled(true);
                 player.sendMessage(new TextComponent(BungeeMessages.BLOCKED_COMMAND.getFormattedString()
