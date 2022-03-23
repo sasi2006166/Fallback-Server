@@ -21,6 +21,9 @@ settings:
   # Checks the lobby list every 5 seconds, recommended staying with default value.
   task_period: 5
 
+  # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
+  stats: true
+
 commands:
   permissions:
     command_permission: "fallback.admin"

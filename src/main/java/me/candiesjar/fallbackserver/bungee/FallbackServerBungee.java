@@ -7,6 +7,7 @@ import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.listeners.ChatListener;
 import me.candiesjar.fallbackserver.bungee.listeners.FallbackListener;
+import me.candiesjar.fallbackserver.bungee.listeners.PlayerListener;
 import me.candiesjar.fallbackserver.bungee.metrics.Metrics;
 import me.candiesjar.fallbackserver.bungee.objects.FallingServer;
 import me.candiesjar.fallbackserver.bungee.utils.Utils;
@@ -151,6 +152,8 @@ public final class FallbackServerBungee extends Plugin {
         getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
         if (BungeeConfig.DISABLED_SERVERS.getBoolean())
             getProxy().getPluginManager().registerListener(this, new ChatListener());
+        if (BungeeConfig.UPDATE_CHECKER.getBoolean())
+            getProxy().getPluginManager().registerListener(this, new PlayerListener());
     }
 
     private void startMetrics() {
