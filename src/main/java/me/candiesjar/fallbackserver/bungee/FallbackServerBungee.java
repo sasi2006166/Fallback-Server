@@ -64,10 +64,10 @@ public final class FallbackServerBungee extends Plugin {
         // Setup
         getLogger().info("§7[§b!§7] Final steps... §7[§b!§7]");
 
-        checkUpdates();
         checkLobbies();
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
+        checkUpdates();
 
     }
 
@@ -143,9 +143,10 @@ public final class FallbackServerBungee extends Plugin {
 
     private void checkUpdates() {
         if (BungeeConfig.UPDATE_CHECKER.getBoolean())
-            if (Utils.getUpdates())
-                getLogger().info(BungeeMessages.NEW_UPDATE.getFormattedString()
-                        .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString()));
+            Utils.checkUpdates();
+        if (Utils.isUpdateAvailable())
+            getLogger().info(BungeeMessages.NEW_UPDATE.getFormattedString()
+                    .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString()));
     }
 
     private void loadListeners() {

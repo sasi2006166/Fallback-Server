@@ -37,7 +37,7 @@
             </resource>
         </resources>
         <directory>C:\Users\marco\Desktop\LocalHost\BungeeCord\plugins</directory>
-        <finalName>FallBackServer_3.0.0</finalName>
+        <finalName>FallBackServer_3.0.0.1</finalName>
     </build>
 
     <repositories>

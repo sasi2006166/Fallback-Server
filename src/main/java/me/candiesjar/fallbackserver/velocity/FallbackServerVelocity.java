@@ -32,8 +32,13 @@ public class FallbackServerVelocity {
     @Inject
     public void onProxyInitialization(Logger logger, CommandManager commandManager, @DataDirectory Path path, VelocityMetrics.Factory metricsFactory) {
 
-        // Instances
-        logger.info("§7[§b!§7] Loading configuration §7[§b!§7]");
+        logger.info("§b __________      ________________              ______      ________                               ");
+        logger.info("§b ___  ____/_____ ___  /__  /__  /_______ _________  /__    __  ___/______________   ______________");
+        logger.info("§b __  /_   _  __ `/_  /__  /__  __ \\  __ `/  ___/_  //_/    _____ \\_  _ \\_  ___/_ | / /  _ \\_  ___/");
+        logger.info("§b _  __/   / /_/ /_  / _  / _  /_/ / /_/ // /__ _  ,<       ____/ //  __/  /   __ |/ //  __/  /    ");
+        logger.info("§b /_/      \\__,_/ /_/  /_/  /_.___/\\__,_/ \\___/ /_/|_|      /____/ \\___//_/    _____/ \\___//_/     ");
+
+        logger.info("§7[§b!§7] Creating configuration files... §7[§b!§7]");
         instance = this;
         ConfigurationUtil.saveConfiguration(path);
         commandManager.register(Arrays.toString(ConfigurationUtil.getConfig().getStringList("").toArray(new String[0])), new HubCommand());
@@ -42,6 +47,7 @@ public class FallbackServerVelocity {
         loadStats(metricsFactory);
 
         logger.info("§aPlugin loaded.");
+
 
     }
 
@@ -54,6 +60,10 @@ public class FallbackServerVelocity {
                 .aliases(ConfigurationUtil.getConfig().getStringList("").toArray(new String[0]))
                 .build();
         commandManager.register(commandMeta, new HubCommand());
+    }
+
+    private void createConfig() {
+
     }
 
 }
