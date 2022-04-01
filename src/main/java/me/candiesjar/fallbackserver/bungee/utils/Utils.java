@@ -8,23 +8,29 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class Utils {
 
-    private static String remoteVersion;
+    private static String remoteVersion = "Loading";
     private static boolean updateAvailable = false;
 
     public static void checkUpdates() {
         ProxyServer.getInstance().getScheduler().runAsync(FallbackServerBungee.getInstance(), () -> {
             try {
-                remoteVersion = null;
+
                 final HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=86398").openConnection();
                 connection.setRequestMethod("GET");
-                remoteVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
-            } catch (IOException e) {
-                FallbackServerBungee.getInstance().getLogger().severe("Cannot check for updates, maybe spigot is not reachable?");
+
+                try (InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())) {
+                    try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                        remoteVersion = bufferedReader.readLine();
+                    }
+                }
+
+            } catch (IOException ignored) {
+                FallbackServerBungee.getInstance().getLogger().severe("Cannot fetch updates, check your firewall settings.");
             }
+
         });
         updateAvailable = !FallbackServerBungee.getInstance().getDescription().getVersion().equals(remoteVersion);
     }
@@ -42,10 +48,14 @@ public class Utils {
     public static void writeToServerList(String section, Object object) {
         FallbackServerBungee.getInstance().getServerList().add(object.toString());
         FallbackServerBungee.getInstance().getConfig().set(section, FallbackServerBungee.getInstance().getServerList());
-        FallbackServerBungee.getInstance().saveConfiguration();
+        // FallbackServerBungee.getInstance().saveConfiguration();
     }
 
     public static boolean isUpdateAvailable() {
         return updateAvailable;
+    }
+
+    public static String getRemoteVersion() {
+        return remoteVersion;
     }
 }

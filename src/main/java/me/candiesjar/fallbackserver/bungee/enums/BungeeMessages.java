@@ -1,9 +1,9 @@
 package me.candiesjar.fallbackserver.bungee.enums;
 
 import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
-import net.md_5.bungee.api.ChatColor;
-
-import java.util.List;
+import me.candiesjar.fallbackserver.bungee.objects.PlaceHolder;
+import me.candiesjar.fallbackserver.bungee.utils.chat.ChatUtil;
+import net.md_5.bungee.api.CommandSender;
 
 public enum BungeeMessages {
 
@@ -45,31 +45,31 @@ public enum BungeeMessages {
     HUB_SUB_TITLE("TITLES.lobby.lobby_sub_title");
 
     private final String path;
+    private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
 
     BungeeMessages(String path) {
         this.path = path;
     }
 
-    public String getString() {
-        return FallbackServerBungee.getInstance().getMessagesConfig().getString(path);
+    public String getPath() {
+        return path;
     }
 
-    public String getFormattedString() {
-        return ChatColor.translateAlternateColorCodes('&', FallbackServerBungee.getInstance().getMessagesConfig().getString(path));
-    }
-    public static String getFormattedString(String string) {
-        return ChatColor.translateAlternateColorCodes('&', string);
+    public void send(CommandSender commandSender, PlaceHolder... placeHolders) {
+
+        commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeHolders)));
     }
 
-    public List<String> getStringList() {
-        return FallbackServerBungee.getInstance().getMessagesConfig().getStringList(path);
-    }
-
-    public int getInt() {
-        return FallbackServerBungee.getInstance().getMessagesConfig().getInt(path);
+    public void sendList(CommandSender commandSender, PlaceHolder... placeHolder) {
+        ChatUtil.sendFormattedList(this, commandSender, placeHolder);
     }
 
     public boolean getBoolean() {
-        return FallbackServerBungee.getInstance().getMessagesConfig().getBoolean(path);
+        return instance.getMessagesConfig().getBoolean(path);
     }
+
+    public int getInt() {
+        return instance.getMessagesConfig().getInt(path);
+    }
+
 }

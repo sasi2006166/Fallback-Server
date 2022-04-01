@@ -9,13 +9,12 @@
 MESSAGES:
   prefix: "&7&lF&b&lS &8&l» "
   correct_syntax: "%prefix% &cCorrect syntax: /fs <reload:set:add>"
-  reload_message: "%prefix% &aReloaded successfully!"
-  only_player: "%prefix% &cOnly players can execute this command!"
+  reload_message: "%prefix% &7Configuration reloaded &bsuccessfully&7!"
+  only_player: "%prefix% &cOnly players must execute this command."
   already_in_hub: "&cYou're already in hub!"
   connecting_to_hub: "&7Connecting to &bhub&7..."
   server_crash: "&cServer %server% crashed, you were teleported you to hub."
   disabled_command: "%prefix% &cSorry, this command is disabled."
-  new_update: "%prefix% &7A new update is &bavailable&7."
   missing_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
   no_server: "%prefix% &cNo lobby available as fallback."
   empty_server: "%prefix% &7Please, &cspecify &7a server."
@@ -23,23 +22,12 @@ MESSAGES:
   server_not_available: "%prefix% &b%server% &7isn't contained in BungeeCord configuration."
   server_added: "%prefix% &b%server% &7has been added to configuration."
 
-  config_warn:
-    - "&7(&c!&7) &4Warning! &7(&c!&7)"
+  new_update:
+    - "&7&m---------------------------------"
+    - "&7New update is available to Fallback Server."
     - ""
-    - "&7Executing this command will &c&lRESET &7your"
-    - "&configuration file, are you sure you want to proceed?"
-    - ""
-    - "&7Re-run the command again for &cproceed&7."
-  configuration_restored: "%prefix% &7Configuration file successfully &bre-created&7."
-
-  messages_warn:
-    - "&7(&c!&7) &4Warning! &7(&c!&7)"
-    - ""
-    - "&7Executing this command will &c&lRESET &7your"
-    - "&messages file, are you sure you want to proceed?"
-    - ""
-    - "&7Re-run the command again for &cproceed&7."
-  messages_restored: "%prefix% &Messages file successfully &bre-created&7."
+    - "&7Current version: &c%old_version% &7|| Newest version: &b%new_version%"
+    - "&7&m---------------------------------"
 
   fallback_command:
     - "&8&m-----&8[&bFallback Server&8]&m-----"
@@ -50,6 +38,27 @@ MESSAGES:
     - ""
     - "&7Running version &b%version%"
     - "&8&m---------------------------"
+
+  status_command:
+    - ""
+
+  config_warn:
+    - "&7(&c!&7) &4Warning! &7(&c!&7)"
+    - ""
+    - "&7Executing this command will &c&lRESET &7your"
+    - "&cconfiguration file&7, are you sure you want to proceed?"
+    - ""
+    - "&7Re-run the command again for &cproceed&7."
+  configuration_restored: "%prefix% &7Configuration file successfully &bre-created&7."
+
+  messages_warn:
+    - "&7(&c!&7) &4Warning! &7(&c!&7)"
+    - ""
+    - "&7Executing this command will &c&lRESET &7your"
+    - "&cmessages file&7, are you sure you want to proceed?"
+    - ""
+    - "&7Re-run the command again for &cproceed&7."
+  messages_restored: "%prefix% &7Messages file successfully &bre-created&7."
 
 TITLES: # Everything in seconds.
   fallback:

@@ -4,13 +4,13 @@ import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
 import me.candiesjar.fallbackserver.bungee.api.FallbackAPI;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.objects.FallingServer;
+import me.candiesjar.fallbackserver.bungee.objects.PlaceHolder;
 import me.candiesjar.fallbackserver.bungee.utils.TitleUtil;
+import me.candiesjar.fallbackserver.bungee.utils.chat.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.ServerConnectRequest;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -24,6 +24,7 @@ public class FallbackListener implements Listener {
 
     private final FallbackServerBungee plugin;
     private final TitleUtil titleUtil = new TitleUtil();
+    private final FallbackServerBungee instance = FallbackServerBungee.getInstance();
 
     public FallbackListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
@@ -44,18 +45,22 @@ public class FallbackListener implements Listener {
         lobbies.sort(FallingServer::compareTo);
         lobbies.sort(Comparator.reverseOrder());
 
-        try {
-            ServerInfo serverInfo = lobbies.get(0).getServerInfo();
-            event.setCancelServer(serverInfo);
-            if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean())
-                titleUtil.sendFallbackTitle(player);
-            else
-                player.sendMessage(new TextComponent(BungeeMessages.CONNECTED.getFormattedString()
-                        .replace("%server%", kickedFrom.getName())));
-            plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom));
-        } catch (IndexOutOfBoundsException ignored) {
-            player.disconnect(new TextComponent(BungeeMessages.NO_SERVER.getFormattedString()
-                    .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString())));
+        if (lobbies.size() == 0) {
+            player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
+            return;
         }
+
+        
+
+        ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+        event.setCancelServer(serverInfo);
+
+        if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean()) {
+            titleUtil.sendFallbackTitle(player);
+        } else {
+            BungeeMessages.CONNECTED.send(player, new PlaceHolder("prefix", instance.getPrefix()));
+        }
+
+        ProxyServer.getInstance().getScheduler().runAsync(instance, () -> plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom)));
     }
 }

@@ -1,40 +1,49 @@
 package me.candiesjar.fallbackserver.bungee;
 
-import com.google.common.io.ByteStreams;
-import me.candiesjar.fallbackserver.bungee.commands.HubCommand;
-import me.candiesjar.fallbackserver.bungee.commands.SubCommandManager;
+import lombok.Getter;
+import me.candiesjar.fallbackserver.bungee.commands.base.HubCommand;
+import me.candiesjar.fallbackserver.bungee.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.listeners.ChatListener;
 import me.candiesjar.fallbackserver.bungee.listeners.FallbackListener;
 import me.candiesjar.fallbackserver.bungee.listeners.PlayerListener;
 import me.candiesjar.fallbackserver.bungee.metrics.Metrics;
-import me.candiesjar.fallbackserver.bungee.objects.FallingServer;
-import me.candiesjar.fallbackserver.bungee.utils.Utils;
+import me.candiesjar.fallbackserver.bungee.objects.TextFile;
+import me.candiesjar.fallbackserver.bungee.utils.UpdateUtil;
+import me.candiesjar.fallbackserver.bungee.utils.tasks.LobbyCheckerTask;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public final class FallbackServerBungee extends Plugin {
+    private final List<ServerInfo> availableServers = new ArrayList<>();
+
+    private List<String> serverList;
 
     private static FallbackServerBungee instance;
-    private Configuration config;
-    private Configuration messagesConfig;
-    private List<String> serverList = new ArrayList<>();
-    private final List<ServerInfo> availableServers = new ArrayList<>();
+
+    @Getter
+    private TextFile configTextFile;
+
+    @Getter
+    private TextFile messagesTextFile;
+
+    @Getter
+    private String version;
 
     public static FallbackServerBungee getInstance() {
         return instance;
     }
 
     public void onEnable() {
+        instance = this;
+
+        version = getDescription().getVersion();
 
         getLogger().info("§b __________      ________________              ______      ________                               ");
         getLogger().info("§b ___  ____/_____ ___  /__  /__  /_______ _________  /__    __  ___/______________   ______________");
@@ -44,9 +53,10 @@ public final class FallbackServerBungee extends Plugin {
 
         // Instances
         getLogger().info("§7[§b!§7] Creating configuration files... §7[§b!§7]");
-        instance = this;
-        loadConfig();
-        loadMessages();
+
+        configTextFile = new TextFile(this, "config.yml");
+        messagesTextFile = new TextFile(this, "messages.yml");
+
         serverList = BungeeConfig.LOBBIES.getStringList();
 
         // Listeners
@@ -64,89 +74,35 @@ public final class FallbackServerBungee extends Plugin {
         // Setup
         getLogger().info("§7[§b!§7] Final steps... §7[§b!§7]");
 
-        checkLobbies();
+        getProxy().getScheduler().schedule(this, new LobbyCheckerTask(), 0, BungeeConfig.TASK_PERIOD.getInt(), TimeUnit.SECONDS);
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
-        checkUpdates();
+        UpdateUtil.checkUpdates();
 
     }
 
     public void onDisable() {
         instance = null;
+
         availableServers.clear();
         serverList.clear();
+
+        configTextFile = null;
+        messagesTextFile = null;
+
         getLogger().info("§7[§c!§7] §cDisabling plugin... §7[§c!§7]");
+    }
+
+    public String getPrefix() {
+        return getMessagesConfig().getString(BungeeMessages.PREFIX.getPath());
     }
 
     private void loadCommands() {
         getProxy().getPluginManager().registerCommand(this, new SubCommandManager());
+
         if (BungeeConfig.USE_HUB_COMMAND.getBoolean()) {
             getProxy().getPluginManager().registerCommand(this, new HubCommand());
         }
-    }
-
-    private File loadConfigurations(String resource) {
-        File folder = getDataFolder();
-        if (!folder.exists())
-            folder.mkdir();
-        File resourceFile = new File(folder, resource);
-        try {
-            if (!resourceFile.exists()) {
-                resourceFile.createNewFile();
-                try (InputStream in = getResourceAsStream(resource);
-                     OutputStream out = new FileOutputStream(resourceFile)) {
-                    ByteStreams.copy(in, out);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resourceFile;
-    }
-
-    private void loadConfig() {
-        try {
-            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(
-                    loadConfigurations("config.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadMessages() {
-        try {
-            messagesConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(
-                    loadConfigurations("messages.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void checkLobbies() {
-        getProxy().getScheduler().schedule(this, () -> {
-            FallingServer.getServers().clear();
-            for (String serverName : BungeeConfig.LOBBIES.getStringList()) {
-                ServerInfo serverInfo = getProxy().getServerInfo(serverName);
-
-                if (serverInfo == null) {
-                    continue;
-                }
-
-                serverInfo.ping((result, error) -> {
-                    if (error == null) {
-                        new FallingServer(serverInfo);
-                    }
-                });
-            }
-        }, 0, BungeeConfig.TASK_PERIOD.getInt(), TimeUnit.SECONDS);
-    }
-
-    private void checkUpdates() {
-        if (BungeeConfig.UPDATE_CHECKER.getBoolean())
-            Utils.checkUpdates();
-        if (Utils.isUpdateAvailable())
-            getLogger().info(BungeeMessages.NEW_UPDATE.getFormattedString()
-                    .replace("%prefix%", BungeeMessages.PREFIX.getFormattedString()));
     }
 
     private void loadListeners() {
@@ -158,8 +114,8 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void startMetrics() {
-
-        new Metrics(this, 11817);
+        if (BungeeConfig.USE_STATS.getBoolean())
+            new Metrics(this, 11817);
     }
 
     public boolean isHub(ServerInfo server) {
@@ -167,43 +123,11 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     public Configuration getConfig() {
-        return config;
+        return configTextFile.getConfig();
     }
 
     public Configuration getMessagesConfig() {
-        return messagesConfig;
-    }
-
-    public void reloadConfig() {
-        loadConfig();
-        loadMessages();
-    }
-
-    public void saveConfiguration() {
-        try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class)
-                    .save(config, new File(getDataFolder() + "/" + "config.yml"));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void reCreateConfig(String resource) {
-        File file = new File(getDataFolder(), resource);
-        if (file.exists()) {
-            file.delete();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try (InputStream in = getResourceAsStream(resource);
-                 OutputStream out = new FileOutputStream(file)) {
-                ByteStreams.copy(in, out);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        return messagesTextFile.getConfig();
     }
 
     public List<String> getServerList() {

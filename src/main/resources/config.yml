@@ -18,18 +18,46 @@ settings:
   # As it says, enables updates checking.
   check_updates: true
 
-  # Checks the lobby list every 5 seconds, recommended staying with default value.
+  # In seconds, checks the lobby list every 5 seconds, recommended staying with default value.
   task_period: 5
 
   # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
   stats: true
 
-commands:
-  permissions:
-    command_permission: "fallback.admin"
-    reload_permission: "fallback.admin.reload"
-    add_permission: "fallback.admin.add"
-    reset_permission: "fallback.admin.reset"
+  # True: Enable blacklist, (Player needs to log-in but the server goes down, the plugin will not enable fallback).
+  server_blacklist: true
+
+  # Add here the blacklisted servers, such as pre-lobbies with authentication plugins.
+  server_blacklist_list:
+    - testsv
+
+sub_commands:
+
+  admin:
+    permission: "fallback.admin"
+
+  reload:
+    permission: "fallback.admin.reload"
+
+  add:
+    enabled: true
+    permission: "fallback.admin.add"
+
+  remove:
+    enabled: true
+    permission: "fallback.admin.remove"
+
+  set:
+    enabled: true
+    permission: "fallback.admin.set"
+
+  reset:
+    enabled: true
+    permission: "fallback.admin.reset"
+    
+  status:
+    enabled: true
+    permission: "fallback.admin.status"
 
 Hub:
   server_list:

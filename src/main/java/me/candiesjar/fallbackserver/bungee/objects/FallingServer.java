@@ -27,5 +27,4 @@ public class FallingServer implements Comparable<FallingServer> {
     public static Map<ServerInfo, FallingServer> getServers() {
         return servers;
     }
-
 }

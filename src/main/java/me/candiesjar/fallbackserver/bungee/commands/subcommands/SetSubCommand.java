@@ -1,7 +1,7 @@
-package me.candiesjar.fallbackserver.bungee.commands.subCommands;
+package me.candiesjar.fallbackserver.bungee.commands.subcommands;
 
-import me.candiesjar.fallbackserver.bungee.commands.SubCommand;
-import me.candiesjar.fallbackserver.bungee.enums.SubCommandType;
+import me.candiesjar.fallbackserver.bungee.commands.interfaces.SubCommand;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -10,13 +10,13 @@ public class SetSubCommand implements SubCommand {
     // Like Pokemon games, code is here, but not activated.
 
     @Override
-    public SubCommandType getType() {
-        return SubCommandType.UNIVERSAL;
+    public String getPermission() {
+        return BungeeConfig.SET_COMMAND_PERMISSION.getString();
     }
 
     @Override
-    public String getPermission() {
-        return "fallback.internal.test";
+    public boolean isEnabled() {
+        return BungeeConfig.SET_COMMAND.getBoolean();
     }
 
     @Override

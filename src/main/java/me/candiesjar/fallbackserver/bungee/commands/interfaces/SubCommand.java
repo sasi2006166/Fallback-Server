@@ -1,13 +1,12 @@
-package me.candiesjar.fallbackserver.bungee.commands;
+package me.candiesjar.fallbackserver.bungee.commands.interfaces;
 
-import me.candiesjar.fallbackserver.bungee.enums.SubCommandType;
 import net.md_5.bungee.api.CommandSender;
 
 public interface SubCommand {
 
-    SubCommandType getType();
-
     String getPermission();
+
+    boolean isEnabled();
 
     void perform(CommandSender sender, String[] arguments);
 
