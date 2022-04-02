@@ -10,7 +10,7 @@
 - Best support with all plugins.
 - See spigot thread for more: https://www.spigotmc.org/resources/86398/
 
-## Compatibily
+## Compatibility
 
 ```
 - BungeeCord 1.7-1.18
