@@ -2,36 +2,44 @@
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 ## Features
 
-- Ability to use multiple lobbies as fallback.
-- Aliases for hub command with disabling opportunity.
-- WIDE support, from 1.8.X to 1.18.X (BungeeCord)
-- More on spigot thread -> https://www.spigotmc.org/resources/86398/
+- Multi-Lobby support as Fallback.
+- Many commands, everything customizable.
+- Fast, tested on multiple configurations.
+- Organized configuration and messages.
+- Open-Source API for developers.
+- Best support with all plugins.
+- See spigot thread for more: https://www.spigotmc.org/resources/86398/
+
+## Compatibily
+
+```
+- BungeeCord 1.7-1.18
+- Waterfall 1.8-1.18
+- Travertine 1.7-1.18
+- Aegis (Lite, Normal, Escanor)
+- FlameCord
+- SSCord
+- InsaneProxy
+```
+
+If your proxy is not in the list don't worry, try the plugin anyway.
 
 ## Installation
 
-Fallback Server supports every proxy out there, from BungeeCord to Waterfall and much more.
+**Make sure that your servers contained into Proxy's config are using 0.0.0.0 as IP. (ONLY IF LOBBIES ARE IN THE SAME SERVER AS THE PROXY)**
 
 ```
-- Enter your Proxy's plugin folder.
-- Download latest release from Spigot / Discord.
-- Put FallbackServer_X.X.X.jar into folder.
-- Start your proxy and let plugin create the config.
-- Customize the config as you want!
+- Download latest plugin Jar.
+- Put it into "plugins/"
+- Start the proxy to allow the plugin to create configuration files.
+- Modify the config based on your needs and run /fs reload.
+- Have fun using the plugin!
 ```
-
-Make sure that your servers contained into Proxy's config are using 0.0.0.0 as IP.
 
 #### Building for source
 
-Clone the repository
-
 ```sh
 git clone https://github.com/sasi2006166/Fallback-Server
-```
-
-Build it using maven.
-
-```sh
 cd Fallback-Server && mvn clean install
 ```
 
