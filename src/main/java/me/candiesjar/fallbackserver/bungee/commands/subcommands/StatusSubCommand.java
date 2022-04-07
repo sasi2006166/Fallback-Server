@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserver.bungee.commands.subcommands;
 
 import me.candiesjar.fallbackserver.bungee.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import net.md_5.bungee.api.CommandSender;
 
 public class StatusSubCommand implements SubCommand {
@@ -20,6 +21,7 @@ public class StatusSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
+
 
 
     }

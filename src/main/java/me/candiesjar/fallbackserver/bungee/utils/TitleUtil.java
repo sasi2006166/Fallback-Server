@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.bungee.utils;
 
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.bungee.objects.PlaceHolder;
 import me.candiesjar.fallbackserver.bungee.utils.chat.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;

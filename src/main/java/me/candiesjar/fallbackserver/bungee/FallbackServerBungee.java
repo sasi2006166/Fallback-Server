@@ -78,6 +78,7 @@ public final class FallbackServerBungee extends Plugin {
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
         UpdateUtil.checkUpdates();
+        checkPlugins();
 
     }
 
@@ -100,7 +101,7 @@ public final class FallbackServerBungee extends Plugin {
     private void loadCommands() {
         getProxy().getPluginManager().registerCommand(this, new SubCommandManager());
 
-        if (BungeeConfig.USE_HUB_COMMAND.getBoolean()) {
+        if (BungeeConfig.LOBBY_COMMAND.getBoolean()) {
             getProxy().getPluginManager().registerCommand(this, new HubCommand());
         }
     }
@@ -111,6 +112,15 @@ public final class FallbackServerBungee extends Plugin {
             getProxy().getPluginManager().registerListener(this, new ChatListener());
         if (BungeeConfig.UPDATE_CHECKER.getBoolean())
             getProxy().getPluginManager().registerListener(this, new PlayerListener());
+    }
+
+    private void checkPlugins() {
+        if (getProxy().getPluginManager().getPlugin("ViaVersion") != null) {
+            getLogger().severe("§7[§c!§7] §7ViaVersion detected, it may cause troubles §7[§c!§7]");
+        }
+        if (getProxy().getPluginManager().getPlugin("Protocolize") != null) {
+            getLogger().severe("§7[§c!§7] §7Protocolize detected, it may cause troubles §7[§c!§7]");
+        }
     }
 
     private void startMetrics() {

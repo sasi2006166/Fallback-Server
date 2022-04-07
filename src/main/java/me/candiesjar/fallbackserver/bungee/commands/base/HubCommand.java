@@ -23,7 +23,7 @@ public class HubCommand extends Command {
     private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
 
     public HubCommand() {
-        super("", null, BungeeConfig.HUB_COMMANDS.getStringList().toArray(new String[0]));
+        super("", null, BungeeConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]));
     }
 
     public void execute(CommandSender sender, String[] args) {

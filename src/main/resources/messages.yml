@@ -73,5 +73,5 @@ TITLES: # Everything in seconds.
     fade_in: 1
     fade_out: 1
     stay: 3
-    lobby_title: "&a&lConnecting to hub..."
-    lobby_sub_title: "&7Please wait!"
+    lobby_title: "&a&lConnected to lobby."
+    lobby_sub_title: "&7Welcome back!"

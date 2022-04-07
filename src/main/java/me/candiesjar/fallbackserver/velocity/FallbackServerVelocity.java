@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.scheduler.Scheduler;
 import me.candiesjar.fallbackserver.velocity.commands.FallbackVelocityCommand;
 import me.candiesjar.fallbackserver.velocity.commands.HubCommand;
 import me.candiesjar.fallbackserver.velocity.stats.VelocityMetrics;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 public class FallbackServerVelocity {
 
     private static FallbackServerVelocity instance;
+    Scheduler taskBuilder;
 
     public static FallbackServerVelocity getInstance() {
         return instance;
@@ -41,6 +43,8 @@ public class FallbackServerVelocity {
         logger.info("§7[§b!§7] Creating configuration files... §7[§b!§7]");
         instance = this;
         ConfigurationUtil.saveConfiguration(path);
+
+        logger.info("§7[§b!§7] Loading commands... §7[§b!§7]");
         commandManager.register(Arrays.toString(ConfigurationUtil.getConfig().getStringList("").toArray(new String[0])), new HubCommand());
         commandManager.register("fsv", new FallbackVelocityCommand());
 
@@ -60,10 +64,6 @@ public class FallbackServerVelocity {
                 .aliases(ConfigurationUtil.getConfig().getStringList("").toArray(new String[0]))
                 .build();
         commandManager.register(commandMeta, new HubCommand());
-    }
-
-    private void createConfig() {
-
     }
 
 }

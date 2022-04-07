@@ -68,7 +68,7 @@ public class SubCommandManager extends Command implements TabExecutor {
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
-            return null;
+            return Collections.emptyList();
         }
 
         if (BungeeConfig.TAB_COMPLETE.getBoolean()) {
@@ -79,6 +79,6 @@ public class SubCommandManager extends Command implements TabExecutor {
             }
         }
 
-        return null;
+        return Collections.emptyList();
     }
 }

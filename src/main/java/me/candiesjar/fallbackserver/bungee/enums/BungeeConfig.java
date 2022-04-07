@@ -11,6 +11,8 @@ public enum BungeeConfig {
     UPDATE_CHECKER("settings.check_updates"),
     TASK_PERIOD("settings.task_period"),
     USE_STATS("settings.stats"),
+    LOBBIES("settings.fallback_list"),
+    BLACKLISTED_WORDS("settings.blacklisted_words"),
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
     RELOAD_PERMISSION("sub_commands.reload.permission"),
@@ -33,10 +35,10 @@ public enum BungeeConfig {
     BLACKLISTED_SERVERS("settings.server_blacklist"),
     BLACKLISTED_SERVERS_LIST("settings.server_blacklist_list"),
 
-    USE_HUB_COMMAND("Hub.commands.enable_command"),
-    HUB_COMMANDS("Hub.commands.command_aliases"),
-    LOBBIES("Hub.server_list"),
-    DISABLED_SERVERS("Hub.enable_disabled_servers");
+    LOBBY_COMMAND("settings.lobby_command"),
+    LOBBY_ALIASES("settings.lobby_command_aliases"),
+
+    DISABLED_SERVERS("settings.disabled_servers");
 
     private final String path;
     private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();

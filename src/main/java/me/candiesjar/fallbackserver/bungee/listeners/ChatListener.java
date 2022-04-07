@@ -13,12 +13,23 @@ import net.md_5.bungee.event.EventHandler;
 public class ChatListener implements Listener {
 
     @EventHandler(priority = 64)
-    public void onChat(ChatEvent event) {
-        final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+    public void onChat(final ChatEvent event) {
 
+        if (!event.isCommand()) {
+            return;
+        }
+
+        if (!(event.getSender() instanceof ProxiedPlayer)) {
+            return;
+        }
+
+        final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+        final String playerServer = player.getServer().getInfo().getName();
         String message = event.getMessage();
 
-        final String playerServer = player.getServer().getInfo().getName();
+        if (player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
+            return;
+        }
 
         if (message.length() > 1) {
             String[] args = message.split(" ");
@@ -27,11 +38,9 @@ public class ChatListener implements Listener {
 
         final boolean checkMessage = Utils.checkMessage(message, playerServer);
 
-        if (!player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
-            if (checkMessage) {
-                event.setCancelled(true);
-                BungeeMessages.BLOCKED_COMMAND.send(player, new PlaceHolder("prefix", FallbackServerBungee.getInstance().getPrefix()));
-            }
+        if (checkMessage) {
+            event.setCancelled(true);
+            BungeeMessages.BLOCKED_COMMAND.send(player, new PlaceHolder("prefix", FallbackServerBungee.getInstance().getPrefix()));
         }
     }
 }

@@ -19,10 +19,45 @@ settings:
   check_updates: true
 
   # In seconds, checks the lobby list every 5 seconds, recommended staying with default value.
+  # On first start / reboot, let the plugin settle down for 5 seconds before start using fallback.
   task_period: 5
 
   # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
   stats: true
+
+  # Example: If the kicked message contains this (those) words the player will NOT be kicked.
+  blacklisted_words:
+    - "ban"
+
+  # Add here your lobbies, those will be used as fallback.
+  # Those servers will also be used for the /lobby command.
+  fallback_list:
+    - lobby1
+    - lobby2
+    - lobby3
+
+  # If you want to use the /lobby command (with aliases).
+  # Requires Proxy reboot for applying changes.
+  lobby_command: true
+
+  # Aliases for /lobby command, it's possible to remove the base /hub command too.
+  lobby_command_aliases:
+    - hub
+    - lobby
+
+  # Enable if you want to block lobby commands in specified servers.
+  # Example: A player needs to checked for hacks and tries to use /lobby command in a server dedicated for that.
+  disabled_servers: true
+
+  # Add here the servers with the command(s) you want to block.
+  # You can block any command, not only lobby command.
+  disabled_servers_list:
+    hack_control:
+      - lobby
+      - hub
+    hack_control_2:
+      - lobby
+      - hub
 
   # True: Enable blacklist, (Player needs to log-in but the server goes down, the plugin will not enable fallback).
   server_blacklist: true
@@ -32,6 +67,9 @@ settings:
     - testsv
 
 sub_commands:
+
+  # Enabled: true, will enable the selected sub-command.
+  # Permission: permission required to use the sub-command.
 
   admin:
     permission: "fallback.admin"
@@ -54,26 +92,7 @@ sub_commands:
   reset:
     enabled: true
     permission: "fallback.admin.reset"
-    
+
   status:
     enabled: true
     permission: "fallback.admin.status"
-
-Hub:
-  server_list:
-    - lobby1
-    - lobby2
-    - lobby3
-  commands:
-    enable_command: true # This flag requires a proxy reboot.
-    command_aliases: # Customize /hub command, requires reboot.
-      - lobby
-      - hub
-  enable_disabled_servers: true # Will disable hub command (aliases) in specified servers, requires reboot.
-  disabled_servers:
-    hack_control: # Add server name with all command aliases or what command you want to disable, like /bungee
-      - lobby
-      - hub
-    hack_control_2:
-      - lobby
-      - hub

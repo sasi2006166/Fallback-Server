@@ -2,12 +2,14 @@ package me.candiesjar.fallbackserver.bungee.listeners;
 
 import me.candiesjar.fallbackserver.bungee.FallbackServerBungee;
 import me.candiesjar.fallbackserver.bungee.api.FallbackAPI;
+import me.candiesjar.fallbackserver.bungee.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.bungee.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.bungee.objects.FallingServer;
 import me.candiesjar.fallbackserver.bungee.objects.PlaceHolder;
 import me.candiesjar.fallbackserver.bungee.utils.TitleUtil;
 import me.candiesjar.fallbackserver.bungee.utils.chat.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -31,9 +33,20 @@ public class FallbackListener implements Listener {
     }
 
     @EventHandler
-    public void onServerKickEvent(ServerKickEvent event) {
+    public void onServerKickEvent(final ServerKickEvent event) {
+
         final ProxiedPlayer player = event.getPlayer();
         final ServerInfo kickedFrom = event.getKickedFrom();
+
+        if (!player.isConnected()) {
+            return;
+        }
+
+        for (String blacklist : BungeeConfig.BLACKLISTED_WORDS.getStringList()) {
+            if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(blacklist)) {
+                return;
+            }
+        }
 
         event.setCancelled(true);
 
@@ -46,13 +59,14 @@ public class FallbackListener implements Listener {
         lobbies.sort(Comparator.reverseOrder());
 
         if (lobbies.size() == 0) {
-            player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
+            if (event.getKickReasonComponent() == null) {
+                player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
+            }
             return;
         }
 
-        
-
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+
         event.setCancelServer(serverInfo);
 
         if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean()) {
