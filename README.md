@@ -1,12 +1,13 @@
 # Fallback Server
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+
 ## Features
 
-- Multi-Lobby support as Fallback.
-- Many commands, everything customizable.
-- Fast, tested on multiple configurations.
+- Multi-Lobby support.
+- Many sub-commands for administrators.
+- Stable and fast.
 - Organized configuration and messages.
-- Open-Source API for developers.
+- Extensive API for developers.
 - Best support with all plugins.
 - See spigot thread for more: https://www.spigotmc.org/resources/86398/
 
@@ -22,7 +23,7 @@
 - InsaneProxy
 ```
 
-If your proxy is not in the list don't worry, try the plugin anyway.
+**Try** the plugin even if your fork isn't contained in the list.
 
 ## Installation
 
@@ -35,8 +36,7 @@ If your proxy is not in the list don't worry, try the plugin anyway.
 - Modify the config based on your needs and run /fs reload.
 - Have fun using the plugin!
 ```
-
-#### Building for source
+#### Building from source
 
 ```sh
 git clone https://github.com/sasi2006166/Fallback-Server
