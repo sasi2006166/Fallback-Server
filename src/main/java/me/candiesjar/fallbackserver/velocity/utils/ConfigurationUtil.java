@@ -23,6 +23,7 @@ public class ConfigurationUtil {
         }
     }
 
+
     public static YamlFile getConfig() {
         return ConfigurationUtil.configFile;
     }
