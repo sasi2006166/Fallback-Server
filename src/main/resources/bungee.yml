@@ -1,4 +1,4 @@
 name: FallBackServer
 version: ${project.version}
-main: me.candiesjar.fallbackserver.bungee.FallbackServerBungee
+main: me.candiesjar.fallbackserver.FallbackServerBungee
 author: CandiesJar
