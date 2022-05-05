@@ -1,4 +1,4 @@
-# Fallback Server
+# Fallback Server Velocity
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
 ## Features
@@ -14,16 +14,8 @@
 ## Compatibility
 
 ```
-- BungeeCord 1.7-1.18
-- Waterfall 1.8-1.18
-- Travertine 1.7-1.18
-- Aegis (Lite, Normal, Escanor)
-- FlameCord
-- SSCord
-- InsaneProxy
+- Velocity (1.0.0-3.1.2_SNAPSHOT)
 ```
-
-**Try** the plugin even if your fork isn't contained in the list.
 
 ## Installation
 

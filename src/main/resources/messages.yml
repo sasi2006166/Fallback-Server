@@ -42,36 +42,18 @@ MESSAGES:
   status_command:
     - ""
 
-  config_warn:
-    - "&7(&c!&7) &4Warning! &7(&c!&7)"
-    - ""
-    - "&7Executing this command will &c&lRESET &7your"
-    - "&cconfiguration file&7, are you sure you want to proceed?"
-    - ""
-    - "&7Re-run the command again for &cproceed&7."
-  configuration_restored: "%prefix% &7Configuration file successfully &bre-created&7."
-
-  messages_warn:
-    - "&7(&c!&7) &4Warning! &7(&c!&7)"
-    - ""
-    - "&7Executing this command will &c&lRESET &7your"
-    - "&cmessages file&7, are you sure you want to proceed?"
-    - ""
-    - "&7Re-run the command again for &cproceed&7."
-  messages_restored: "%prefix% &7Messages file successfully &bre-created&7."
-
 TITLES: # Everything in seconds.
   fallback:
     enabled: true
+    fallback_title: "&cServer crashed!"
+    fallback_sub_title: "&7You've been moved to lobby."
     fade_in: 1 # The time for showing the title
     fade_out: 1  # Time for making title go away
     stay: 3 # Time for making title stay in
-    fallback_title: "&cServer crashed!"
-    fallback_sub_title: "&7You've been moved to lobby."
   lobby:
     enabled: true
+    lobby_title: "&a&lConnected to lobby."
+    lobby_sub_title: "&7Welcome back!"
     fade_in: 1
     fade_out: 1
     stay: 3
-    lobby_title: "&a&lConnected to lobby."
-    lobby_sub_title: "&7Welcome back!"

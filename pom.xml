@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.0.0.3</version>
+    <version>3.0.0.4</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>
@@ -29,6 +29,22 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -36,14 +52,10 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <directory>C:\Users\marco\Desktop\LocalHost\BungeeCord\plugins</directory>
+        <directory>C:\Users\marco\Desktop\LocalHost\Velocity\plugins</directory>
     </build>
 
     <repositories>
-        <repository>
-            <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
-        </repository>
         <repository>
             <id>velocity</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
@@ -55,12 +67,6 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>io.github.waterfallmc</groupId>
-            <artifactId>waterfall-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -75,7 +81,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
