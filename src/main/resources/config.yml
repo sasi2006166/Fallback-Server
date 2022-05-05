@@ -28,6 +28,7 @@ settings:
   # Example: If the kicked message contains this (those) words the player will NOT be kicked.
   blacklisted_words:
     - "ban"
+    - "whitelist"
 
   # Add here your lobbies, those will be used as fallback.
   # Those servers will also be used for the /lobby command.

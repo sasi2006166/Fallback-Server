@@ -18,6 +18,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class FallbackListener implements Listener {
 
@@ -67,7 +68,7 @@ public class FallbackListener implements Listener {
         event.setCancelServer(serverInfo);
 
         if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean()) {
-            titleUtil.sendFallbackTitle(player);
+            ProxyServer.getInstance().getScheduler().schedule(instance, () -> titleUtil.sendFallbackTitle(player), BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         } else {
             BungeeMessages.CONNECTED.send(player, new PlaceHolder("prefix", instance.getPrefix()));
         }
