@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.utils;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.objects.TextFile;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.io.BufferedReader;
@@ -40,10 +41,9 @@ public class Utils {
         return false;
     }
 
-    public static void writeToServerList(String section, Object object) {
-        FallbackServerBungee.getInstance().getServerList().add(object.toString());
+    public static void writeToServerList(String section, String arguments) {
+        FallbackServerBungee.getInstance().getServerList().add(arguments);
         FallbackServerBungee.getInstance().getConfig().set(section, FallbackServerBungee.getInstance().getServerList());
-        // FallbackServerBungee.getInstance().saveConfiguration();
     }
 
     public static boolean isUpdateAvailable() {

@@ -74,7 +74,6 @@ public final class FallbackServerBungee extends Plugin {
 
         // Setup
         getLogger().info("§7[§b!§7] Final steps... §7[§b!§7]");
-
         getProxy().getScheduler().schedule(this, new LobbyCheckerTask(), 0, BungeeConfig.TASK_PERIOD.getInt(), TimeUnit.SECONDS);
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
@@ -91,6 +90,8 @@ public final class FallbackServerBungee extends Plugin {
 
         configTextFile = null;
         messagesTextFile = null;
+
+        version = null;
 
         getLogger().info("§7[§c!§7] §cDisabling plugin... §7[§c!§7]");
     }
@@ -121,12 +122,6 @@ public final class FallbackServerBungee extends Plugin {
         }
         if (getProxy().getPluginManager().getPlugin("Protocolize") != null) {
             getLogger().severe("§7[§c!§7] §7Protocolize detected, it may cause troubles §7[§c!§7]");
-        }
-    }
-
-    private void checkConfiguration() {
-        if (!ProxyServer.getInstance().getConfig().isOnlineMode()) {
-            getLogger().info("§7[§b!§7] Server is offline mode §7[§b!§7]");
         }
     }
 

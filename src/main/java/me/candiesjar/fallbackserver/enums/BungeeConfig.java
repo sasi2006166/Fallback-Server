@@ -23,9 +23,6 @@ public enum BungeeConfig {
     REMOVE_COMMAND("sub_commands.remove.enabled"),
     REMOVE_COMMAND_PERMISSION("sub_commands.remove.permission"),
 
-    RESET_COMMAND("sub_commands.reset.enabled"),
-    RESET_COMMAND_PERMISSION("sub_commands.permissions.reset_permission"),
-
     STATUS_COMMAND("sub_commands.status.enabled"),
     STATUS_COMMAND_PERMISSION("sub_commands.status.permission"),
 

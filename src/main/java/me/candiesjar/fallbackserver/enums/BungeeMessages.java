@@ -53,6 +53,10 @@ public enum BungeeMessages {
 
     public void send(CommandSender commandSender, PlaceHolder... placeHolders) {
 
+        if (ChatUtil.getString(this).equals("")) {
+            return;
+        }
+
         commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeHolders)));
     }
 

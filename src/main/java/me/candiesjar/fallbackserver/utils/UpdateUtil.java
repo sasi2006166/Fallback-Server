@@ -16,6 +16,7 @@ public class UpdateUtil {
     private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
 
     public void checkUpdates() {
+
         if (BungeeConfig.UPDATE_CHECKER.getBoolean()) {
             Utils.checkUpdates();
         }

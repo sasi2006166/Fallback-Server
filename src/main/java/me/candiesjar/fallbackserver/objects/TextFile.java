@@ -50,16 +50,6 @@ public class TextFile {
         return ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
     }
 
-    public void recreate() {
-        file.delete();
-
-        try {
-            create();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void reload() {
         try {
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);

@@ -36,7 +36,7 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <directory>C:\Users\marco\Desktop\LocalHost\BungeeCord\plugins</directory>
+        <directory>C:\Users\Salvatore\Desktop\LocalHost\BungeeCord\plugins</directory>
     </build>
 
     <repositories>
