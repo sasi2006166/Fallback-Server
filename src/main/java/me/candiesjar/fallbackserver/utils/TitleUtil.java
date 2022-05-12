@@ -9,23 +9,18 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class TitleUtil {
 
-    private final Title title = ProxyServer.getInstance().createTitle();
+    private final Title createdTitle = ProxyServer.getInstance().createTitle();
 
-    public void sendFallbackTitle(ProxiedPlayer player) {
-        title.fadeIn(BungeeMessages.FALLBACK_FADE_IN.getInt() * 20);
-        title.fadeOut(BungeeMessages.FALLBACK_FADE_OUT.getInt() * 20);
-        title.stay(BungeeMessages.FALLBACK_STAY.getInt() * 20);
-        title.title(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.FALLBACK_TITLE)));
-        title.subTitle(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.FALLBACK_SUB_TITLE)));
-        title.send(player);
-    }
+    public void sendTitle(int fadeIn, int stay, int fadeOut, BungeeMessages title, BungeeMessages subTitle, ProxiedPlayer proxiedPlayer) {
 
-    public void sendHubTitle(ProxiedPlayer player) {
-        title.fadeIn(BungeeMessages.HUB_TITLE_FADE_IN.getInt() * 20);
-        title.fadeOut(BungeeMessages.HUB_TITLE_FADE_OUT.getInt() * 20);
-        title.stay(BungeeMessages.HUB_TITLE_STAY.getInt() * 20);
-        title.title(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.HUB_TITLE)));
-        title.subTitle(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.HUB_SUB_TITLE)));
-        title.send(player);
+        createdTitle.fadeIn(fadeIn * 20);
+        createdTitle.stay(stay * 20);
+        createdTitle.fadeOut(fadeOut * 20);
+
+        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title)));
+        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)));
+
+        createdTitle.send(proxiedPlayer);
+
     }
 }

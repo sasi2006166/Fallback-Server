@@ -31,12 +31,12 @@ public class AddSubCommand implements SubCommand {
         }
 
         if (FallbackServerBungee.getInstance().getServerList().contains(arguments[1])) {
-            BungeeMessages.SERVER_IS_ADDED.send(sender, new PlaceHolder("server", arguments[1]));
+            BungeeMessages.SERVER_CONTAINED.send(sender, new PlaceHolder("server", arguments[1]));
             return;
         }
 
         if (!ProxyServer.getInstance().getConfig().getServersCopy().containsKey(arguments[1])) {
-            BungeeMessages.SERVER_NOT_AVAILABLE.send(sender, new PlaceHolder("server", arguments[1]));
+            BungeeMessages.UNAVAILABLE_SERVER.send(sender, new PlaceHolder("server", arguments[1]));
             return;
         }
 

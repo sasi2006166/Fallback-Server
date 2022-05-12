@@ -2,7 +2,6 @@ package me.candiesjar.fallbackserver.listeners;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.api.FallbackAPI;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.PlaceHolder;
@@ -19,6 +18,9 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static me.candiesjar.fallbackserver.enums.BungeeConfig.BLACKLISTED_WORDS;
+import static me.candiesjar.fallbackserver.enums.BungeeMessages.*;
 
 public class FallbackListener implements Listener {
 
@@ -40,7 +42,7 @@ public class FallbackListener implements Listener {
             return;
         }
 
-        for (String blacklist : BungeeConfig.BLACKLISTED_WORDS.getStringList()) {
+        for (String blacklist : BLACKLISTED_WORDS.getStringList()) {
             if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(blacklist)) {
                 return;
             }
@@ -58,7 +60,7 @@ public class FallbackListener implements Listener {
 
         if (lobbies.size() == 0) {
             if (event.getKickReasonComponent() == null) {
-                player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
+                player.disconnect(new TextComponent(ChatUtil.getFormattedString(NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
             }
             return;
         }
@@ -68,9 +70,18 @@ public class FallbackListener implements Listener {
         event.setCancelServer(serverInfo);
 
         if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean()) {
-            ProxyServer.getInstance().getScheduler().schedule(instance, () -> titleUtil.sendFallbackTitle(player), BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
+            ProxyServer.getInstance().getScheduler().schedule(instance, () -> titleUtil.sendTitle(FALLBACK_FADE_IN.getInt(),
+                    FALLBACK_STAY.getInt(),
+                    FALLBACK_FADE_OUT.getInt(),
+                    FALLBACK_TITLE,
+                    FALLBACK_SUB_TITLE,
+                    player),
+                    BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         } else {
-            BungeeMessages.CONNECTED.send(player, new PlaceHolder("prefix", instance.getPrefix()));
+            BungeeMessages.KICKED_TO_LOBBY.sendList(player,
+                    new PlaceHolder("prefix", instance.getPrefix()),
+                    new PlaceHolder("server", serverInfo.getName()),
+                    new PlaceHolder("reason", BaseComponent.toLegacyText(event.getKickReasonComponent())));
         }
 
         ProxyServer.getInstance().getScheduler().runAsync(instance, () -> plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom, serverInfo, Arrays.toString(event.getKickReasonComponent()))));

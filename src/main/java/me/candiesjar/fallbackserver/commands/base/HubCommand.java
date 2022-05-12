@@ -28,14 +28,14 @@ public class HubCommand extends Command {
 
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
-            ONLY_PLAYER.send(sender, new PlaceHolder("prefix", instance.getPrefix()));
+            PLAYER_ONLY.send(sender, new PlaceHolder("prefix", instance.getPrefix()));
             return;
         }
 
         final ProxiedPlayer player = (ProxiedPlayer) sender;
 
         if (FallbackServerBungee.getInstance().isHub(player.getServer().getInfo())) {
-            ALREADY_IN_HUB.send(sender, new PlaceHolder("prefix", instance.getPrefix()));
+            ALREADY_IN_LOBBY.send(sender, new PlaceHolder("prefix", instance.getPrefix()));
             return;
         }
 
@@ -54,9 +54,16 @@ public class HubCommand extends Command {
         player.connect(serverInfo);
 
         if (USE_HUB_TITLE.getBoolean()) {
-            titleUtil.sendHubTitle(player);
+
+            titleUtil.sendTitle(HUB_TITLE_FADE_IN.getInt(),
+                    HUB_TITLE_STAY.getInt(),
+                    HUB_TITLE_FADE_OUT.getInt(),
+                    HUB_TITLE,
+                    HUB_SUB_TITLE,
+                    player);
+
         } else {
-            CONNECT_TO_HUB.send(sender, new PlaceHolder("prefix", instance.getPrefix()));
+            MOVED_TO_HUB.send(sender, new PlaceHolder("prefix", instance.getPrefix()), new PlaceHolder("server", serverInfo.getName()));
         }
 
     }

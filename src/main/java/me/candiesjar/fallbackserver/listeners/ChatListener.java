@@ -23,6 +23,10 @@ public class ChatListener implements Listener {
             return;
         }
 
+        if (!event.isProxyCommand()) {
+            return;
+        }
+
         final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
         final String playerServer = player.getServer().getInfo().getName();
         String message = event.getMessage();
