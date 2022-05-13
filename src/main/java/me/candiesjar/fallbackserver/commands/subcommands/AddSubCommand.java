@@ -30,7 +30,7 @@ public class AddSubCommand implements SubCommand {
             return;
         }
 
-        if (FallbackServerBungee.getInstance().getServerList().contains(arguments[1])) {
+        if (BungeeConfig.LOBBIES.getStringList().contains(arguments[1])) {
             BungeeMessages.SERVER_CONTAINED.send(sender, new PlaceHolder("server", arguments[1]));
             return;
         }

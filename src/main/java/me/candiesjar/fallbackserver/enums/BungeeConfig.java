@@ -13,6 +13,7 @@ public enum BungeeConfig {
     USE_STATS("settings.stats"),
     LOBBIES("settings.fallback_list"),
     BLACKLISTED_WORDS("settings.blacklisted_words"),
+    JOIN_BALANCING("settings.join_balancing"),
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
     RELOAD_PERMISSION("sub_commands.reload.permission"),

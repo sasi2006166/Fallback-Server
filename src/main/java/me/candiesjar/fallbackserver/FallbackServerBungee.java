@@ -12,19 +12,13 @@ import me.candiesjar.fallbackserver.metrics.Metrics;
 import me.candiesjar.fallbackserver.objects.TextFile;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
 import me.candiesjar.fallbackserver.utils.tasks.LobbyCheckerTask;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public final class FallbackServerBungee extends Plugin {
-    private final List<ServerInfo> availableServers = new ArrayList<>();
-
-    private List<String> serverList;
 
     private static FallbackServerBungee instance;
 
@@ -58,8 +52,6 @@ public final class FallbackServerBungee extends Plugin {
         configTextFile = new TextFile(this, "config.yml");
         messagesTextFile = new TextFile(this, "messages.yml");
 
-        serverList = BungeeConfig.LOBBIES.getStringList();
-
         // Listeners
         getLogger().info("§7[§b!§7] Starting all listeners... §7[§b!§7]");
         loadListeners();
@@ -84,9 +76,6 @@ public final class FallbackServerBungee extends Plugin {
 
     public void onDisable() {
         instance = null;
-
-        availableServers.clear();
-        serverList.clear();
 
         configTextFile = null;
         messagesTextFile = null;
@@ -140,9 +129,5 @@ public final class FallbackServerBungee extends Plugin {
 
     public Configuration getMessagesConfig() {
         return messagesTextFile.getConfig();
-    }
-
-    public List<String> getServerList() {
-        return serverList;
     }
 }

@@ -6,6 +6,7 @@ import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.io.InputStream;
 import java.net.URL;
 
 public class UpdateSubCommand implements SubCommand {
@@ -31,7 +32,17 @@ public class UpdateSubCommand implements SubCommand {
 
         sender.sendMessage(new TextComponent("Update started..."));
 
-        URL website = new URL("");
+        InputStream inputStream = new URL("").openStream();
+
+        if (inputStream == null) {
+            sender.sendMessage(new TextComponent("Update failed"));
+            return;
+        }
+
+
+
+
+
 
     }
 }

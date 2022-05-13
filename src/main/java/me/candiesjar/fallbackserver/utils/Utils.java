@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.utils;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.objects.TextFile;
+import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.io.BufferedReader;
@@ -15,6 +15,8 @@ public class Utils {
     private static String remoteVersion = "Loading";
     private static boolean updateAvailable = false;
 
+    private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
+
     public static void checkUpdates() {
         ProxyServer.getInstance().getScheduler().runAsync(FallbackServerBungee.getInstance(), () -> {
             try {
@@ -22,17 +24,17 @@ public class Utils {
                 final URLConnection connection = new URL("https://api.spigotmc.org/legacy/update.php?resource=86398").openConnection();
 
                 remoteVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
-                updateAvailable = !FallbackServerBungee.getInstance().getDescription().getVersion().equals(remoteVersion);
+                updateAvailable = !instance.getDescription().getVersion().equals(remoteVersion);
 
             } catch (IOException ignored) {
-                FallbackServerBungee.getInstance().getLogger().severe("Cannot fetch updates, check your firewall settings.");
+                instance.getLogger().severe("Cannot fetch updates, check your firewall settings.");
             }
 
         });
     }
 
     public static boolean checkMessage(String message, String name) {
-        for (String text : FallbackServerBungee.getInstance().getConfig().getStringList("settings.disabled_servers_list." + name)) {
+        for (String text : instance.getConfig().getStringList("settings.disabled_servers_list." + name)) {
             text = "/" + text;
             if (text.equalsIgnoreCase(message)) {
                 return true;
@@ -42,8 +44,8 @@ public class Utils {
     }
 
     public static void writeToServerList(String section, String arguments) {
-        FallbackServerBungee.getInstance().getServerList().add(arguments);
-        FallbackServerBungee.getInstance().getConfig().set(section, FallbackServerBungee.getInstance().getServerList());
+        BungeeConfig.LOBBIES.getStringList().add(arguments);
+        instance.getConfig().set(section, BungeeConfig.LOBBIES.getStringList());
     }
 
     public static boolean isUpdateAvailable() {
