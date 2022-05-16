@@ -7,6 +7,7 @@ import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.objects.PlaceHolder;
 
 import java.util.HashMap;
 
@@ -19,6 +20,7 @@ public class SubCommandManager implements SimpleCommand {
     public SubCommandManager() {
 
         subCommands.put("reload", new ReloadSubCommand());
+
     }
 
     @Override
@@ -32,19 +34,18 @@ public class SubCommandManager implements SimpleCommand {
         }
 
         if (!commandSource.hasPermission(VelocityConfig.ADMIN_PERMISSION.get(String.class))) {
-            commandSource.sendMessage(VelocityMessages.colorize("&8&l» &7Running &b&nFallback Server %version% &7by &b&nCandiesJar"
-                    .replace("%version%", instance.getVersion().get())));
+            commandSource.sendMessage(VelocityMessages.color("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
+                    .replace("version", instance.getVersion().get())));
             return;
         }
 
         if (args.length == 0) {
-            VelocityMessages.sendList(commandSource, VelocityMessages.MAIN_COMMAND.getStringList());
+            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new PlaceHolder("version", instance.getVersion().get()));
             return;
         }
 
         if (!subCommands.containsKey(args[0].toLowerCase())) {
-            commandSource.sendMessage(VelocityMessages.colorize(VelocityMessages.PARAMETERS.get(String.class)
-                    .replace("%prefix%", VelocityMessages.PREFIX.color())));
+            VelocityMessages.PARAMETERS.send(commandSource, new PlaceHolder("prefix", VelocityMessages.PREFIX.color()));
             return;
         }
 
@@ -55,9 +56,9 @@ public class SubCommandManager implements SimpleCommand {
         }
 
         if (!commandSource.hasPermission(subCommand.getPermission())) {
-            commandSource.sendMessage(VelocityMessages.colorize(VelocityMessages.NO_PERMISSION.get(String.class)
-                    .replace("%permission%", subCommand.getPermission())
-                    .replace("%prefix%", VelocityMessages.PREFIX.color())));
+            VelocityMessages.NO_PERMISSION.send(commandSource,
+                    new PlaceHolder("prefix", VelocityMessages.PREFIX.color()),
+                    new PlaceHolder("permission", subCommand.getPermission()));
             return;
         }
 

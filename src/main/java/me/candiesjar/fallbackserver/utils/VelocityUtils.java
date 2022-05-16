@@ -4,6 +4,7 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -31,8 +32,7 @@ public class VelocityUtils {
     }
 
     public static boolean checkMessage(String message, String name) {
-            for (String text : instance.getConfigTextFile().getConfig().getStringList("settings.disabled_servers_list." + name)) {
-            text = "/" + text;
+        for (String text : instance.getConfigTextFile().getConfig().getStringList("settings.disabled_servers_list." + name)) {
             if (text.equalsIgnoreCase(message)) {
                 return true;
             }

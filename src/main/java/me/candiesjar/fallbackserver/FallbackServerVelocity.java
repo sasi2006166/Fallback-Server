@@ -9,6 +9,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import lombok.Getter;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
@@ -44,6 +45,8 @@ public class FallbackServerVelocity {
 
     private TextFile configTextFile;
     private TextFile messagesTextFile;
+
+    private ScheduledTask task;
 
     private static FallbackServerVelocity instance;
 
@@ -84,7 +87,7 @@ public class FallbackServerVelocity {
         loadStats(metricsFactory);
 
         logger.info("§7[§b!§7] Starting schedulers... §7[§b!§7]");
-        server.getScheduler().buildTask(this, new LobbyTask()).repeat(5, TimeUnit.SECONDS).schedule();
+        task = server.getScheduler().buildTask(this, new LobbyTask()).repeat(VelocityConfig.TASK_PERIOD.get(Integer.class), TimeUnit.SECONDS).schedule();
 
         logger.info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
         UpdateUtil.checkUpdates();
@@ -96,10 +99,19 @@ public class FallbackServerVelocity {
 
         logger.info("§7[§b!§7] Unloading plugin §7[§b!§7]");
 
+        task.cancel();
+        task = null;
         server = null;
+        instance = null;
+
+        configTextFile = null;
+        messagesTextFile = null;
+
         logger = null;
         metricsFactory = null;
+
         path = null;
+
     }
 
     private void loadStats(VelocityMetrics.Factory factory) {
@@ -111,18 +123,28 @@ public class FallbackServerVelocity {
     private void loadCommands() {
         server.getCommandManager().register("fsv", new SubCommandManager());
 
-        CommandMeta commandMeta = server.getCommandManager().metaBuilder("")
-                .aliases(VelocityConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]))
-                .build();
+        if (VelocityConfig.LOBBY_COMMAND.get(Boolean.class)) {
 
-        server.getCommandManager().register(commandMeta, new HubCommand());
+            CommandMeta commandMeta = server.getCommandManager().metaBuilder("")
+                    .aliases(VelocityConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]))
+                    .build();
 
+            server.getCommandManager().register(commandMeta, new HubCommand());
+
+        }
     }
 
     private void loadListeners() {
-        server.getEventManager().register(this, new PlayerListener());
         server.getEventManager().register(this, new FallbackListener());
-        server.getEventManager().register(this, new ChatListener());
+
+        if (VelocityConfig.UPDATE_CHECKER.get(Boolean.class)) {
+            server.getEventManager().register(this, new PlayerListener());
+        }
+
+        if (VelocityConfig.DISABLED_SERVERS.get(Boolean.class)) {
+            server.getEventManager().register(this, new ChatListener());
+        }
+
     }
 
     public boolean isHub(ServerInfo serverInfo) {

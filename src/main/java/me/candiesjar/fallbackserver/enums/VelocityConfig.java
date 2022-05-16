@@ -13,6 +13,7 @@ public enum VelocityConfig {
     USE_STATS("settings.stats"),
     LOBBIES("settings.fallback_list"),
     BLACKLISTED_WORDS("settings.blacklisted_words"),
+    JOIN_BALANCING("settings.join_balancing"),
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
     RELOAD_PERMISSION("sub_commands.reload.permission"),
@@ -22,9 +23,6 @@ public enum VelocityConfig {
 
     REMOVE_COMMAND("sub_commands.remove.enabled"),
     REMOVE_COMMAND_PERMISSION("sub_commands.remove.permission"),
-
-    RESET_COMMAND("sub_commands.reset.enabled"),
-    RESET_COMMAND_PERMISSION("sub_commands.permissions.reset_permission"),
 
     STATUS_COMMAND("sub_commands.status.enabled"),
     STATUS_COMMAND_PERMISSION("sub_commands.status.permission"),
@@ -40,8 +38,7 @@ public enum VelocityConfig {
 
     DISABLED_SERVERS("settings.disabled_servers");
 
-
-    private static final FallbackServerVelocity inst = FallbackServerVelocity.getInstance();
+    private static final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
     private final String path;
 
     VelocityConfig(String path) {
@@ -49,10 +46,10 @@ public enum VelocityConfig {
     }
 
     public <T> T get(Class<T> clazz) {
-        return clazz.cast(inst.getConfigTextFile().getConfig().get(path));
+        return clazz.cast(instance.getConfigTextFile().getConfig().get(path));
     }
 
     public List<String> getStringList() {
-        return inst.getConfigTextFile().getConfig().getStringList(path);
+        return instance.getConfigTextFile().getConfig().getStringList(path);
     }
 }

@@ -11,15 +11,15 @@ import java.util.Map;
 @Getter
 @Setter
 public class FallingServer implements Comparable<FallingServer> {
-    private static final Map<String, FallingServer> servers = Maps.newHashMap();
+    private static final Map<RegisteredServer, FallingServer> servers = Maps.newHashMap();
     private final RegisteredServer registeredServer;
 
     public FallingServer(RegisteredServer registeredServer) {
         this.registeredServer = registeredServer;
-        servers.put(registeredServer.getServerInfo().getName().toLowerCase(), this);
+        servers.put(registeredServer, this);
     }
 
-    public static Map<String, FallingServer> getServers() {
+    public static Map<RegisteredServer, FallingServer> getServers() {
         return servers;
     }
 

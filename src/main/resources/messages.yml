@@ -1,9 +1,13 @@
-# ███████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗    ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗
-# ██╔════╝██╔══██╗██║     ██║     ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝    ██╔════╝██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗
-# █████╗  ███████║██║     ██║     ██████╔╝███████║██║     █████╔╝     ███████╗█████╗  ██████╔╝██║   ██║█████╗  ██████╔╝
-# ██╔══╝  ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗     ╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
-# ██║     ██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗    ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
-# ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝
+#  █████▒▄▄▄       ██▓     ██▓     ▄▄▄▄    ▄▄▄       ▄████▄   ██ ▄█▀     ██████ ▓█████  ██▀███   ██▒   █▓▓█████  ██▀███
+#▓██   ▒▒████▄    ▓██▒    ▓██▒    ▓█████▄ ▒████▄    ▒██▀ ▀█   ██▄█▒    ▒██    ▒ ▓█   ▀ ▓██ ▒ ██▒▓██░   █▒▓█   ▀ ▓██ ▒ ██▒
+#▒████ ░▒██  ▀█▄  ▒██░    ▒██░    ▒██▒ ▄██▒██  ▀█▄  ▒▓█    ▄ ▓███▄░    ░ ▓██▄   ▒███   ▓██ ░▄█ ▒ ▓██  █▒░▒███   ▓██ ░▄█ ▒
+#░▓█▒  ░░██▄▄▄▄██ ▒██░    ▒██░    ▒██░█▀  ░██▄▄▄▄██ ▒▓▓▄ ▄██▒▓██ █▄      ▒   ██▒▒▓█  ▄ ▒██▀▀█▄    ▒██ █░░▒▓█  ▄ ▒██▀▀█▄
+#░▒█░    ▓█   ▓██▒░██████▒░██████▒░▓█  ▀█▓ ▓█   ▓██▒▒ ▓███▀ ░▒██▒ █▄   ▒██████▒▒░▒████▒░██▓ ▒██▒   ▒▀█░  ░▒████▒░██▓ ▒██▒
+# ▒ ░    ▒▒   ▓▒█░░ ▒░▓  ░░ ▒░▓  ░░▒▓███▀▒ ▒▒   ▓▒█░░ ░▒ ▒  ░▒ ▒▒ ▓▒   ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒▓ ░▒▓░   ░ ▐░  ░░ ▒░ ░░ ▒▓ ░▒▓░
+# ░       ▒   ▒▒ ░░ ░ ▒  ░░ ░ ▒  ░▒░▒   ░   ▒   ▒▒ ░  ░  ▒   ░ ░▒ ▒░   ░ ░▒  ░ ░ ░ ░  ░  ░▒ ░ ▒░   ░ ░░   ░ ░  ░  ░▒ ░ ▒░
+# ░ ░     ░   ▒     ░ ░     ░ ░    ░    ░   ░   ▒   ░        ░ ░░ ░    ░  ░  ░     ░     ░░   ░      ░░     ░     ░░   ░
+#             ░  ░    ░  ░    ░  ░ ░            ░  ░░ ░      ░  ░            ░     ░  ░   ░           ░     ░  ░   ░
+#                                       ░           ░                                                ░
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
 
 MESSAGES:
@@ -11,9 +15,8 @@ MESSAGES:
   correct_syntax: "%prefix% &cCorrect syntax: /fs <reload:set:add>"
   reload_message: "%prefix% &7Configuration reloaded &bsuccessfully&7!"
   only_player: "%prefix% &cOnly players must execute this command."
-  already_in_hub: "&cYou're already in hub!"
-  connecting_to_hub: "&7Connecting to &bhub&7..."
-  server_crash: "&cServer %server% crashed, you were teleported you to hub."
+  already_in_hub: "%prefix% &cYou're already in hub!"
+  connecting_to_hub: "%prefix% &7You've been moved to &b%server%"
   disabled_command: "%prefix% &cSorry, this command is disabled."
   missing_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
   no_server: "%prefix% &cNo lobby available as fallback."
@@ -21,6 +24,15 @@ MESSAGES:
   server_is_added: "%prefix% &b%server% &7is already into Fallback Server's list."
   server_not_available: "%prefix% &b%server% &7isn't contained in BungeeCord configuration."
   server_added: "%prefix% &b%server% &7has been added to configuration."
+
+  moved_to_lobby:
+    - ""
+    - "&7&m---------------------------------"
+    - ""
+    - "&7You've been moved to &b%server%"
+    - "&7Reason: &b%reason%"
+    - ""
+    - "&7&m---------------------------------"
 
   new_update:
     - "&7&m---------------------------------"
@@ -45,15 +57,17 @@ MESSAGES:
 TITLES: # Everything in seconds.
   fallback:
     enabled: true
-    fallback_title: "&cServer crashed!"
-    fallback_sub_title: "&7You've been moved to lobby."
+    delay: 2
     fade_in: 1 # The time for showing the title
     fade_out: 1  # Time for making title go away
     stay: 3 # Time for making title stay in
+    fallback_title: "&cServer crashed!"
+    fallback_sub_title: "&7You've been moved to lobby."
   lobby:
     enabled: true
-    lobby_title: "&a&lConnected to lobby."
-    lobby_sub_title: "&7Welcome back!"
+    delay: 1
     fade_in: 1
     fade_out: 1
     stay: 3
+    lobby_title: "&a&lConnected to lobby."
+    lobby_sub_title: "&7Welcome back!"

@@ -7,51 +7,65 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
+import me.candiesjar.fallbackserver.objects.PlaceHolder;
 import me.candiesjar.fallbackserver.utils.TitleUtil;
+import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
+import net.kyori.adventure.text.Component;
 
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+
+import static me.candiesjar.fallbackserver.enums.VelocityMessages.*;
 
 public class HubCommand implements SimpleCommand {
+
+    private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
 
     @Override
     public void execute(Invocation invocation) {
 
-        CommandSource commandSource = invocation.source();
+        final CommandSource commandSource = invocation.source();
 
         if (!(commandSource instanceof Player)) {
-            commandSource.sendMessage(VelocityMessages.colorize(VelocityMessages.ONLY_PLAYER.get(String.class)
-                    .replace("%prefix%", VelocityMessages.PREFIX.color())));
+            PLAYER_ONLY.send(commandSource,
+                    new PlaceHolder("prefix", PREFIX.color()));
             return;
         }
 
-        Player player = (Player) commandSource;
+        final Player player = (Player) commandSource;
 
         if (FallbackServerVelocity.getInstance().isHub(player.getCurrentServer().get().getServerInfo())) {
-            player.sendMessage(VelocityMessages.colorize(VelocityMessages.ALREADY_IN_HUB.get(String.class)
-                    .replace("%prefix%", VelocityMessages.PREFIX.color())));
+            ALREADY_IN_LOBBY.send(player,
+                    new PlaceHolder("prefix", PREFIX.color()));
             return;
         }
 
-        LinkedList<FallingServer> lobbies = new LinkedList<>(FallingServer.getServers().values());
+        final LinkedList<FallingServer> lobbies = new LinkedList<>(FallingServer.getServers().values());
 
         lobbies.sort(FallingServer::compareTo);
         lobbies.sort(Comparator.reverseOrder());
 
         if (lobbies.size() == 0) {
-            player.sendMessage(VelocityMessages.colorize(VelocityMessages.NO_SERVER.get(String.class)
-                    .replace("%prefix%", VelocityMessages.PREFIX.color())));
+            NO_SERVER.send(player,
+                    new PlaceHolder("prefix", PREFIX.color()));
             return;
         }
 
-        RegisteredServer server = lobbies.get(0).getRegisteredServer();
+        final RegisteredServer server = lobbies.get(0).getRegisteredServer();
         player.createConnectionRequest(server).fireAndForget();
 
-        if (VelocityMessages.USE_HUB_TITLE.get(Boolean.class)) {
-            TitleUtil.sendHubTitle(player);
+        if (USE_HUB_TITLE.get(Boolean.class)) {
+            instance.getServer().getScheduler().buildTask(instance, () -> TitleUtil.sendTitle(HUB_TITLE_FADE_IN.get(Integer.class),
+                            HUB_TITLE_STAY.get(Integer.class),
+                            HUB_TITLE_FADE_OUT.get(Integer.class),
+                            ChatUtil.color(HUB_TITLE.get(String.class)),
+                            ChatUtil.color(HUB_SUB_TITLE.get(String.class)),
+                            player))
+                    .delay(HUB_TITLE_DELAY.get(Integer.class), TimeUnit.SECONDS)
+                    .schedule();
         } else {
-            player.sendMessage(VelocityMessages.colorize(VelocityMessages.CONNECT_TO_HUB.get(String.class)
-                    .replace("%prefix%", VelocityMessages.PREFIX.color())));
+            MOVED_TO_HUB.send(player, new PlaceHolder("prefix", PREFIX.color()), new PlaceHolder("server", server.getServerInfo().getName()));
         }
 
     }

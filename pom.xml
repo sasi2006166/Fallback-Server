@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.candiesjar</groupId>
-    <artifactId>FallBackServer</artifactId>
+    <artifactId>FallBackServerVelocity</artifactId>
     <version>3.0.0.4</version>
     <packaging>jar</packaging>
 
@@ -52,7 +52,7 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <directory>C:\Users\marco\Desktop\LocalHost\Velocity\plugins</directory>
+        <directory>C:\Users\Salvatore\Desktop\LocalHost\Velocity\plugins</directory>
     </build>
 
     <repositories>
