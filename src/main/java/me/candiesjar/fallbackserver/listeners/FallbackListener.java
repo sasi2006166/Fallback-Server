@@ -6,6 +6,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.api.VelocityAPI;
+import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.PlaceHolder;
 import me.candiesjar.fallbackserver.utils.TitleUtil;
@@ -47,6 +48,14 @@ public class FallbackListener {
                 return;
             }
 
+        }
+
+        if (VelocityConfig.BLACKLISTED_SERVERS.get(Boolean.class)) {
+            for (String blacklist : VelocityConfig.BLACKLISTED_SERVERS.getStringList()) {
+                if (blacklist.contains(kickedFrom.getServerInfo().getName())) {
+                    return;
+                }
+            }
         }
 
         final Map<RegisteredServer, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());

@@ -47,6 +47,7 @@ settings:
   blacklisted_words:
     - "ban"
     - "whitelist"
+    - "full"
 
   # Add here your lobbies, those will be used as fallback.
   # Those servers will also be used for the /lobby command.

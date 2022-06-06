@@ -31,6 +31,10 @@ public class LobbyTask implements Runnable {
             }
 
             if (result != null) {
+                if (result.getPlayers().get().getOnline() == result.getPlayers().get().getMax()) {
+                    return;
+                }
+
                 new FallingServer(server);
             }
         }));
