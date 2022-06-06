@@ -1,4 +1,4 @@
 name: FallBackServer
-version: ${project.version}
+version: 1.0-SKIDDED
 main: me.candiesjar.fallbackserver.FallbackServerBungee
-author: CandiesJar
+author: Candies_The_Skidder
