@@ -6,13 +6,13 @@ import java.util.List;
 
 public enum BungeeConfig {
 
-    TAB_COMPLETE("settings.command_tab_complete"),
+    TAB_COMPLETION("settings.command_tab_complete"),
     COMMAND_WITHOUT_PERMISSION("settings.command_without_permission"),
     UPDATE_CHECKER("settings.check_updates"),
     TASK_PERIOD("settings.task_period"),
-    USE_STATS("settings.stats"),
-    LOBBIES("settings.fallback_list"),
-    BLACKLISTED_WORDS("settings.blacklisted_words"),
+    TELEMETRY("settings.stats"),
+    LOBBIES_LIST("settings.fallback_list"),
+    IGNORED_REASONS("settings.blacklisted_words"),
     JOIN_BALANCING("settings.join_balancing"),
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),

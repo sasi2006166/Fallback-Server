@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.0.0.4</version>
+    <version>3.1</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>
@@ -36,7 +36,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <directory>C:\Users\Salvatore\Desktop\LocalHost\BungeeCord\plugins</directory>
     </build>
 
     <repositories>

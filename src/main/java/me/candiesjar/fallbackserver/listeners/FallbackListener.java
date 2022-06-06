@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserver.listeners;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.api.FallbackAPI;
+import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.PlaceHolder;
@@ -18,9 +19,6 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import static me.candiesjar.fallbackserver.enums.BungeeConfig.BLACKLISTED_WORDS;
-import static me.candiesjar.fallbackserver.enums.BungeeMessages.*;
 
 public class FallbackListener implements Listener {
 
@@ -42,46 +40,55 @@ public class FallbackListener implements Listener {
             return;
         }
 
-        for (String blacklist : BLACKLISTED_WORDS.getStringList()) {
+        for (String blacklist : BungeeConfig.IGNORED_REASONS.getStringList()) {
             if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(blacklist)) {
                 return;
             }
         }
 
+        if (BungeeConfig.BLACKLISTED_SERVERS.getBoolean()) {
+            for (String blacklist : BungeeConfig.BLACKLISTED_SERVERS.getStringList()) {
+                if (blacklist.contains(kickedFrom.getName())) {
+                    return;
+                }
+            }
+        }
+
         event.setCancelled(true);
 
-        Map<ServerInfo, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());
+        final Map<ServerInfo, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());
 
         clonedMap.remove(kickedFrom);
 
-        LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
+        final LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
         lobbies.sort(FallingServer::compareTo);
         lobbies.sort(Comparator.reverseOrder());
 
         if (lobbies.size() == 0) {
             if (event.getKickReasonComponent() == null) {
-                player.disconnect(new TextComponent(ChatUtil.getFormattedString(NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
+                player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new PlaceHolder("prefix", instance.getPrefix()))));
             }
             return;
         }
 
-        ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+        final ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 
         event.setCancelServer(serverInfo);
 
+        BungeeMessages.KICKED_TO_LOBBY.sendList(player,
+                new PlaceHolder("prefix", instance.getPrefix()),
+                new PlaceHolder("server", serverInfo.getName()),
+                new PlaceHolder("reason", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+
         if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean()) {
-            ProxyServer.getInstance().getScheduler().schedule(instance, () -> titleUtil.sendTitle(FALLBACK_FADE_IN.getInt(),
-                    FALLBACK_STAY.getInt(),
-                    FALLBACK_FADE_OUT.getInt(),
-                    FALLBACK_TITLE,
-                    FALLBACK_SUB_TITLE,
-                    player),
+
+            ProxyServer.getInstance().getScheduler().schedule(instance, () -> titleUtil.sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
+                            BungeeMessages.FALLBACK_STAY.getInt(),
+                            BungeeMessages.FALLBACK_FADE_OUT.getInt(),
+                            BungeeMessages.FALLBACK_TITLE,
+                            BungeeMessages.FALLBACK_SUB_TITLE,
+                            player),
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
-        } else {
-            BungeeMessages.KICKED_TO_LOBBY.sendList(player,
-                    new PlaceHolder("prefix", instance.getPrefix()),
-                    new PlaceHolder("server", serverInfo.getName()),
-                    new PlaceHolder("reason", BaseComponent.toLegacyText(event.getKickReasonComponent())));
         }
 
         ProxyServer.getInstance().getScheduler().runAsync(instance, () -> plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom, serverInfo, Arrays.toString(event.getKickReasonComponent()))));

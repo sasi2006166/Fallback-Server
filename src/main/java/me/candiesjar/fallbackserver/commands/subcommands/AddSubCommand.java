@@ -25,12 +25,13 @@ public class AddSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
+
         if (arguments.length < 2) {
             BungeeMessages.EMPTY_SERVER.send(sender, new PlaceHolder("prefix", FallbackServerBungee.getInstance().getPrefix()));
             return;
         }
 
-        if (BungeeConfig.LOBBIES.getStringList().contains(arguments[1])) {
+        if (BungeeConfig.LOBBIES_LIST.getStringList().contains(arguments[1])) {
             BungeeMessages.SERVER_CONTAINED.send(sender, new PlaceHolder("server", arguments[1]));
             return;
         }

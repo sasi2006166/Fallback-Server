@@ -82,7 +82,7 @@ public final class FallbackServerBungee extends Plugin {
 
         version = null;
 
-        getLogger().info("§7[§c!§7] §cDisabling plugin... §7[§c!§7]");
+        getLogger().info("§7[§c!§7] §dFallbackServer §7is disabling... §7[§c!§7]");
     }
 
     public String getPrefix() {
@@ -115,12 +115,12 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void startMetrics() {
-        if (BungeeConfig.USE_STATS.getBoolean())
+        if (BungeeConfig.TELEMETRY.getBoolean())
             new Metrics(this, 11817);
     }
 
     public boolean isHub(ServerInfo server) {
-        return BungeeConfig.LOBBIES.getStringList().contains(server.getName());
+        return BungeeConfig.LOBBIES_LIST.getStringList().contains(server.getName());
     }
 
     public Configuration getConfig() {

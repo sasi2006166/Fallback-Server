@@ -42,9 +42,9 @@ public class HubCommand extends Command {
             return;
         }
 
-        Map<ServerInfo, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());
+        final Map<ServerInfo, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());
 
-        LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
+        final LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
         lobbies.sort(FallingServer::compareTo);
         lobbies.sort(Comparator.reverseOrder());
 
@@ -53,8 +53,11 @@ public class HubCommand extends Command {
             return;
         }
 
-        ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+        final ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+
         player.connect(serverInfo);
+
+        MOVED_TO_HUB.send(player, new PlaceHolder("prefix", instance.getPrefix()), new PlaceHolder("server", serverInfo.getName()));
 
         if (USE_HUB_TITLE.getBoolean()) {
 
@@ -65,8 +68,6 @@ public class HubCommand extends Command {
                     HUB_SUB_TITLE,
                     player);
 
-        } else {
-            MOVED_TO_HUB.send(player, new PlaceHolder("prefix", instance.getPrefix()), new PlaceHolder("server", serverInfo.getName()));
         }
 
         ProxyServer.getInstance().getScheduler().runAsync(instance, () -> instance.getProxy().getPluginManager().callEvent(new HubAPI(player, playerServer, serverInfo)));

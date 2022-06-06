@@ -25,6 +25,8 @@ public enum BungeeMessages {
     UNAVAILABLE_SERVER("MESSAGES.server_not_available"),
     SERVER_ADDED("MESSAGES.server_added"),
 
+    STATS_COMMAND("messages.stats_command"),
+
     USE_FALLBACK_TITLE("TITLES.fallback.enabled"),
     FALLBACK_DELAY("TITLES.fallback.delay"),
     FALLBACK_FADE_IN("TITLES.fallback.fade_in"),

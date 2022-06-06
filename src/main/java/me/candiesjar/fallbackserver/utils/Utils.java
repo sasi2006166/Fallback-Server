@@ -4,9 +4,7 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import net.md_5.bungee.api.ProxyServer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -44,8 +42,8 @@ public class Utils {
     }
 
     public static void writeToServerList(String section, String arguments) {
-        BungeeConfig.LOBBIES.getStringList().add(arguments);
-        instance.getConfig().set(section, BungeeConfig.LOBBIES.getStringList());
+        BungeeConfig.LOBBIES_LIST.getStringList().add(arguments);
+        instance.getConfig().set(section, BungeeConfig.LOBBIES_LIST.getStringList());
     }
 
     public static boolean isUpdateAvailable() {

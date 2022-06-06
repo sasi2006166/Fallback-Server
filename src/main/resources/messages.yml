@@ -46,12 +46,11 @@ MESSAGES:
     - ""
     - "&b/fs reload &7| Command for reload configuration."
     - "&b/fs add <server> &7| Adds a fallback server to configuration."
-    - "&b/fs reset <config:messages> &7| Restores config / messages configs."
     - ""
     - "&7Running version &b%version%"
     - "&8&m---------------------------"
 
-  status_command:
+  stats_command:
     - ""
 
 TITLES: # Everything in seconds.

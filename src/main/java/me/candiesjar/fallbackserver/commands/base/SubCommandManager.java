@@ -36,7 +36,7 @@ public class SubCommandManager extends Command implements TabExecutor {
         }
 
         if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
-            sender.sendMessage(ChatUtil.asComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar"
+            sender.sendMessage(ChatUtil.asLegacyComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar"
                     .replace("%version%", FallbackServerBungee.getInstance().getDescription().getVersion())));
             return;
         }
@@ -51,7 +51,7 @@ public class SubCommandManager extends Command implements TabExecutor {
             return;
         }
 
-        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+        final SubCommand subCommand = subCommands.get(args[0].toLowerCase());
 
         if (!subCommand.isEnabled()) {
             return;
@@ -71,9 +71,9 @@ public class SubCommandManager extends Command implements TabExecutor {
             return Collections.emptyList();
         }
 
-        if (BungeeConfig.TAB_COMPLETE.getBoolean()) {
+        if (BungeeConfig.TAB_COMPLETION.getBoolean()) {
             if (args.length == 1) {
-                List<String> completions = new ArrayList<>(subCommands.keySet());
+                final List<String> completions = new ArrayList<>(subCommands.keySet());
                 Collections.sort(completions);
                 return completions;
             }

@@ -25,5 +25,6 @@ public class PlayerListener implements Listener {
                     new PlaceHolder("old_version", FallbackServerBungee.getInstance().getVersion()),
                     new PlaceHolder("new_version", Utils.getRemoteVersion()));
         }
+
     }
 }

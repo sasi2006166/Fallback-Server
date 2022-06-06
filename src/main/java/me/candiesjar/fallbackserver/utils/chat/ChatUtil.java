@@ -69,6 +69,12 @@ public class ChatUtil {
         return usableComponent;
     }
 
+    public TextComponent asLegacyComponent(String s) {
+        usableComponent.setText(s);
+        usableComponent.toLegacyText();
+        return usableComponent;
+    }
+
     public void sendList(CommandSender commandSender, List<String> stringList) {
         for (String message : stringList) {
             commandSender.sendMessage(asComponent(message));
@@ -78,4 +84,5 @@ public class ChatUtil {
     public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, PlaceHolder... placeHolders) {
         sendList(commandSender, color(getStringList(bungeeMessages, placeHolders)));
     }
+
 }

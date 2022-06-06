@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserver.commands.subcommands;
 
 import lombok.SneakyThrows;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
+import me.candiesjar.fallbackserver.utils.FileUtils;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
