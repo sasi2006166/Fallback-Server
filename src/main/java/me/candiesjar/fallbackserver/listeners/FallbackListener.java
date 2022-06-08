@@ -46,8 +46,8 @@ public class FallbackListener implements Listener {
             }
         }
 
-        if (BungeeConfig.BLACKLISTED_SERVERS.getBoolean()) {
-            for (String blacklist : BungeeConfig.BLACKLISTED_SERVERS.getStringList()) {
+        if (BungeeConfig.USE_BLACKLISTED_SERVERS.getBoolean()) {
+            for (String blacklist : BungeeConfig.BLACKLISTED_SERVERS_LIST.getStringList()) {
                 if (blacklist.contains(kickedFrom.getName())) {
                     return;
                 }
@@ -61,8 +61,6 @@ public class FallbackListener implements Listener {
         clonedMap.remove(kickedFrom);
 
         final LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
-        lobbies.sort(FallingServer::compareTo);
-        lobbies.sort(Comparator.reverseOrder());
 
         if (lobbies.size() == 0) {
             if (event.getKickReasonComponent() == null) {
@@ -71,12 +69,14 @@ public class FallbackListener implements Listener {
             return;
         }
 
+        lobbies.sort(FallingServer::compareTo);
+        lobbies.sort(Comparator.reverseOrder());
+
         final ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 
         event.setCancelServer(serverInfo);
 
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
-                new PlaceHolder("prefix", instance.getPrefix()),
                 new PlaceHolder("server", serverInfo.getName()),
                 new PlaceHolder("reason", BaseComponent.toLegacyText(event.getKickReasonComponent())));
 

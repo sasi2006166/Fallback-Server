@@ -29,6 +29,7 @@ public class HubCommand extends Command {
     }
 
     public void execute(CommandSender sender, String[] args) {
+
         if (!(sender instanceof ProxiedPlayer)) {
             PLAYER_ONLY.send(sender, new PlaceHolder("prefix", instance.getPrefix()));
             return;
@@ -45,13 +46,15 @@ public class HubCommand extends Command {
         final Map<ServerInfo, FallingServer> clonedMap = new HashMap<>(FallingServer.getServers());
 
         final LinkedList<FallingServer> lobbies = new LinkedList<>(clonedMap.values());
-        lobbies.sort(FallingServer::compareTo);
-        lobbies.sort(Comparator.reverseOrder());
 
         if (lobbies.size() == 0) {
             NO_SERVER.send(player, new PlaceHolder("prefix", instance.getPrefix()));
             return;
         }
+
+        lobbies.sort(FallingServer::compareTo);
+        lobbies.sort(Comparator.reverseOrder());
+
 
         final ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 

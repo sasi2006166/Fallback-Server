@@ -30,7 +30,7 @@ public enum BungeeConfig {
     SET_COMMAND("sub_commands.set.enabled"),
     SET_COMMAND_PERMISSION("sub_commands.set.permission"),
 
-    BLACKLISTED_SERVERS("settings.server_blacklist"),
+    USE_BLACKLISTED_SERVERS("settings.server_blacklist"),
     BLACKLISTED_SERVERS_LIST("settings.server_blacklist_list"),
 
     LOBBY_COMMAND("settings.lobby_command"),

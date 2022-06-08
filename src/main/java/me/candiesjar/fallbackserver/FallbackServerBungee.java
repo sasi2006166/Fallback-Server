@@ -82,7 +82,7 @@ public final class FallbackServerBungee extends Plugin {
 
         version = null;
 
-        getLogger().info("§7[§c!§7] §dFallbackServer §7is disabling... §7[§c!§7]");
+        getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling... §7[§c!§7]");
     }
 
     public String getPrefix() {
