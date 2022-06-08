@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServerVelocity</artifactId>
-    <version>3.1</version>
+    <version>3.1.2</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>

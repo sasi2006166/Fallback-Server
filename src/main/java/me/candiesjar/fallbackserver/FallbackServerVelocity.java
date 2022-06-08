@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "fallbackservervelocity",
         name = "FallbackServerVelocity",
-        version = "3.0.0.4",
+        version = "3.1.2",
         url = "github.com/sasi2006166",
         authors = "CandiesJar"
 )
@@ -97,7 +97,7 @@ public class FallbackServerVelocity {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
 
-        logger.info("§7[§b!§7] Unloading plugin §7[§b!§7]");
+        logger.info("§7[§b!§7] §bFallbackServer §7is disabling... §7[§b!§7]");
 
         task.cancel();
         task = null;

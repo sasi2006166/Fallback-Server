@@ -51,7 +51,9 @@ public class ChatUtil {
     }
 
     public String color(String s) {
+
         return s.replace("&", "§");
+
     }
 
     public List<String> color(List<String> list) {

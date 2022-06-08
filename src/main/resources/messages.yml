@@ -44,9 +44,8 @@ MESSAGES:
   fallback_command:
     - "&8&m-----&8[&bFallback Server&8]&m-----"
     - ""
-    - "&b/fs reload &7| Command for reload configuration."
-    - "&b/fs add <server> &7| Adds a fallback server to configuration."
-    - "&b/fs reset <config:messages> &7| Restores config / messages configs."
+    - "&b/fsv reload &7| Command for reload configuration."
+    - "&b/fsv add <server> &7| Adds a fallback server to configuration."
     - ""
     - "&7Running version &b%version%"
     - "&8&m---------------------------"

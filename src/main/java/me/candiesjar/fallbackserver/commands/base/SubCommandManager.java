@@ -26,8 +26,8 @@ public class SubCommandManager implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
 
-        CommandSource commandSource = invocation.source();
-        String[] args = invocation.arguments();
+        final CommandSource commandSource = invocation.source();
+        final String[] args = invocation.arguments();
 
         if (!commandSource.hasPermission(VelocityConfig.ADMIN_PERMISSION.get(String.class)) && !VelocityConfig.COMMAND_WITHOUT_PERMISSION.get(Boolean.class)) {
             return;
@@ -49,7 +49,7 @@ public class SubCommandManager implements SimpleCommand {
             return;
         }
 
-        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+        final SubCommand subCommand = subCommands.get(args[0].toLowerCase());
 
         if (!subCommand.isEnabled()) {
             return;

@@ -72,7 +72,6 @@ public enum VelocityMessages {
         ChatUtil.sendFormattedList(this, commandSource, placeHolder);
     }
 
-
     public String color() {
         return get(String.class).replace("&", "§");
     }

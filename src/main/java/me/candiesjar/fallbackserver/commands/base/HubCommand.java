@@ -36,15 +36,11 @@ public class HubCommand implements SimpleCommand {
         final Player player = (Player) commandSource;
 
         if (FallbackServerVelocity.getInstance().isHub(player.getCurrentServer().get().getServerInfo())) {
-            ALREADY_IN_LOBBY.send(player,
-                    new PlaceHolder("prefix", PREFIX.color()));
+            ALREADY_IN_LOBBY.send(player, new PlaceHolder("prefix", PREFIX.color()));
             return;
         }
 
         final LinkedList<FallingServer> lobbies = new LinkedList<>(FallingServer.getServers().values());
-
-        lobbies.sort(FallingServer::compareTo);
-        lobbies.sort(Comparator.reverseOrder());
 
         if (lobbies.size() == 0) {
             NO_SERVER.send(player,
@@ -52,8 +48,16 @@ public class HubCommand implements SimpleCommand {
             return;
         }
 
+        lobbies.sort(FallingServer::compareTo);
+        lobbies.sort(Comparator.reverseOrder());
+
         final RegisteredServer server = lobbies.get(0).getRegisteredServer();
+
         player.createConnectionRequest(server).fireAndForget();
+
+        MOVED_TO_HUB.send(player,
+                new PlaceHolder("prefix", PREFIX.color()),
+                new PlaceHolder("server", server.getServerInfo().getName()));
 
         if (USE_HUB_TITLE.get(Boolean.class)) {
             instance.getServer().getScheduler().buildTask(instance, () -> TitleUtil.sendTitle(HUB_TITLE_FADE_IN.get(Integer.class),
@@ -64,9 +68,6 @@ public class HubCommand implements SimpleCommand {
                             player))
                     .delay(HUB_TITLE_DELAY.get(Integer.class), TimeUnit.SECONDS)
                     .schedule();
-        } else {
-            MOVED_TO_HUB.send(player, new PlaceHolder("prefix", PREFIX.color()), new PlaceHolder("server", server.getServerInfo().getName()));
         }
-
     }
 }
