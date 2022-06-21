@@ -8,6 +8,7 @@ import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.listeners.ChatListener;
 import me.candiesjar.fallbackserver.listeners.FallbackListener;
 import me.candiesjar.fallbackserver.listeners.PlayerListener;
+import me.candiesjar.fallbackserver.listeners.ReconnectListener;
 import me.candiesjar.fallbackserver.metrics.Metrics;
 import me.candiesjar.fallbackserver.objects.TextFile;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
@@ -64,13 +65,9 @@ public final class FallbackServerBungee extends Plugin {
         getLogger().info("§7[§b!§7] Starting stats service... §7[§b!§7]");
         startMetrics();
 
-        // Setup
-        getLogger().info("§7[§b!§7] Final steps... §7[§b!§7]");
-        getProxy().getScheduler().schedule(this, new LobbyCheckerTask(), 0, BungeeConfig.TASK_PERIOD.getInt(), TimeUnit.SECONDS);
-
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
+        getProxy().getScheduler().schedule(this, new LobbyCheckerTask(), 0, BungeeConfig.TASK_PERIOD.getInt(), TimeUnit.SECONDS);
         UpdateUtil.checkUpdates();
-        checkPlugins();
 
     }
 
@@ -98,20 +95,27 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void loadListeners() {
-        getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
+
+        switch (BungeeConfig.FALLBACK_MODE.getString()) {
+            case "DEFAULT":
+                getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
+                getLogger().info("§7[§b!§7] Enabled default kicking method §7[§b!§7]");
+                break;
+            case "RECONNECT":
+                getProxy().getPluginManager().registerListener(this, new ReconnectListener());
+                getLogger().info("§7[§b!§7] Enabled reconnect kicking method §7[§b!§7]");
+                break;
+            default:
+                getLogger().severe("Configuration error under fallback_mode: " + BungeeConfig.FALLBACK_MODE.getString());
+                getLogger().severe("Enabling default configuration");
+                getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
+                break;
+        }
+
         if (BungeeConfig.DISABLED_SERVERS.getBoolean())
             getProxy().getPluginManager().registerListener(this, new ChatListener());
         if (BungeeConfig.UPDATE_CHECKER.getBoolean())
             getProxy().getPluginManager().registerListener(this, new PlayerListener());
-    }
-
-    private void checkPlugins() {
-        if (getProxy().getPluginManager().getPlugin("ViaVersion") != null) {
-            getLogger().severe("§7[§c!§7] §7ViaVersion detected, it may cause troubles §7[§c!§7]");
-        }
-        if (getProxy().getPluginManager().getPlugin("Protocolize") != null) {
-            getLogger().severe("§7[§c!§7] §7Protocolize detected, it may cause troubles §7[§c!§7]");
-        }
     }
 
     private void startMetrics() {

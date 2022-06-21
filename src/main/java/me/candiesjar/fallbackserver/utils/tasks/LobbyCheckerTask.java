@@ -3,7 +3,6 @@ package me.candiesjar.fallbackserver.utils.tasks;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.objects.FallingServer;
-import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 
 public class LobbyCheckerTask implements Runnable {
@@ -23,9 +22,9 @@ public class LobbyCheckerTask implements Runnable {
 
                 if (error == null) {
                     if (result.getPlayers().getOnline() == result.getPlayers().getMax()) {
-                        instance.getLogger().info("Lobby " + serverInfo.getName() + " is full!");
                         return;
                     }
+
                     new FallingServer(serverInfo);
                 }
             });

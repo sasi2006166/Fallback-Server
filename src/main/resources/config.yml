@@ -15,6 +15,14 @@ settings:
   # Only players with permission will be able to tab-complete the command.
   command_tab_complete: true
 
+  # RECONNECT: Player will not be disconnected from the server, instead gets a title
+  # that says "Reconnecting" with animated dots, if crashed server doesn't go again
+  # online the plugin will automatically balance them tough lobbies.
+  # NORMAL: Normal kick method, after a server crash the plugin will automatically
+  # balance all your kicked players.
+  # IMPORTANT: This options requires a proxy reboot.
+  fallback_mode: DEFAULT
+
   # False: Only players with permission will be able to see main command output.
   # True: Players without permission will receive the output message of main command (limited).
   command_without_permission: true
@@ -33,6 +41,9 @@ settings:
   # Warning: If the list contains one lobby the balancing will not work.
   # Currently, work-in-progress, disabled until stable release.
   join_balancing: false
+
+  # Administrator will be notified which server goes down and the complete reason of shutdown.
+  admin_notification: true
 
   # Enable if you want to block lobby commands in specified servers.
   # Example: A player needs to checked for hacks and tries to use /lobby command in a server dedicated for that.
@@ -103,3 +114,7 @@ sub_commands:
   status:
     enabled: true
     permission: "fallback.admin.status"
+
+  update:
+    enabled: true
+    permission: "fallback.admin.update"

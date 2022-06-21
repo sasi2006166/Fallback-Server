@@ -41,6 +41,20 @@ public class Utils {
         return false;
     }
 
+    public static String getDots(int s) {
+        switch (s % 4) {
+            case 0:
+            default:
+                return "";
+            case 1:
+                return ".";
+            case 2:
+                return "..";
+            case 3:
+                return "...";
+        }
+    }
+
     public static void writeToServerList(String section, String arguments) {
         BungeeConfig.LOBBIES_LIST.getStringList().add(arguments);
         instance.getConfig().set(section, BungeeConfig.LOBBIES_LIST.getStringList());

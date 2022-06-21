@@ -38,7 +38,7 @@ public class HubCommand extends Command {
         final ProxiedPlayer player = (ProxiedPlayer) sender;
         final ServerInfo playerServer = player.getServer().getInfo();
 
-        if (FallbackServerBungee.getInstance().isHub(player.getServer().getInfo())) {
+        if (FallbackServerBungee.getInstance().isHub(playerServer)) {
             ALREADY_IN_LOBBY.send(player, new PlaceHolder("prefix", instance.getPrefix()));
             return;
         }
@@ -54,7 +54,6 @@ public class HubCommand extends Command {
 
         lobbies.sort(FallingServer::compareTo);
         lobbies.sort(Comparator.reverseOrder());
-
 
         final ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 

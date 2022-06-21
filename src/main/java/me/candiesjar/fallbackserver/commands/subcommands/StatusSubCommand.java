@@ -32,8 +32,5 @@ public class StatusSubCommand implements SubCommand {
                 new PlaceHolder("max_memory", "" + Runtime.getRuntime().maxMemory()),
                 new PlaceHolder("cpu_cores", "" + Runtime.getRuntime().availableProcessors()),
                 new PlaceHolder("version", FallbackServerBungee.getInstance().getVersion()));
-
-
-
     }
 }

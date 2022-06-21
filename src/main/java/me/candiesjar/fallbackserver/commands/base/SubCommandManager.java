@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserver.commands.base;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.UpdateSubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.PlaceHolder;
@@ -25,6 +26,7 @@ public class SubCommandManager extends Command implements TabExecutor {
         super("fs");
 
         subCommands.put("reload", new ReloadSubCommand());
+        subCommands.put("update", new UpdateSubCommand());
 
     }
 

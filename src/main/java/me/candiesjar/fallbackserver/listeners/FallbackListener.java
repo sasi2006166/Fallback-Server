@@ -17,7 +17,10 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class FallbackListener implements Listener {
@@ -78,7 +81,7 @@ public class FallbackListener implements Listener {
 
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new PlaceHolder("server", serverInfo.getName()),
-                new PlaceHolder("reason", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+                new PlaceHolder("reason", ChatUtil.color(BaseComponent.toLegacyText(event.getKickReasonComponent()))));
 
         if (BungeeMessages.USE_FALLBACK_TITLE.getBoolean()) {
 
@@ -91,6 +94,12 @@ public class FallbackListener implements Listener {
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
 
-        ProxyServer.getInstance().getScheduler().runAsync(instance, () -> plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom, serverInfo, Arrays.toString(event.getKickReasonComponent()))));
+        if (BungeeConfig.ADMIN_NOTIFICATION.getBoolean()) {
+
+            ProxyServer.getInstance().getPlayers().stream().filter(all -> )
+
+        }
+
+        ProxyServer.getInstance().getScheduler().runAsync(instance, () -> plugin.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom, serverInfo, BaseComponent.toLegacyText(event.getKickReasonComponent()))));
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 public class JoinListener implements Listener {
 
     @EventHandler
-    public void onServerConnect(ServerConnectEvent event) {
+    public void onServerConnect(final ServerConnectEvent event) {
 
         if (event.isCancelled()) {
             return;
