@@ -24,6 +24,7 @@ MESSAGES:
   server_is_added: "%prefix% &b%server% &7is already into Fallback Server's list."
   server_not_available: "%prefix% &b%server% &7isn't contained in BungeeCord configuration."
   server_added: "%prefix% &b%server% &7has been added to configuration."
+  connection_failed: "%prefix% &7Re-connection &c&lfailed&7! Moving to fallback."
 
   moved_to_lobby:
     - ""
@@ -62,6 +63,13 @@ TITLES: # Everything in seconds.
     stay: 3 # Time for making title stay in
     fallback_title: "&cServer crashed!"
     fallback_sub_title: "&7You've been moved to lobby."
+
+  # Reconnect title values are automatic.
+  # You can enable / disable it in config.yml
+  reconnect:
+    reconnect_title: "&a&lReconnecting&7%dots%"
+    reconnect_sub_title: "&7Please wait!"
+
   lobby:
     enabled: true
     fade_in: 1

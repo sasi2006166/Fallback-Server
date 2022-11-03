@@ -3,7 +3,7 @@ package me.candiesjar.fallbackserver.listeners;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -13,11 +13,7 @@ import net.md_5.bungee.event.EventHandler;
 public class ChatListener implements Listener {
 
     @EventHandler(priority = 64)
-    public void onChat(final ChatEvent event) {
-
-        if (!event.isCommand()) {
-            return;
-        }
+    public void onChat(ChatEvent event) {
 
         if (!(event.getSender() instanceof ProxiedPlayer)) {
             return;
@@ -27,8 +23,8 @@ public class ChatListener implements Listener {
             return;
         }
 
-        final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-        final String playerServer = player.getServer().getInfo().getName();
+        ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+        String playerServer = player.getServer().getInfo().getName();
         String message = event.getMessage();
 
         if (player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
@@ -40,11 +36,11 @@ public class ChatListener implements Listener {
             message = args[0];
         }
 
-        final boolean checkMessage = Utils.checkMessage(message, playerServer);
+        boolean checkMessage = Utils.checkMessage(message, playerServer);
 
         if (checkMessage) {
             event.setCancelled(true);
-            BungeeMessages.BLOCKED_COMMAND.send(player, new PlaceHolder("prefix", FallbackServerBungee.getInstance().getPrefix()));
+            BungeeMessages.BLOCKED_COMMAND.send(player, new Placeholder("prefix", FallbackServerBungee.getInstance().getPrefix()));
         }
     }
 }

@@ -26,6 +26,11 @@ public class UpdateSubCommand implements SubCommand {
     @Override
     public void perform(CommandSender sender, String[] arguments) {
 
+        if (FallbackServerBungee.getInstance().isAlpha()) {
+            sender.sendMessage(new TextComponent("§7Updater is disabled in §c§lALPHA§7!"));
+            return;
+        }
+
         final String PLUGIN_VERSION = Utils.getRemoteVersion();
         final String PLUGIN_NAME = "FallbackServer-" + PLUGIN_VERSION + ".jar";
         final String OLD_JAR_NAME = "FallbackServer-" + instance.getVersion() + ".jar";

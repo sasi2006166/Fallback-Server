@@ -8,7 +8,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import java.util.Map;
 
 @Getter
-@Setter
 public class FallingServer implements Comparable<FallingServer> {
 
     private static final Map<ServerInfo, FallingServer> servers = Maps.newHashMap();

@@ -7,12 +7,21 @@ import java.util.List;
 public enum BungeeConfig {
 
     TAB_COMPLETION("settings.command_tab_complete"),
-    COMMAND_WITHOUT_PERMISSION("settings.command_without_permission"),
+    HIDE_COMMAND("settings.hide_command"),
     FALLBACK_MODE("settings.fallback_mode"),
-    UPDATE_CHECKER("settings.check_updates"),
-    TASK_PERIOD("settings.task_period"),
+
+    RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
+    RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
+    RECONNECT_KICK("settings.auto_reconnect.disconnect"),
+    RECONNECT_SORT("settings.auto_reconnect.player_sort"),
+
+    RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
+    RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
+
+    UPDATER("settings.updater"),
+    PING_DELAY("settings.ping_delay"),
     TELEMETRY("settings.stats"),
-    DISABLED_SERVERS("settings.disabled_servers"),
+    USE_COMMAND_BLOCKER("settings.use_command_blocker"),
     LOBBIES_LIST("settings.fallback_list"),
     IGNORED_REASONS("settings.blacklisted_words"),
     ADMIN_NOTIFICATION("settings.admin_notification"),

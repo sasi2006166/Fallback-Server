@@ -7,8 +7,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class SetSubCommand implements SubCommand {
 
-    // Like Pokemon games, code is here, but not activated.
-
     @Override
     public String getPermission() {
         return BungeeConfig.SET_COMMAND_PERMISSION.getString();

@@ -21,7 +21,7 @@ public class FileUtils {
             Files.copy(inputStream, Paths.get(folder + "/" + name), StandardCopyOption.REPLACE_EXISTING);
             inputStream.close();
         } catch (IOException e) {
-            FallbackServerBungee.getInstance().getLogger().severe("Update failed!  " + e);
+            FallbackServerBungee.getInstance().getLogger().severe("Download failed!  " + e);
         }
 
     }

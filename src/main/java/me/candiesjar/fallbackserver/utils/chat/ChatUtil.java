@@ -3,7 +3,7 @@ package me.candiesjar.fallbackserver.utils.chat;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.Placeholder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,35 +21,35 @@ public class ChatUtil {
         return instance.getMessagesConfig().getString(bungeeMessages.getPath());
     }
 
-    public String getString(BungeeMessages bungeeMessages, PlaceHolder... placeHolders) {
-        return applyPlaceHolder(getString(bungeeMessages), placeHolders);
+    public String getString(BungeeMessages bungeeMessages, Placeholder... placeholders) {
+        return applyPlaceHolder(getString(bungeeMessages), placeholders);
     }
 
     public String getFormattedString(BungeeMessages bungeeMessages) {
         return color(getString(bungeeMessages));
     }
 
-    public String getFormattedString(BungeeMessages bungeeMessages, PlaceHolder... placeHolders) {
-        return color(getString(bungeeMessages, placeHolders));
+    public String getFormattedString(BungeeMessages bungeeMessages, Placeholder... placeholders) {
+        return color(getString(bungeeMessages, placeholders));
     }
 
     public List<String> getStringList(BungeeMessages bungeeMessages) {
         return instance.getMessagesConfig().getStringList(bungeeMessages.getPath());
     }
 
-    public List<String> getStringList(BungeeMessages bungeeMessages, PlaceHolder... placeHolders) {
+    public List<String> getStringList(BungeeMessages bungeeMessages, Placeholder... placeholders) {
         List<String> newList = new ArrayList<>();
 
         for (String s : getStringList(bungeeMessages)) {
-            s = applyPlaceHolder(s, placeHolders);
+            s = applyPlaceHolder(s, placeholders);
             newList.add(s);
         }
 
         return newList;
     }
 
-    public String applyPlaceHolder(String s, PlaceHolder... placeHolders) {
-        for (PlaceHolder placeHolder : placeHolders) {
+    public String applyPlaceHolder(String s, Placeholder... placeholders) {
+        for (Placeholder placeHolder : placeholders) {
             s = s.replace(placeHolder.getKey(), placeHolder.getValue());
         }
 
@@ -81,8 +81,8 @@ public class ChatUtil {
         }
     }
 
-    public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, PlaceHolder... placeHolders) {
-        sendList(commandSender, color(getStringList(bungeeMessages, placeHolders)));
+    public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, Placeholder... placeholders) {
+        sendList(commandSender, color(getStringList(bungeeMessages, placeholders)));
     }
 
 }

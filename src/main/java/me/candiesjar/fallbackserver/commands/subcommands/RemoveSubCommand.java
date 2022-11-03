@@ -6,8 +6,6 @@ import net.md_5.bungee.api.CommandSender;
 
 public class RemoveSubCommand implements SubCommand {
 
-    // Like Pokemon games, code is here, but not activated.
-
     @Override
     public String getPermission() {
         return BungeeConfig.REMOVE_COMMAND_PERMISSION.getString();

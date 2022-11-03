@@ -10,48 +10,83 @@
 #                                       ░           ░                                                ░
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
 
+# IMPORTANT WARNING: Before reporting any issue on discord, READ carefully the comments!
+# Some features are DISABLED since they're under developing, don't report any bugs on them.
+# Thanks for understanding.
+
 settings:
 
-  # Only players with permission will be able to tab-complete the command.
+  # Player with admin permission only will be able to use /fs tab complete.
   command_tab_complete: true
 
   # RECONNECT: Player will not be disconnected from the server, instead gets a title
   # that says "Reconnecting" with animated dots, if crashed server doesn't go again
   # online the plugin will automatically balance them tough lobbies.
-  # NORMAL: Normal kick method, after a server crash the plugin will automatically
+  # DEFAULT: Normal kick method, after a server crash the plugin will automatically
   # balance all your kicked players.
-  # IMPORTANT: This options requires a proxy reboot.
+  # IMPORTANT: This option requires a proxy reboot.
   fallback_mode: DEFAULT
 
-  # False: Only players with permission will be able to see main command output.
-  # True: Players without permission will receive the output message of main command (limited).
-  command_without_permission: true
+  # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
+  # Customize things like delays and title mode, everything in seconds.
+  auto_reconnect:
+    # Tries before disconnecting or moving player to lobbies.
+    max_tries: 5
 
-  # As it says, enables updates checking.
-  check_updates: true
+    # Time before pinging the server during reconnect phase.
+    # Don't put values under 1, they will NOT work.
+    ping_delay: 10
 
-  # In seconds, checks the lobby list every 5 seconds, recommended staying with default value.
-  # On first start / reboot, let the plugin settle down for 5 seconds before start using fallback.
-  task_period: 5
+    # This option will kick player(s) if the reconnect task fails.
+    # I don't recommend using this if you don't want to lose players.
+    disconnect: false
+
+    # This option will trigger normal FallbackServer kicking procedure.
+    # Sorting players in various lobbies.
+    player_sort: true
+
+    # Title can be customized into messages configuration.
+    # Available in messages.yml
+    title:
+      enable: true
+      # NORMAL: The normal animated title with dots
+      # PULSE: A title that simulates the heartbeat
+      # STATIC: Title will not animate dots
+      # You can customize it in messages.yml
+      mode: NORMAL # DISABLED.
+
+  # False: Normal players will not be able to see the /fs output.
+  # True: Everyone will be able to see the simple "running fallbackserver" message.
+  hide_command: true
+
+  # Choose if you want to enable the updater.
+  updater: true
+
+  # In seconds, will check your lobbies every X seconds, defined under here.
+  # On first start / reboot, let the plugin settle down for X seconds (defined under here) before start using fallback.
+  # Recommended to use 5 if your server is in beta or have not stable spigot instances.
+  ping_delay: 5
 
   # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
+  # By default this setting is set on "true" to help me improve the plugin.
+  # Obviously you can disable it if you want, feel free to do so.
   stats: true
 
   # True: the plugin will automatically choose best lobby when connecting and balance all players.
   # Warning: If the list contains one lobby the balancing will not work.
-  # Currently, work-in-progress, disabled until stable release.
+  # DISABLED.
   join_balancing: false
 
   # Administrator will be notified which server goes down and the complete reason of shutdown.
+  # DISABLED.
   admin_notification: true
 
-  # Enable if you want to block lobby commands in specified servers.
-  # Example: A player needs to checked for hacks and tries to use /lobby command in a server dedicated for that.
-  disabled_servers: true
+  # Choose if you want to use fallbackserver's built-in command blocker.
+  use_command_blocker: true
 
+  # WARNING: will only work if "use_command_blocker" is set on true.
   # Add here the servers with the command(s) you want to block.
-  # You can block any command, not only lobby command.
-  disabled_servers_list:
+  command_blocker_list:
     hack_control:
       - lobby
       - hub
@@ -59,34 +94,38 @@ settings:
       - lobby
       - hub
 
-  # Example: If the kicked message contains this (those) words the player will NOT be kicked.
+  # Disable player kicking if the plugin detects any of listed reasons.
+  # Example: player gets banned on (only) spigot instance using Essentials
+  # FallbackServer will disconnect him instead of kicking.
   blacklisted_words:
     - "ban"
     - "whitelist"
     - "full"
 
-  # Add here your lobbies, those will be used as fallback.
-  # Those servers will also be used for the /lobby command.
+  # Add here fallback lobbies, also used for /hub command.
   fallback_list:
     - lobby1
     - lobby2
     - lobby3
 
-  # If you want to use the /lobby command (with aliases).
-  # Requires Proxy reboot for applying changes.
+  # WARNING: Requires proxy reboot.
+  # If you want to use the /lobby command.
   lobby_command: true
 
+  # WARNING: works only if "lobby_command" is set on true.
   # Aliases for /lobby command, it's possible to remove the base /hub command too.
   lobby_command_aliases:
     - hub
     - lobby
 
-  # True: Enable blacklist, (Player needs to log-in but the server goes down, the plugin will not enable fallback).
+  # Enable server blacklist feature, such for authentication servers.
   server_blacklist: true
 
-  # Add here the blacklisted servers, such as pre-lobbies with authentication plugins.
+  # WARNING: Works only if "server_blacklist" is set on true.
+  # Add here your pre-lobbies or any server you want to disable.
+  # Kicking will be disabled on those and player will be disconnected.
   server_blacklist_list:
-    - testsv
+    - testserver
 
 sub_commands:
 

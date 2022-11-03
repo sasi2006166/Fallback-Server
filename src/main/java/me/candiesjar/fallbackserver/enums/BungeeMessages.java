@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.enums;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.objects.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 
@@ -25,7 +25,9 @@ public enum BungeeMessages {
     UNAVAILABLE_SERVER("MESSAGES.server_not_available"),
     SERVER_ADDED("MESSAGES.server_added"),
 
-    STATS_COMMAND("messages.stats_command"),
+    CONNECTION_FAILED("MESSAGES.connection_failed"),
+
+    STATS_COMMAND("MESSAGES.stats_command"),
 
     USE_FALLBACK_TITLE("TITLES.fallback.enabled"),
     FALLBACK_DELAY("TITLES.fallback.delay"),
@@ -34,6 +36,9 @@ public enum BungeeMessages {
     FALLBACK_STAY("TITLES.fallback.stay"),
     FALLBACK_TITLE("TITLES.fallback.fallback_title"),
     FALLBACK_SUB_TITLE("TITLES.fallback.fallback_sub_title"),
+
+    RECONNECT_TITLE("TITLES.reconnect.reconnect_title"),
+    RECONNECT_SUB_TITLE("TITLES.reconnect.reconnect_sub_title"),
 
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),
@@ -53,16 +58,16 @@ public enum BungeeMessages {
         return path;
     }
 
-    public void send(CommandSender commandSender, PlaceHolder... placeHolders) {
+    public void send(CommandSender commandSender, Placeholder... placeholders) {
 
         if (ChatUtil.getString(this).equals("")) {
             return;
         }
 
-        commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeHolders)));
+        commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeholders)));
     }
 
-    public void sendList(CommandSender commandSender, PlaceHolder... placeHolder) {
+    public void sendList(CommandSender commandSender, Placeholder... placeHolder) {
         ChatUtil.sendFormattedList(this, commandSender, placeHolder);
     }
 
