@@ -3,31 +3,45 @@ package me.candiesjar.fallbackserver.listeners;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
+import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
 import me.candiesjar.fallbackserver.utils.VelocityUtils;
+import net.kyori.adventure.text.Component;
 
+@RequiredArgsConstructor
 public class PlayerListener {
 
-    private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
-
     @Subscribe
-    public void onPlayerJoin(final ServerConnectedEvent event) {
-
+    public void onPlayerJoin(ServerConnectedEvent event) {
         final Player player = event.getPlayer();
+        final String adminPermission = VelocityConfig.ADMIN_PERMISSION.get(String.class);
 
-        if (!player.hasPermission(VelocityConfig.ADMIN_PERMISSION.get(String.class))) {
+        if (!player.hasPermission(adminPermission)) {
             return;
         }
 
-        if (VelocityUtils.isUpdateAvailable()) {
-            VelocityMessages.NEW_UPDATE.sendList(player,
-                    new PlaceHolder("old_version", instance.getVersion().get()),
-                    new PlaceHolder("new_version", VelocityUtils.getRemoteVersion()));
+        if (FallbackServerVelocity.getInstance().isAlpha()) {
+            player.sendMessage(Component.text(" "));
+            player.sendMessage(Component.text("§7You're running an §c§lALPHA VERSION §7of Fallback Server."));
+            player.sendMessage(Component.text("§7If you find any bugs, please report them on discord."));
+            player.sendMessage(Component.text(" "));
+            return;
         }
 
+        VelocityUtils.getUpdates().whenComplete((newUpdate, throwable) -> {
+            if (throwable != null) {
+                throwable.printStackTrace();
+            }
+
+            if (newUpdate != null && newUpdate) {
+                VelocityMessages.NEW_UPDATE.sendList(player,
+                        new PlaceHolder("old_version", FallbackServerVelocity.VERSION),
+                        new PlaceHolder("new_version", VelocityUtils.getRemoteVersion()));
+            }
+        });
     }
 
 }

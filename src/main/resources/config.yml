@@ -10,10 +10,49 @@
 #                                       ░           ░                                                ░
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
 
+# IMPORTANT WARNING: Before reporting any issue on discord, read carefully the comments!
+# Most features are still under working and are disabled.
+# Thanks for understanding.
+
 settings:
 
   # Only players with permission will be able to tab-complete the command.
   command_tab_complete: true
+
+  # RECONNECT: Player will not be disconnected from the server, instead gets a title
+  # that says "Reconnecting" with animated dots, if crashed server doesn't go again
+  # online the plugin will automatically balance them tough lobbies.
+  # NORMAL: Normal kick method, after a server crash the plugin will automatically
+  # balance all your kicked players.
+  # IMPORTANT: This option requires a proxy reboot.
+  fallback_mode: DEFAULT
+
+  # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
+  # Customize things like delays and title mode, everything in seconds.
+  auto_reconnect:
+    # Tries before disconnecting or moving player to lobbies.
+    max_tries: 5
+
+    # Time before pinging the server during reconnect phase.
+    # Don't put values under 1, they will NOT work.
+    ping_delay: 10
+
+    # This option will kick player(s) if the reconnect task fails.
+    # I don't recommend using this if you don't want to lose players.
+    disconnect: false
+
+    # This option will trigger normal FallbackServer kicking procedure.
+    # Sorting players in various lobbies.
+    player_sort: true
+
+    # Title can be customized into messages configuration.
+    # Available in messages.yml
+    title:
+      enable: true
+      # NORMAL: The normal animated title with dots
+      # PULSE: A title that simulates the heartbeat
+      # You can customize it in messages.yml
+      mode: NORMAL # Disabled for now.
 
   # False: Only players with permission will be able to see main command output.
   # True: Players without permission will receive the output message of main command (limited).
@@ -28,6 +67,14 @@ settings:
 
   # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
   stats: true
+
+  # True: the plugin will automatically choose best lobby when connecting and balance all players.
+  # Warning: If the list contains one lobby the balancing will not work.
+  # Currently, work-in-progress, disabled until stable release.
+  join_balancing: false
+
+  # Administrator will be notified which server goes down and the complete reason of shutdown.
+  admin_notification: true
 
   # Enable if you want to block lobby commands in specified servers.
   # Example: A player needs to checked for hacks and tries to use /lobby command in a server dedicated for that.
@@ -70,7 +117,7 @@ settings:
 
   # Add here the blacklisted servers, such as pre-lobbies with authentication plugins.
   server_blacklist_list:
-    - testsv
+    - testserver
 
 sub_commands:
 
@@ -98,3 +145,7 @@ sub_commands:
   status:
     enabled: true
     permission: "fallback.admin.status"
+
+  update:
+    enabled: true
+    permission: "fallback.admin.update"

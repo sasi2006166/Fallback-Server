@@ -1,42 +1,77 @@
 package me.candiesjar.fallbackserver.utils.tasks;
 
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.proxy.server.ServerInfo;
+import com.velocitypowered.api.proxy.server.ServerPing;
+import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.objects.FallingServer;
+import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
+@RequiredArgsConstructor
 public class LobbyTask implements Runnable {
 
-    private static final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
+    private final FallingServerManager fallingServerManager;
+
+    public List<String> getAllowedServers() {
+        List<String> allowedServers = new ArrayList<>();
+
+        for (String serverName : VelocityConfig.LOBBIES_LIST.getStringList()) {
+            String toLowerCase = serverName.toLowerCase();
+            allowedServers.add(toLowerCase);
+        }
+
+        return allowedServers;
+    }
 
     @Override
     public void run() {
-        FallingServer.getServers().clear();
-        List<String> allowedServers = VelocityConfig.LOBBIES.getStringList().parallelStream().map(String::toLowerCase).collect(Collectors.toList());
+        fallingServerManager.clearCache();
 
         List<RegisteredServer> servers = new ArrayList<>();
+        List<String> allowedServers = getAllowedServers();
 
-        for (RegisteredServer server : instance.getServer().getAllServers()) {
-            if (!allowedServers.contains(server.getServerInfo().getName().toLowerCase())) continue;
+        for (RegisteredServer server : FallbackServerVelocity.getInstance().getServer().getAllServers()) {
+            ServerInfo serverInfo = server.getServerInfo();
+            String serverName = serverInfo.getName().toLowerCase();
+
+            if (!allowedServers.contains(serverName)) {
+                continue;
+            }
+
             servers.add(server);
         }
 
-        servers.forEach(server -> server.ping().whenComplete((result, throwable) -> {
+        pingServers(servers);
+    }
+
+    private void pingServers(List<RegisteredServer> serverList) {
+        serverList.forEach(server -> server.ping().whenComplete((result, throwable) -> {
             if (throwable != null) {
                 return;
             }
 
-            if (result != null) {
-                if (result.getPlayers().get().getOnline() == result.getPlayers().get().getMax()) {
-                    return;
-                }
-
-                new FallingServer(server);
+            if (result == null) {
+                return;
             }
+
+            Optional<ServerPing.Players> playersOptional = result.getPlayers();
+
+            if (!playersOptional.isPresent()) {
+                return;
+            }
+
+            ServerPing.Players players = playersOptional.get();
+
+            if (players.getOnline() == players.getMax()) {
+                return;
+            }
+
+            fallingServerManager.add(server.getServerInfo().getName(), server);
         }));
     }
 }

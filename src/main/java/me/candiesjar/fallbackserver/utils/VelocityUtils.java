@@ -1,51 +1,66 @@
 package me.candiesjar.fallbackserver.utils;
 
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+@UtilityClass
 public class VelocityUtils {
-
-    private static final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
     private static String remoteVersion = "Loading";
-    private static boolean updateAvailable = false;
+    private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
 
-    public static void getUpdates() {
-        instance.getServer().getScheduler().buildTask(instance, () -> {
-            try {
+    @SneakyThrows(Exception.class)
+    public CompletableFuture<Boolean> getUpdates() {
 
-                final URLConnection connection = new URL("https://api.spigotmc.org/legacy/update.php?resource=86398").openConnection();
+        if (instance.isAlpha()) {
 
-                remoteVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
-                updateAvailable = !instance.getVersion().get().equals(remoteVersion);
-
-            } catch (IOException ignored) {
-                FallbackServerVelocity.getInstance().getLogger().error("Cannot fetch updates, check your firewall settings.");
-            }
-        }).schedule();
-
-    }
-
-    public static boolean checkMessage(String message, String name) {
-        for (String text : instance.getConfigTextFile().getConfig().getStringList("settings.disabled_servers_list." + name)) {
-            if (text.equalsIgnoreCase(message)) {
-                return true;
-            }
+            return CompletableFuture.supplyAsync(() -> {
+                instance.getLogger().info("§7Updater is disabled in alpha version(s).");
+                instance.getLogger().info(" ");
+                return false;
+            });
         }
-        return false;
+
+        return CompletableFuture.supplyAsync(() -> {
+            boolean isUpdateAvailable;
+            URLConnection connection;
+            try {
+                connection = new URL("https://api.spigotmc.org/legacy/update.php?resource=86398").openConnection();
+                try (InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())) {
+                    try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                        remoteVersion = bufferedReader.readLine();
+                        isUpdateAvailable = !FallbackServerVelocity.VERSION.equalsIgnoreCase(remoteVersion);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return isUpdateAvailable;
+        });
     }
 
-    public static String getRemoteVersion() {
+    public boolean checkMessage(String message, List<String> stringList) {
+        List<String> list = new ArrayList<>();
+
+        for (String s : stringList) {
+            String toLowerCase = s.toLowerCase();
+            list.add(toLowerCase);
+        }
+
+        return list.contains(message.toLowerCase());
+    }
+
+    public String getRemoteVersion() {
         return remoteVersion;
     }
-
-    public static boolean isUpdateAvailable() {
-        return updateAvailable;
-    }
-
 }

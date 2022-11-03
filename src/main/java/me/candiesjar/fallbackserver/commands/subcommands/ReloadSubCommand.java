@@ -1,13 +1,16 @@
 package me.candiesjar.fallbackserver.commands.subcommands;
 
 import com.velocitypowered.api.command.CommandSource;
+import lombok.RequiredArgsConstructor;
+import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.PlaceHolder;
-import me.candiesjar.fallbackserver.objects.TextFile;
+import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
 
+@RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
+    private final FallbackServerVelocity fallbackServerVelocity;
 
     @Override
     public String getPermission() {
@@ -21,7 +24,9 @@ public class ReloadSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSource commandSource, String[] args) {
-        TextFile.reloadAll();
+        fallbackServerVelocity.getConfigTextFile().reload();
+        fallbackServerVelocity.getMessagesTextFile().reload();
+
         VelocityMessages.RELOAD.send(commandSource, new PlaceHolder("prefix", VelocityMessages.PREFIX.color()));
     }
 }

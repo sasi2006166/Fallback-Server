@@ -2,8 +2,8 @@ package me.candiesjar.fallbackserver.enums;
 
 import com.velocitypowered.api.command.CommandSource;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.objects.PlaceHolder;
-import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
+import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -28,13 +28,20 @@ public enum VelocityMessages {
     UNAVAILABLE_SERVER("MESSAGES.server_not_available"),
     SERVER_ADDED("MESSAGES.server_added"),
 
+    CONNECTION_FAILED("MESSAGES.connection_failed"),
+
+    STATS_COMMAND("MESSAGES.stats_command"),
+
     USE_FALLBACK_TITLE("TITLES.fallback.enabled"),
-    FALLBACK_TITLE_DELAY("TITLES.fallback.delay"),
+    FALLBACK_DELAY("TITLES.fallback.delay"),
     FALLBACK_FADE_IN("TITLES.fallback.fade_in"),
     FALLBACK_FADE_OUT("TITLES.fallback.fade_out"),
     FALLBACK_STAY("TITLES.fallback.stay"),
     FALLBACK_TITLE("TITLES.fallback.fallback_title"),
     FALLBACK_SUB_TITLE("TITLES.fallback.fallback_sub_title"),
+
+    RECONNECT_TITLE("TITLES.reconnect.reconnect_title"),
+    RECONNECT_SUB_TITLE("TITLES.reconnect.reconnect_sub_title"),
 
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_DELAY("TITLES.lobby.delay"),
