@@ -4,7 +4,7 @@ import com.velocitypowered.api.command.CommandSource;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
@@ -20,31 +20,31 @@ public class ChatUtil {
         return instance.getMessagesTextFile().getConfig().getString(velocityMessages.getPath());
     }
 
-    public String getString(VelocityMessages velocityMessages, PlaceHolder... placeHolders) {
-        return applyPlaceHolder(getString(velocityMessages), placeHolders);
+    public String getString(VelocityMessages velocityMessages, Placeholder... placeholders) {
+        return applyPlaceHolder(getString(velocityMessages), placeholders);
     }
 
-    public String getFormattedString(VelocityMessages velocityMessages, PlaceHolder... placeHolders) {
-        return color(getString(velocityMessages, placeHolders));
+    public String getFormattedString(VelocityMessages velocityMessages, Placeholder... placeholders) {
+        return color(getString(velocityMessages, placeholders));
     }
 
     public List<String> getStringList(VelocityMessages velocityMessages) {
         return instance.getMessagesTextFile().getConfig().getStringList(velocityMessages.getPath());
     }
 
-    public List<String> getStringList(VelocityMessages velocityMessages, PlaceHolder... placeHolders) {
+    public List<String> getStringList(VelocityMessages velocityMessages, Placeholder... placeholders) {
         List<String> newList = new ArrayList<>();
 
         for (String s : getStringList(velocityMessages)) {
-            s = applyPlaceHolder(s, placeHolders);
+            s = applyPlaceHolder(s, placeholders);
             newList.add(s);
         }
 
         return newList;
     }
 
-    public String applyPlaceHolder(String s, PlaceHolder... placeHolders) {
-        for (PlaceHolder placeHolder : placeHolders) {
+    public String applyPlaceHolder(String s, Placeholder... placeholders) {
+        for (Placeholder placeHolder : placeholders) {
             s = s.replace(placeHolder.getKey(), placeHolder.getValue());
         }
 
@@ -67,8 +67,8 @@ public class ChatUtil {
         }
     }
 
-    public void sendFormattedList(VelocityMessages velocityMessages, CommandSource commandSource, PlaceHolder... placeHolders) {
-        sendList(commandSource, color(getStringList(velocityMessages, placeHolders)));
+    public void sendFormattedList(VelocityMessages velocityMessages, CommandSource commandSource, Placeholder... placeholders) {
+        sendList(commandSource, color(getStringList(velocityMessages, placeholders)));
     }
 
 

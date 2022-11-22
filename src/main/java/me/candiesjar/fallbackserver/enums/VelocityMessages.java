@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserver.enums;
 
 import com.velocitypowered.api.command.CommandSource;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -44,12 +44,12 @@ public enum VelocityMessages {
     RECONNECT_SUB_TITLE("TITLES.reconnect.reconnect_sub_title"),
 
     USE_HUB_TITLE("TITLES.lobby.enabled"),
-    HUB_TITLE_DELAY("TITLES.lobby.delay"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),
     HUB_TITLE_FADE_OUT("TITLES.lobby.fade_out"),
     HUB_TITLE_STAY("TITLES.lobby.stay"),
     HUB_TITLE("TITLES.lobby.lobby_title"),
-    HUB_SUB_TITLE("TITLES.lobby.lobby_sub_title");
+    HUB_SUB_TITLE("TITLES.lobby.lobby_sub_title"),
+    HUB_TITLE_DELAY("TITLES.lobby.delay");
 
     private final String path;
     private static final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
@@ -66,16 +66,16 @@ public enum VelocityMessages {
         return clazz.cast(instance.getMessagesTextFile().getConfig().get(path));
     }
 
-    public void send(CommandSource commandSource, PlaceHolder... placeHolders) {
+    public void send(CommandSource commandSource, Placeholder... placeholders) {
 
         if (ChatUtil.getString(this).equals("")) {
             return;
         }
 
-        commandSource.sendMessage(Component.text(ChatUtil.getFormattedString(this, placeHolders)));
+        commandSource.sendMessage(Component.text(ChatUtil.getFormattedString(this, placeholders)));
     }
 
-    public void sendList(CommandSource commandSource, PlaceHolder... placeHolder) {
+    public void sendList(CommandSource commandSource, Placeholder... placeHolder) {
         ChatUtil.sendFormattedList(this, commandSource, placeHolder);
     }
 

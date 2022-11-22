@@ -10,7 +10,8 @@ import me.candiesjar.fallbackserver.api.VelocityAPI;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
+import me.candiesjar.fallbackserver.utils.ServerUtils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.kyori.adventure.text.Component;
@@ -33,18 +34,24 @@ public class FallbackListener {
     @Subscribe
     public void onPlayerKick(KickedFromServerEvent event) {
 
-        final Player player = event.getPlayer();
-        final RegisteredServer kickedFrom = event.getServer();
-        final String serverName = kickedFrom.getServerInfo().getName();
+        Player player = event.getPlayer();
+        RegisteredServer kickedFrom = event.getServer();
+        String serverName = kickedFrom.getServerInfo().getName();
 
         if (!player.isActive() || event.kickedDuringServerConnect()) {
             return;
         }
 
-        final Optional<Component> componentOptional = event.getServerKickReason();
-        final boolean isEmpty = !componentOptional.isPresent();
+        boolean isMaintenance = ServerUtils.isMaintenance(kickedFrom);
 
-        final String kickReasonString = isEmpty ? "" : ChatUtil.componentToString(componentOptional.get());
+        if (isMaintenance) {
+            return;
+        }
+
+        Optional<Component> componentOptional = event.getServerKickReason();
+        boolean isEmpty = componentOptional.isEmpty();
+
+        String kickReasonString = isEmpty ? "" : ChatUtil.componentToString(componentOptional.get());
 
         for (String blacklist : VelocityConfig.IGNORED_REASONS.getStringList()) {
 
@@ -66,25 +73,33 @@ public class FallbackListener {
 
         fallingServerManager.remove(serverName);
 
-        final LinkedList<RegisteredServer> lobbies = Lists.newLinkedList(fallingServerManager.getAll());
+        LinkedList<RegisteredServer> lobbies = Lists.newLinkedList(fallingServerManager.getAll());
 
         if (lobbies.size() == 0) {
             if (!kickReasonString.isEmpty()) {
                 String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", VelocityMessages.PREFIX.color());
                 player.disconnect(Component.text(ChatUtil.color(disconnectMessage)));
             }
+            player.disconnect(Component.text(ChatUtil.color(kickReasonString)));
             return;
         }
 
         lobbies.sort(Comparator.comparingInt(o -> o.getPlayersConnected().size()));
 
-        final RegisteredServer registeredServer = lobbies.get(0);
+        RegisteredServer registeredServer = lobbies.get(0);
+
+        isMaintenance = ServerUtils.isMaintenance(registeredServer);
+
+        if (isMaintenance) {
+            player.disconnect(Component.text(ChatUtil.color(kickReasonString)));
+            return;
+        }
 
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(registeredServer));
 
         VelocityMessages.KICKED_TO_LOBBY.sendList(player,
-                new PlaceHolder("server", registeredServer.getServerInfo().getName()),
-                new PlaceHolder("reason", ChatUtil.color(kickReasonString))
+                new Placeholder("server", registeredServer.getServerInfo().getName()),
+                new Placeholder("reason", ChatUtil.color(kickReasonString))
         );
 
         if (VelocityMessages.USE_FALLBACK_TITLE.get(Boolean.class)) {

@@ -6,8 +6,9 @@ import java.util.List;
 
 public enum VelocityConfig {
     TAB_COMPLETION("settings.command_tab_complete"),
-    COMMAND_WITHOUT_PERMISSION("settings.command_without_permission"),
+    HIDE_COMMAND("settings.hide_command"),
     FALLBACK_MODE("settings.fallback_mode"),
+    DEBUG_MODE("settings.debug"),
 
     RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
@@ -17,10 +18,10 @@ public enum VelocityConfig {
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
 
-    UPDATE_CHECKER("settings.check_updates"),
-    TASK_PERIOD("settings.task_period"),
+    UPDATER("settings.updater"),
+    PING_DELAY("settings.ping_delay"),
     TELEMETRY("settings.stats"),
-    DISABLED_SERVERS("settings.disabled_servers"),
+    USE_COMMAND_BLOCKER("settings.use_command_blocker"),
     LOBBIES_LIST("settings.fallback_list"),
     IGNORED_REASONS("settings.blacklisted_words"),
     ADMIN_NOTIFICATION("settings.admin_notification"),
@@ -57,10 +58,10 @@ public enum VelocityConfig {
     }
 
     public <T> T get(Class<T> clazz) {
-        return clazz.cast(instance.getConfig().get(configurationPath));
+        return clazz.cast(instance.getConfigTextFile().getConfig().get(configurationPath));
     }
 
     public List<String> getStringList() {
-        return instance.getConfig().getStringList(configurationPath);
+        return instance.getConfigTextFile().getConfig().getStringList(configurationPath);
     }
 }

@@ -6,7 +6,7 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 
 @RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
@@ -27,6 +27,6 @@ public class ReloadSubCommand implements SubCommand {
         fallbackServerVelocity.getConfigTextFile().reload();
         fallbackServerVelocity.getMessagesTextFile().reload();
 
-        VelocityMessages.RELOAD.send(commandSource, new PlaceHolder("prefix", VelocityMessages.PREFIX.color()));
+        VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
     }
 }

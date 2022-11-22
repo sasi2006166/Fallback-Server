@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.utils;
 
+import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
@@ -49,8 +50,22 @@ public class VelocityUtils {
         });
     }
 
+    public String getDots(int s) {
+        switch (s % 4) {
+            case 0:
+            default:
+                return "";
+            case 1:
+                return ".";
+            case 2:
+                return "..";
+            case 3:
+                return "...";
+        }
+    }
+
     public boolean checkMessage(String message, List<String> stringList) {
-        List<String> list = new ArrayList<>();
+        List<String> list = Lists.newArrayList();
 
         for (String s : stringList) {
             String toLowerCase = s.toLowerCase();

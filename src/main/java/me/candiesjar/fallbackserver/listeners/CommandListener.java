@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.VelocityUtils;
 
 import java.util.List;
@@ -24,15 +24,15 @@ public class CommandListener {
             return;
         }
 
-        final Player player = (Player) event.getCommandSource();
-        final Optional<ServerConnection> serverConnectionOptional = player.getCurrentServer();
+        Player player = (Player) event.getCommandSource();
+        Optional<ServerConnection> serverConnectionOptional = player.getCurrentServer();
 
-        if (!serverConnectionOptional.isPresent()) {
+        if (serverConnectionOptional.isEmpty()) {
             return;
         }
 
-        final ServerConnection serverConnection = serverConnectionOptional.get();
-        final String serverName = serverConnection.getServerInfo().getName();
+        ServerConnection serverConnection = serverConnectionOptional.get();
+        String serverName = serverConnection.getServerInfo().getName();
         String command = event.getCommand();
 
         if (player.hasPermission(VelocityConfig.ADMIN_PERMISSION.get(String.class))) {
@@ -44,12 +44,12 @@ public class CommandListener {
             command = args[0];
         }
 
-        final List<String> blockedCommands = fallbackServerVelocity.getConfig().getStringList("settings.disabled_servers_list." + serverName);
-        final boolean isBlacklistedCommand = VelocityUtils.checkMessage(command, blockedCommands);
+        List<String> blockedCommands = fallbackServerVelocity.getConfigTextFile().getConfig().getStringList("settings.command_blocker_list." + serverName);
+        boolean isBlacklistedCommand = VelocityUtils.checkMessage(command, blockedCommands);
 
         if (isBlacklistedCommand) {
             event.setResult(CommandExecuteEvent.CommandResult.denied());
-            VelocityMessages.BLOCKED_COMMAND.send(player, new PlaceHolder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.BLOCKED_COMMAND.send(player, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
         }
     }
 }

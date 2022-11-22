@@ -9,6 +9,7 @@
 #             ░  ░    ░  ░    ░  ░ ░            ░  ░░ ░      ░  ░            ░     ░  ░   ░           ░     ░  ░   ░
 #                                       ░           ░                                                ░
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
+# Velocity configuration file
 
 MESSAGES:
   prefix: "&7&lF&b&lS &8&l» "
@@ -72,9 +73,9 @@ TITLES: # Everything in seconds.
 
   lobby:
     enabled: true
-    delay: 1
     fade_in: 1
     fade_out: 1
     stay: 3
+    delay: 1
     lobby_title: "&a&lConnected to lobby."
     lobby_sub_title: "&7Welcome back!"

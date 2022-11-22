@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.VelocityUtils;
 import net.kyori.adventure.text.Component;
 
@@ -16,8 +16,9 @@ public class PlayerListener {
 
     @Subscribe
     public void onPlayerJoin(ServerConnectedEvent event) {
-        final Player player = event.getPlayer();
-        final String adminPermission = VelocityConfig.ADMIN_PERMISSION.get(String.class);
+
+        Player player = event.getPlayer();
+        String adminPermission = VelocityConfig.ADMIN_PERMISSION.get(String.class);
 
         if (!player.hasPermission(adminPermission)) {
             return;
@@ -38,8 +39,8 @@ public class PlayerListener {
 
             if (newUpdate != null && newUpdate) {
                 VelocityMessages.NEW_UPDATE.sendList(player,
-                        new PlaceHolder("old_version", FallbackServerVelocity.VERSION),
-                        new PlaceHolder("new_version", VelocityUtils.getRemoteVersion()));
+                        new Placeholder("old_version", FallbackServerVelocity.VERSION),
+                        new Placeholder("new_version", VelocityUtils.getRemoteVersion()));
             }
         });
     }

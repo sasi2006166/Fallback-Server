@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.commands.base;
 
+import com.google.common.collect.Lists;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
@@ -7,12 +8,9 @@ import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.text.PlaceHolder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class FallbackVelocityCommand implements SimpleCommand {
     private final FallbackServerVelocity fallbackServerVelocity;
@@ -27,13 +25,13 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
     @Override
     public void execute(Invocation invocation) {
-        final CommandSource commandSource = invocation.source();
-        final String[] args = invocation.arguments();
+        CommandSource commandSource = invocation.source();
+        String[] args = invocation.arguments();
 
-        final String adminPermission = VelocityConfig.ADMIN_PERMISSION.get(String.class);
-        final boolean commandWithoutPermission = VelocityConfig.COMMAND_WITHOUT_PERMISSION.get(Boolean.class);
+        String adminPermission = VelocityConfig.ADMIN_PERMISSION.get(String.class);
+        boolean commandWithoutPermission = VelocityConfig.HIDE_COMMAND.get(Boolean.class);
 
-        if (!commandSource.hasPermission(adminPermission) && !commandWithoutPermission) {
+        if (!commandSource.hasPermission(adminPermission) && commandWithoutPermission) {
             return;
         }
 
@@ -44,16 +42,16 @@ public class FallbackVelocityCommand implements SimpleCommand {
         }
 
         if (args.length == 0) {
-            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new PlaceHolder("version", fallbackServerVelocity.getVersion()));
+            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new Placeholder("version", fallbackServerVelocity.getVersion()));
             return;
         }
 
         if (!subCommands.containsKey(args[0].toLowerCase())) {
-            VelocityMessages.PARAMETERS.send(commandSource, new PlaceHolder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.PARAMETERS.send(commandSource, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
             return;
         }
 
-        final SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
 
         if (!subCommand.isEnabled()) {
             return;
@@ -61,8 +59,8 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
         if (!commandSource.hasPermission(subCommand.getPermission())) {
             VelocityMessages.NO_PERMISSION.send(commandSource,
-                    new PlaceHolder("prefix", VelocityMessages.PREFIX.color()),
-                    new PlaceHolder("permission", subCommand.getPermission()));
+                    new Placeholder("prefix", VelocityMessages.PREFIX.color()),
+                    new Placeholder("permission", subCommand.getPermission()));
             return;
         }
 
@@ -89,7 +87,7 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
             case 0:
             case 1:
-                List<String> completion = new ArrayList<>(subCommands.keySet());
+                LinkedList<String> completion = Lists.newLinkedList(subCommands.keySet());
                 Collections.sort(completion);
                 return completion;
 
