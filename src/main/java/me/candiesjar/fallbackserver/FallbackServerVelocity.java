@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class FallbackServerVelocity {
 
+    @Getter
     public static final String VERSION = "3.1.3-Alpha1";
 
     private final ProxyServer server;
@@ -75,6 +76,8 @@ public class FallbackServerVelocity {
     private boolean useMaintenance = false;
 
     private FallingServerManager fallingServerManager;
+
+    private boolean useLimbo = false;
 
     @Inject
     public FallbackServerVelocity(ProxyServer server, Logger logger, VelocityMetrics.Factory metricsFactory, @DataDirectory Path path) {
@@ -111,8 +114,6 @@ public class FallbackServerVelocity {
         loadStats(metricsFactory);
 
         loadTask();
-
-        WorldUtil.createWorld();
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
         checkAlpha();
@@ -154,6 +155,11 @@ public class FallbackServerVelocity {
             useMaintenance = true;
         }
 
+        if (getServer().getPluginManager().getPlugin("limboapi").isPresent()) {
+            getLogger().info("§7[§b!§7] Enabling LimboAPI §7[§b!§7]");
+            useLimbo = true;
+        }
+
     }
 
     private void loadConfiguration() {
@@ -172,7 +178,7 @@ public class FallbackServerVelocity {
 
     private void checkAlpha() {
 
-        if (getVersion().contains("Alpha")) {
+        if (getVERSION().contains("Alpha")) {
             isAlpha = true;
             getLogger().info(" ");
             getLogger().info("§7You're running an §c§lALPHA VERSION §7of Fallback Server.");
@@ -225,7 +231,6 @@ public class FallbackServerVelocity {
                     .build();
 
             server.getCommandManager().register(commandMeta, new HubCommand(this));
-
         }
     }
 
@@ -241,8 +246,21 @@ public class FallbackServerVelocity {
                 getLogger().info("§7[§b!§7] Using default method §7[§b!§7]");
                 break;
             case "RECONNECT":
+                getLogger().info("§7[§b!§7] Trying reconnect method §7[§b!§7]");
+
+                if (!useLimbo) {
+                    getLogger().error("" +
+                            "LimboAPI is missing from your plugins folder, for enabling " +
+                            "reconnect method you need to install LimboAPI." +
+                            "You can download it from https://www.spigotmc.org/resources/limboapi.95748/" +
+                            "Using default method instead.");
+                    server.getEventManager().register(this, new FallbackListener(this));
+                    return;
+                }
+
+                WorldUtil.createWorld();
                 server.getEventManager().register(this, new ReconnectListener());
-                getLogger().info("§7[§b!§7] Using reconnect method §7[§b!§7]");
+                getLogger().info("§7[§b!§7] Enabled reconnect method §7[§b!§7]");
                 break;
             default:
                 getLogger().error("Configuration error under fallback_mode: " + VelocityConfig.FALLBACK_MODE.get(String.class));
@@ -266,11 +284,10 @@ public class FallbackServerVelocity {
 
     public void cancelReconnect(UUID uuid) {
         FallbackLimboHandler limbo = PlayerCacheManager.getInstance().remove(uuid);
-        if (limbo != null && getServer().getPlayer(uuid).isPresent()) {
+        if (limbo != null) {
             limbo.getReconnectTask().cancel();
             limbo.getTitleTask().cancel();
             limbo.clear();
-            getLogger().info("Eliminata limbo per " + getServer().getPlayer(uuid));
         }
     }
 
@@ -283,10 +300,6 @@ public class FallbackServerVelocity {
         }
 
         return list.contains(serverName.toLowerCase());
-    }
-
-    public String getVersion() {
-        return VERSION;
     }
 
 }

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,7 +22,6 @@ public class VelocityUtils {
     public CompletableFuture<Boolean> getUpdates() {
 
         if (instance.isAlpha()) {
-
             return CompletableFuture.supplyAsync(() -> {
                 instance.getLogger().info("§7Updater is disabled in alpha version(s).");
                 instance.getLogger().info(" ");

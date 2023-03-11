@@ -8,7 +8,6 @@ import net.elytrium.limboapi.api.Limbo;
 import net.elytrium.limboapi.api.LimboFactory;
 import net.elytrium.limboapi.api.chunk.Dimension;
 import net.elytrium.limboapi.api.chunk.VirtualWorld;
-import net.elytrium.limboapi.api.player.GameMode;
 
 @UtilityClass
 public class WorldUtil {
@@ -24,14 +23,14 @@ public class WorldUtil {
         VirtualWorld world = factory.createVirtualWorld(
                 Dimension.valueOf("OVERWORLD"),
                 0, 0, 0,
-                (float) 0, (float) 0
+                (float) 90, (float) 90
         );
 
         fallbackWorld = factory.createLimbo(world)
                 .setName("FallbackLimbo")
-                .setWorldTime(20L)
-                .setShouldRespawn(true)
-                .setGameMode(GameMode.ADVENTURE);
+                .setWorldTime(6000)
+                .setShouldRejoin(false)
+                .setShouldRespawn(false);
     }
 
 }

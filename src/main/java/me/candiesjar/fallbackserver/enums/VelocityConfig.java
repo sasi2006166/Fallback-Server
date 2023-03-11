@@ -5,7 +5,7 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import java.util.List;
 
 public enum VelocityConfig {
-    TAB_COMPLETION("settings.command_tab_complete"),
+    TAB_COMPLETE("settings.command_tab_complete"),
     HIDE_COMMAND("settings.hide_command"),
     FALLBACK_MODE("settings.fallback_mode"),
     DEBUG_MODE("settings.debug"),

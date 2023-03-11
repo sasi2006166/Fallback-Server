@@ -1,6 +1,8 @@
 package me.candiesjar.fallbackserver.listeners;
 
 import com.google.common.collect.Lists;
+import com.velocitypowered.api.event.Continuation;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -31,14 +33,14 @@ public class FallbackListener {
         this.fallingServerManager = fallbackServerVelocity.getFallingServerManager();
     }
 
-    @Subscribe
-    public void onPlayerKick(KickedFromServerEvent event) {
+    @Subscribe(order = PostOrder.EARLY)
+    public void onPlayerKick(KickedFromServerEvent event, Continuation continuation) {
 
         Player player = event.getPlayer();
         RegisteredServer kickedFrom = event.getServer();
         String serverName = kickedFrom.getServerInfo().getName();
 
-        if (!player.isActive() || event.kickedDuringServerConnect()) {
+        if (event.kickedDuringServerConnect()) {
             return;
         }
 
@@ -76,7 +78,7 @@ public class FallbackListener {
         LinkedList<RegisteredServer> lobbies = Lists.newLinkedList(fallingServerManager.getAll());
 
         if (lobbies.size() == 0) {
-            if (!kickReasonString.isEmpty()) {
+            if (kickReasonString.isEmpty()) {
                 String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", VelocityMessages.PREFIX.color());
                 player.disconnect(Component.text(ChatUtil.color(disconnectMessage)));
             }
@@ -88,6 +90,8 @@ public class FallbackListener {
 
         RegisteredServer registeredServer = lobbies.get(0);
 
+        System.out.println("RegisteredServer: " + registeredServer);
+
         isMaintenance = ServerUtils.isMaintenance(registeredServer);
 
         if (isMaintenance) {
@@ -95,7 +99,7 @@ public class FallbackListener {
             return;
         }
 
-        event.setResult(KickedFromServerEvent.RedirectPlayer.create(registeredServer));
+        player.createConnectionRequest(registeredServer).fireAndForget();
 
         VelocityMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", registeredServer.getServerInfo().getName()),

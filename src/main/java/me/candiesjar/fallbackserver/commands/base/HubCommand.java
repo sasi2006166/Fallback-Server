@@ -34,7 +34,7 @@ public class HubCommand implements SimpleCommand {
         Player player = (Player) commandSource;
         Optional<ServerConnection> serverConnectionOptional = player.getCurrentServer();
 
-        if (!serverConnectionOptional.isPresent()) {
+        if (serverConnectionOptional.isEmpty()) {
             return;
         }
 

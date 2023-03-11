@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserver.handler;
 import com.google.common.collect.Lists;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import lombok.Getter;
@@ -19,6 +20,7 @@ import net.elytrium.limboapi.api.player.LimboPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -55,9 +57,12 @@ public class FallbackLimboHandler implements LimboSessionHandler {
 
         AtomicInteger tries = new AtomicInteger(0);
 
+        PingOptions.Builder options = PingOptions.builder();
+        options.timeout(Duration.ofSeconds(1));
+
         reconnectTask = instance.getServer().getScheduler().buildTask(instance, () -> {
 
-            System.out.println("Connessione in corso per " + player.getUsername());
+            System.out.println("Reconnecting " + player.getUsername() + " to " + target.getServerInfo().getName());
 
             Optional<ServerConnection> connection = player.getCurrentServer();
 
@@ -90,7 +95,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
                 return;
             }
 
-            target.ping().whenComplete((result, error) -> {
+            target.ping(options.build()).whenComplete((result, error) -> {
                 if (error != null || result == null) {
                     tries.getAndIncrement();
                     return;

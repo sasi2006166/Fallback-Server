@@ -33,6 +33,12 @@ settings:
   # IMPORTANT: This option requires a proxy reboot.
   fallback_mode: DEFAULT
 
+  # Add here fallback lobbies, also used for /hub command.
+  fallback_list:
+    - lobby1
+    - lobby2
+    - lobby3
+
   # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
   # Customize things like delays and title mode, everything in seconds.
   auto_reconnect:
@@ -107,12 +113,6 @@ settings:
     - "ban"
     - "whitelist"
     - "full"
-
-  # Add here fallback lobbies, also used for /hub command.
-  fallback_list:
-    - lobby1
-    - lobby2
-    - lobby3
 
   # WARNING: Requires proxy reboot.
   # If you want to use the /lobby command.

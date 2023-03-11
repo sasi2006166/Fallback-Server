@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.utils.tasks;
 
+import com.google.common.collect.Lists;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
@@ -32,7 +33,7 @@ public class LobbyTask implements Runnable {
     public void run() {
         fallingServerManager.clearCache();
 
-        List<RegisteredServer> servers = new ArrayList<>();
+        List<RegisteredServer> servers = Lists.newArrayList();
         List<String> allowedServers = getAllowedServers();
 
         for (RegisteredServer server : FallbackServerVelocity.getInstance().getServer().getAllServers()) {
@@ -61,7 +62,7 @@ public class LobbyTask implements Runnable {
 
             Optional<ServerPing.Players> playersOptional = result.getPlayers();
 
-            if (!playersOptional.isPresent()) {
+            if (playersOptional.isEmpty()) {
                 return;
             }
 
