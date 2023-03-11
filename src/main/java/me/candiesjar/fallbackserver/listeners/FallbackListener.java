@@ -8,6 +8,7 @@ import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
+import me.candiesjar.fallbackserver.utils.ServerUtils;
 import me.candiesjar.fallbackserver.utils.TitleUtil;
 import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
@@ -61,6 +62,12 @@ public class FallbackListener implements Listener {
             return;
         }
 
+        boolean isMaintenance = ServerUtils.checkMaintenance(kickedFrom);
+
+        if (isMaintenance) {
+            return;
+        }
+
         event.setCancelled(true);
 
         Map<ServerInfo, FallingServer> clonedMap = Maps.newHashMap(FallingServer.getServers());
@@ -81,6 +88,13 @@ public class FallbackListener implements Listener {
         lobbies.sort(Comparator.reverseOrder());
 
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+
+        isMaintenance = ServerUtils.checkMaintenance(serverInfo);
+
+        if (isMaintenance) {
+            player.disconnect(new TextComponent(BaseComponent.toLegacyText(event.getKickReasonComponent())));
+            return;
+        }
 
         event.setCancelServer(serverInfo);
 

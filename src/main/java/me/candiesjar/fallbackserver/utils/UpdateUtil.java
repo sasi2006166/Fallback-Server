@@ -9,13 +9,15 @@ public class UpdateUtil {
 
     public void checkUpdates() {
 
-        if (FallbackServerBungee.getInstance().isAlpha()) {
-            FallbackServerBungee.getInstance().getLogger().info("§7Updater is disabled in alpha version(s).");
-            FallbackServerBungee.getInstance().getLogger().info(" ");
+        boolean isAlpha = FallbackServerBungee.getInstance().isAlpha();
+
+        if (isAlpha) {
             return;
         }
 
-        if (BungeeConfig.UPDATER.getBoolean()) {
+        boolean updater = BungeeConfig.UPDATER.getBoolean();
+
+        if (updater) {
             Utils.checkUpdates();
         }
 

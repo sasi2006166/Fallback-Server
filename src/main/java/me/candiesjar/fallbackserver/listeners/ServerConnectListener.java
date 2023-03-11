@@ -1,17 +1,16 @@
 package me.candiesjar.fallbackserver.listeners;
 
-import eu.kennytv.maintenance.api.MaintenanceProvider;
-import eu.kennytv.maintenance.api.proxy.MaintenanceProxy;
-import eu.kennytv.maintenance.api.proxy.Server;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import us.ajg0702.queue.api.AjQueueAPI;
 import us.ajg0702.queue.api.QueueManager;
 import us.ajg0702.queue.api.players.AdaptedPlayer;
+import us.ajg0702.queue.api.queues.QueueServer;
 
 public class ServerConnectListener implements Listener {
 
@@ -21,7 +20,7 @@ public class ServerConnectListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerSwitch(ServerConnectEvent event) {
 
         ProxiedPlayer player = event.getPlayer();
@@ -32,27 +31,17 @@ public class ServerConnectListener implements Listener {
         if (useAjQueue) {
             AdaptedPlayer adaptedPlayer = AjQueueAPI.getInstance().getPlatformMethods().getPlayer(player.getName());
             QueueManager queueManager = AjQueueAPI.getInstance().getQueueManager();
+            QueueServer queueServer = queueManager.findServer(target.getName());
 
-            
-
-
-
-        }
-
-        boolean useMaintenance = plugin.isUseMaintenance();
-
-        if (useMaintenance) {
-            MaintenanceProxy api = (MaintenanceProxy) MaintenanceProvider.get();
-            Server server = api.getServer(target.getName());
-
-            boolean isMaintenance = api.isMaintenance(server);
-
-            if (isMaintenance) {
+            if (!queueServer.canAccess(adaptedPlayer)) {
+                System.out.println("Server in queue");
                 event.setCancelled(true);
-
+                return;
             }
         }
 
     }
 
 }
+
+

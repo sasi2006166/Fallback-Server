@@ -31,17 +31,16 @@ public class UpdateSubCommand implements SubCommand {
             return;
         }
 
-        final String PLUGIN_VERSION = Utils.getRemoteVersion();
-        final String PLUGIN_NAME = "FallbackServer-" + PLUGIN_VERSION + ".jar";
-        final String OLD_JAR_NAME = "FallbackServer-" + instance.getVersion() + ".jar";
-        final String UPDATE_URL = "https://github.com/sasi2006166/Fallback-Server/releases/download/" + PLUGIN_VERSION + "/" + PLUGIN_NAME;
+        String PLUGIN_VERSION = Utils.getRemoteVersion();
+        String REMOTE_NAME = "FallbackServer-" + PLUGIN_VERSION + ".jar";
+        String OLD_JAR_NAME = "FallbackServer-" + instance.getVersion() + ".jar";
+        String UPDATE_URL = "https://github.com/sasi2006166/Fallback-Server/releases/download/" + PLUGIN_VERSION + "/" + REMOTE_NAME;
 
         sender.sendMessage(new TextComponent("Update started..."));
 
-        FileUtils.downloadFile(UPDATE_URL, PLUGIN_NAME, ProxyServer.getInstance().getPluginsFolder());
+        FileUtils.downloadFile(UPDATE_URL, ProxyServer.getInstance().getPluginsFolder().getName());
 
-        FileUtils.deleteFile(OLD_JAR_NAME, ProxyServer.getInstance().getPluginsFolder());
-        sender.sendMessage(new TextComponent("Deleted " + OLD_JAR_NAME));
+        FallbackServerBungee.getInstance().setNeedsUpdate(true);
 
         sender.sendMessage(new TextComponent("update finished.."));
 

@@ -1,34 +1,18 @@
 package me.candiesjar.fallbackserver.listeners;
 
-import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.cache.PlayerCache;
+import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.utils.TitleUtil;
+import me.candiesjar.fallbackserver.utils.ServerUtils;
 import me.candiesjar.fallbackserver.utils.tasks.ReconnectTask;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.util.concurrent.TimeUnit;
-
 public class ReconnectListener implements Listener {
-
-    private int dots = 0;
-
-    private ScheduledTask titleTask;
-
-    private final FallbackServerBungee plugin;
-
-    public ReconnectListener(FallbackServerBungee plugin) {
-        this.plugin = plugin;
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerKick(ServerKickEvent event) {
@@ -36,6 +20,10 @@ public class ReconnectListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         ServerInfo kickedFrom = event.getKickedFrom();
+
+        if (!player.isConnected()) {
+            return;
+        }
 
         for (String word : BungeeConfig.IGNORED_REASONS.getStringList()) {
 
@@ -55,37 +43,23 @@ public class ReconnectListener implements Listener {
             return;
         }
 
+        boolean isMaintenance = ServerUtils.checkMaintenance(kickedFrom);
+
+        if (isMaintenance) {
+            return;
+        }
+
         event.setCancelled(true);
 
-        ReconnectTask task = PlayerCache.getReconnectMap().get(player.getUniqueId());
+        event.setCancelServer(kickedFrom);
+
+        ReconnectTask task = PlayerCacheManager.getInstance().get(player.getUniqueId());
 
         if (task == null) {
-            PlayerCache.getReconnectMap().put(player.getUniqueId(), task = new ReconnectTask(player, kickedFrom, player.getUniqueId()));
+            PlayerCacheManager.getInstance().put(player.getUniqueId(), task = new ReconnectTask(player, kickedFrom, player.getUniqueId()));
         }
 
         task.reconnect();
-
-    }
-
-    private void refreshTitle(ProxiedPlayer player) {
-
-        titleTask = ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
-
-            dots++;
-
-            if (dots == 4) {
-                dots = 0;
-            }
-
-            TitleUtil.sendReconnectingTitle(0,
-                    1 + 20,
-                    dots,
-                    BungeeMessages.RECONNECT_TITLE,
-                    BungeeMessages.RECONNECT_SUB_TITLE,
-                    player);
-
-
-        }, 0, 1, TimeUnit.SECONDS);
 
     }
 

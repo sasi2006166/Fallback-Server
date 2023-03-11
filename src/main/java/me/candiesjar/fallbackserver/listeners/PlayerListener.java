@@ -22,6 +22,10 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        if (!event.getReason().equals(ServerConnectEvent.Reason.JOIN_PROXY)) {
+            return;
+        }
+
         if (FallbackServerBungee.getInstance().isAlpha()) {
             player.sendMessage(new TextComponent(" "));
             player.sendMessage(new TextComponent("§7You're running an §c§lALPHA VERSION §7of Fallback Server."));

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.DebugSubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.LanguageSubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.UpdateSubCommand;
@@ -31,6 +32,7 @@ public class SubCommandManager extends Command implements TabExecutor {
 
         subCommands.put("reload", new ReloadSubCommand());
         subCommands.put("update", new UpdateSubCommand());
+        subCommands.put("debug", new DebugSubCommand(plugin));
         subCommands.put("language", new LanguageSubCommand());
 
     }
@@ -38,7 +40,7 @@ public class SubCommandManager extends Command implements TabExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
 
-        if (!BungeeConfig.HIDE_COMMAND.getBoolean() && !sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
+        if (BungeeConfig.HIDE_COMMAND.getBoolean() && !sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
             return;
         }
 

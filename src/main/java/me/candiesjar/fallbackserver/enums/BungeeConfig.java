@@ -9,6 +9,7 @@ public enum BungeeConfig {
     TAB_COMPLETION("settings.command_tab_complete"),
     HIDE_COMMAND("settings.hide_command"),
     FALLBACK_MODE("settings.fallback_mode"),
+    DEBUG_MODE("settings.debug"),
 
     RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),

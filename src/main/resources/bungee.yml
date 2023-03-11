@@ -9,6 +9,7 @@
 #             ░  ░    ░  ░    ░  ░ ░            ░  ░░ ░      ░  ░            ░     ░  ░   ░           ░     ░  ░   ░
 #                                       ░           ░                                                ░
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
+# BungeeCord configuration file
 
 name: FallBackServer
 version: ${project.version}

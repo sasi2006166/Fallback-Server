@@ -26,10 +26,14 @@ public class ReconnectTask {
     private final ProxiedPlayer player;
     private final ServerInfo target;
     private final UUID uuid;
+
     private final FallbackServerBungee instance = FallbackServerBungee.getInstance();
 
     @Getter
-    private ScheduledTask task;
+    private ScheduledTask reconnectTask;
+
+    @Getter
+    private ScheduledTask titleTask;
 
     public ReconnectTask(ProxiedPlayer player, ServerInfo target, UUID uuid) {
         this.player = player;
@@ -39,35 +43,18 @@ public class ReconnectTask {
 
     public void reconnect() {
 
-        task = ProxyServer.getInstance().getScheduler().schedule(FallbackServerBungee.getInstance(), () -> {
+        sendTitle(player);
+
+        AtomicInteger tries = new AtomicInteger(0);
+
+        reconnectTask = instance.getProxy().getScheduler().schedule(instance, () -> {
 
             System.out.println("Connessione in corso.. per " + player.getName());
-
-            AtomicInteger tries = new AtomicInteger(0);
-            int dots = 0;
-
-            dots++;
-
-            if (dots == 4) {
-                dots = 0;
-            }
 
             if (!player.isConnected()) {
                 instance.cancelReconnect(uuid);
                 return;
             }
-
-            if (player.getServer().getInfo().equals(target)) {
-                instance.cancelReconnect(uuid);
-                return;
-            }
-
-            TitleUtil.sendReconnectingTitle(0,
-                    1 + 20,
-                    dots,
-                    BungeeMessages.RECONNECT_TITLE,
-                    BungeeMessages.RECONNECT_SUB_TITLE,
-                    player);
 
             if (tries.get() == BungeeConfig.RECONNECT_TRIES.getInt()) {
                 BungeeMessages.CONNECTION_FAILED.send(player,
@@ -105,24 +92,39 @@ public class ReconnectTask {
 
             target.ping((result, error) -> {
 
-                if (error != null) {
+                if (error != null || result == null) {
                     tries.getAndIncrement();
                     return;
                 }
 
                 player.connect(target);
                 instance.cancelReconnect(uuid);
-                tries.set(0);
 
             });
 
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 0, BungeeConfig.RECONNECT_DELAY.getInt(), TimeUnit.SECONDS);
 
+    }
+
+    private void sendTitle(ProxiedPlayer player) {
+        AtomicInteger dots = new AtomicInteger(0);
+
+        titleTask = instance.getProxy().getScheduler().schedule(instance, () -> {
+
+            if (dots.getAndIncrement() == 4) {
+                dots.set(0);
+            }
+
+            TitleUtil.sendReconnectingTitle(0, 1 + 20, dots.get(), BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE, player);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void clear() {
 
-        task.cancel();
+        ProxyServer.getInstance().createTitle()
+                .reset()
+                .clear()
+                .send(player);
 
     }
 

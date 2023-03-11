@@ -70,11 +70,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.waterfallmc</groupId>
-            <artifactId>waterfall-proxy</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>us.ajg0702.queue.api</groupId>
             <artifactId>api</artifactId>
             <version>2.2.8</version>
