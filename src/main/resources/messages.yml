@@ -13,13 +13,13 @@
 
 MESSAGES:
   prefix: "&7&lF&b&lS &8&l» "
-  correct_syntax: "%prefix% &cCorrect syntax: /fs <reload:set:add>"
-  reload_message: "%prefix% &7Configuration reloaded &bsuccessfully&7!"
+  syntax: "%prefix% &cCorrect syntax: /fs <reload:set:add>"
+  no_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
+  reloaded: "%prefix% &7Configuration reloaded &bsuccessfully&7!"
   only_player: "%prefix% &cOnly players must execute this command."
   already_in_hub: "%prefix% &cYou're already in hub!"
-  connecting_to_hub: "&7You've been moved to &b%server%"
+  moved: "&7You've been moved to &b%server%"
   disabled_command: "%prefix% &cSorry, this command is disabled."
-  missing_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
   no_server: "%prefix% &cNo lobby available as fallback."
   empty_server: "%prefix% &7Please, &cspecify &7a server."
   server_is_added: "%prefix% &b%server% &7is already into Fallback Server's list."

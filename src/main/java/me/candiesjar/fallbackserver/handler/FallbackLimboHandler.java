@@ -22,7 +22,7 @@ import net.kyori.adventure.title.Title;
 
 import java.time.Duration;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -58,18 +58,13 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         AtomicInteger tries = new AtomicInteger(0);
 
         PingOptions.Builder options = PingOptions.builder();
-        options.timeout(Duration.ofSeconds(1));
+        options.timeout(Duration.ofMillis(VelocityConfig.RECONNECT_PING_TIMEOUT.get(Integer.class)));
 
         reconnectTask = instance.getServer().getScheduler().buildTask(instance, () -> {
 
             System.out.println("Reconnecting " + player.getUsername() + " to " + target.getServerInfo().getName());
 
             Optional<ServerConnection> connection = player.getCurrentServer();
-
-            if (!player.isActive()) {
-                instance.cancelReconnect(uuid);
-                return;
-            }
 
             if (connection.isPresent()) {
                 RegisteredServer registeredServer = connection.get().getServer();
@@ -123,7 +118,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
     }
 
     private void handleFallback(LimboPlayer limboPlayer) {
-        LinkedList<RegisteredServer> lobbies = Lists.newLinkedList(fallingServerManager.getAll());
+        List<RegisteredServer> lobbies = Lists.newArrayList(fallingServerManager.getAll());
 
         if (lobbies.size() == 0) {
             limboPlayer.getProxyPlayer().disconnect(Component.text(ChatUtil.getFormattedString(VelocityMessages.NO_SERVER, new Placeholder("prefix", VelocityMessages.PREFIX.get(String.class)))));

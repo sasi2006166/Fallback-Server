@@ -20,7 +20,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +33,7 @@ public class FallbackListener {
         this.fallingServerManager = fallbackServerVelocity.getFallingServerManager();
     }
 
-    @Subscribe(order = PostOrder.EARLY)
+    @Subscribe(order = PostOrder.FIRST)
     public void onPlayerKick(KickedFromServerEvent event, Continuation continuation) {
 
         Player player = event.getPlayer();
@@ -41,12 +41,6 @@ public class FallbackListener {
         String serverName = kickedFrom.getServerInfo().getName();
 
         if (event.kickedDuringServerConnect()) {
-            return;
-        }
-
-        boolean isMaintenance = ServerUtils.isMaintenance(kickedFrom);
-
-        if (isMaintenance) {
             return;
         }
 
@@ -75,11 +69,11 @@ public class FallbackListener {
 
         fallingServerManager.remove(serverName);
 
-        LinkedList<RegisteredServer> lobbies = Lists.newLinkedList(fallingServerManager.getAll());
+        List<RegisteredServer> lobbies = Lists.newArrayList(fallingServerManager.getAll());
 
         if (lobbies.size() == 0) {
             if (kickReasonString.isEmpty()) {
-                String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", VelocityMessages.PREFIX.color());
+                String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", ChatUtil.getFormattedString(VelocityMessages.PREFIX));
                 player.disconnect(Component.text(ChatUtil.color(disconnectMessage)));
             }
             player.disconnect(Component.text(ChatUtil.color(kickReasonString)));
@@ -90,16 +84,14 @@ public class FallbackListener {
 
         RegisteredServer registeredServer = lobbies.get(0);
 
-        System.out.println("RegisteredServer: " + registeredServer);
-
-        isMaintenance = ServerUtils.isMaintenance(registeredServer);
+        boolean isMaintenance = ServerUtils.isMaintenance(registeredServer);
 
         if (isMaintenance) {
             player.disconnect(Component.text(ChatUtil.color(kickReasonString)));
             return;
         }
 
-        player.createConnectionRequest(registeredServer).fireAndForget();
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(registeredServer));
 
         VelocityMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", registeredServer.getServerInfo().getName()),
@@ -119,6 +111,7 @@ public class FallbackListener {
         fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> fallbackServerVelocity.getServer().getEventManager().fire(new VelocityAPI(player, kickedFrom, registeredServer, kickReasonString)));
 
     }
+
 
     private boolean shouldUseBlacklistedServer(String serverName) {
         return VelocityConfig.USE_BLACKLISTED_SERVERS.get(Boolean.class) && VelocityConfig.BLACKLISTED_SERVERS_LIST.getStringList().contains(serverName);

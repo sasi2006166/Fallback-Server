@@ -10,6 +10,7 @@ import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.VelocityUtils;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,12 +45,12 @@ public class CommandListener {
             command = args[0];
         }
 
-        List<String> blockedCommands = fallbackServerVelocity.getConfigTextFile().getConfig().getStringList("settings.command_blocker_list." + serverName);
+        List<String> blockedCommands = fallbackServerVelocity.getConfig().getConfig().getStringList("settings.command_blocker_list." + serverName);
         boolean isBlacklistedCommand = VelocityUtils.checkMessage(command, blockedCommands);
 
         if (isBlacklistedCommand) {
             event.setResult(CommandExecuteEvent.CommandResult.denied());
-            VelocityMessages.BLOCKED_COMMAND.send(player, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.BLOCKED_COMMAND.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
         }
     }
 }

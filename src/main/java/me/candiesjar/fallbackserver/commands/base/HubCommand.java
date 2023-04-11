@@ -27,7 +27,7 @@ public class HubCommand implements SimpleCommand {
         CommandSource commandSource = invocation.source();
 
         if (!(commandSource instanceof Player)) {
-            VelocityMessages.PLAYER_ONLY.send(commandSource, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.PLAYER_ONLY.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
@@ -42,14 +42,14 @@ public class HubCommand implements SimpleCommand {
         String serverName = serverConnection.getServerInfo().getName();
 
         if (fallbackServerVelocity.isHub(serverName)) {
-            VelocityMessages.ALREADY_IN_LOBBY.send(player, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.ALREADY_IN_LOBBY.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
         LinkedList<RegisteredServer> lobbies = Lists.newLinkedList(fallbackServerVelocity.getFallingServerManager().getAll());
 
         if (lobbies.size() == 0) {
-            VelocityMessages.NO_SERVER.send(player, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.NO_SERVER.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
@@ -64,7 +64,7 @@ public class HubCommand implements SimpleCommand {
         player.createConnectionRequest(server).fireAndForget();
 
         VelocityMessages.MOVED_TO_HUB.send(player,
-                new Placeholder("prefix", VelocityMessages.PREFIX.color()),
+                new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)),
                 new Placeholder("server", server.getServerInfo().getName())
         );
 

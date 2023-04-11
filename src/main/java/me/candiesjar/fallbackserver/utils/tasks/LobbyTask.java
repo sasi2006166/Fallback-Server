@@ -19,7 +19,7 @@ public class LobbyTask implements Runnable {
     private final FallingServerManager fallingServerManager;
 
     public List<String> getAllowedServers() {
-        List<String> allowedServers = new ArrayList<>();
+        List<String> allowedServers = Lists.newArrayList();
 
         for (String serverName : VelocityConfig.LOBBIES_LIST.getStringList()) {
             String toLowerCase = serverName.toLowerCase();

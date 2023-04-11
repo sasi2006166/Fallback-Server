@@ -49,9 +49,8 @@ settings:
     # Don't put values under 1, they will NOT work.
     ping_delay: 5
 
-    # This option will kick player(s) if the reconnect task fails.
-    # I don't recommend using this if you don't want to lose players.
-    disconnect: false
+    # Time for time-outing the server on ping.
+    ping_timeout: 5000 # In Milliseconds
 
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.

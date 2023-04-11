@@ -10,8 +10,14 @@ import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
+import net.kyori.adventure.text.Component;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class FallbackVelocityCommand implements SimpleCommand {
 
@@ -34,8 +40,8 @@ public class FallbackVelocityCommand implements SimpleCommand {
         }
 
         if (!commandSource.hasPermission(adminPermission)) {
-            commandSource.sendMessage(VelocityMessages.color("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
-                    .replace("version", FallbackServerVelocity.getVERSION())));
+            commandSource.sendMessage(Component.text(ChatUtil.color("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
+                    .replace("version", FallbackServerVelocity.getVERSION()))));
             return;
         }
 
@@ -45,7 +51,7 @@ public class FallbackVelocityCommand implements SimpleCommand {
         }
 
         if (!subCommands.containsKey(args[0].toLowerCase())) {
-            VelocityMessages.PARAMETERS.send(commandSource, new Placeholder("prefix", VelocityMessages.PREFIX.color()));
+            VelocityMessages.CORRECT_SYNTAX.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
@@ -57,7 +63,7 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
         if (!commandSource.hasPermission(subCommand.getPermission())) {
             VelocityMessages.NO_PERMISSION.send(commandSource,
-                    new Placeholder("prefix", VelocityMessages.PREFIX.color()),
+                    new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)),
                     new Placeholder("permission", subCommand.getPermission()));
             return;
         }
@@ -67,29 +73,30 @@ public class FallbackVelocityCommand implements SimpleCommand {
     }
 
     @Override
-    public List<String> suggest(Invocation invocation) {
+    public CompletableFuture<List<String>> suggestAsync(Invocation invocation) {
+        return CompletableFuture.supplyAsync(() -> {
+            CommandSource commandSource = invocation.source();
 
-        CommandSource commandSource = invocation.source();
+            if (!commandSource.hasPermission(VelocityConfig.ADMIN_PERMISSION.get(String.class))) {
+                return Collections.emptyList();
+            }
 
-        if (!commandSource.hasPermission(VelocityConfig.ADMIN_PERMISSION.get(String.class))) {
+            if (!VelocityConfig.TAB_COMPLETE.get(Boolean.class)) {
+                return Collections.emptyList();
+            }
+
+            String[] args = invocation.arguments();
+
+            switch (args.length) {
+
+                case 0:
+                case 1:
+                    LinkedList<String> completion = Lists.newLinkedList(subCommands.keySet());
+                    Collections.sort(completion);
+                    return completion;
+
+            }
             return Collections.emptyList();
-        }
-
-        if (!VelocityConfig.TAB_COMPLETE.get(Boolean.class)) {
-            return Collections.emptyList();
-        }
-
-        String[] args = invocation.arguments();
-
-        switch (args.length) {
-
-            case 0:
-            case 1:
-                LinkedList<String> completion = Lists.newLinkedList(subCommands.keySet());
-                Collections.sort(completion);
-                return completion;
-
-        }
-        return Collections.emptyList();
+        });
     }
 }

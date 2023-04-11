@@ -1,18 +1,26 @@
 package me.candiesjar.fallbackserver.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
+import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.VelocityUtils;
 import net.kyori.adventure.text.Component;
 
+import java.util.UUID;
+
+
 @RequiredArgsConstructor
 public class PlayerListener {
+
+    private final FallbackServerVelocity fallbackServerVelocity;
 
     @Subscribe
     public void onPlayerJoin(ServerConnectedEvent event) {
@@ -24,17 +32,13 @@ public class PlayerListener {
             return;
         }
 
-        if (FallbackServerVelocity.getInstance().isAlpha()) {
-            player.sendMessage(Component.text(" "));
-            player.sendMessage(Component.text("§7You're running an §c§lALPHA VERSION §7of Fallback Server."));
-            player.sendMessage(Component.text("§7If you find any bugs, please report them on discord."));
-            player.sendMessage(Component.text(" "));
+        if (fallbackServerVelocity.isAlpha()) {
             return;
         }
 
         VelocityUtils.getUpdates().whenComplete((newUpdate, throwable) -> {
             if (throwable != null) {
-                throwable.printStackTrace();
+                return;
             }
 
             if (newUpdate != null && newUpdate) {
@@ -43,6 +47,19 @@ public class PlayerListener {
                         new Placeholder("new_version", VelocityUtils.getRemoteVersion()));
             }
         });
+    }
+
+    @Subscribe
+    public void onDisconnect(DisconnectEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+
+        FallbackLimboHandler limboHandler = PlayerCacheManager.getInstance().get(uuid);
+
+        if (limboHandler != null) {
+            fallbackServerVelocity.cancelReconnect(uuid);
+        }
+
     }
 
 }

@@ -12,8 +12,8 @@ public enum VelocityConfig {
 
     RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
-    RECONNECT_KICK("settings.auto_reconnect.disconnect"),
     RECONNECT_SORT("settings.auto_reconnect.player_sort"),
+    RECONNECT_PING_TIMEOUT("settings.auto_reconnect.ping_timeout"),
 
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
@@ -58,10 +58,10 @@ public enum VelocityConfig {
     }
 
     public <T> T get(Class<T> clazz) {
-        return clazz.cast(instance.getConfigTextFile().getConfig().get(configurationPath));
+        return clazz.cast(instance.getConfig().getConfig().get(configurationPath));
     }
 
     public List<String> getStringList() {
-        return instance.getConfigTextFile().getConfig().getStringList(configurationPath);
+        return instance.getConfig().getConfig().getStringList(configurationPath);
     }
 }

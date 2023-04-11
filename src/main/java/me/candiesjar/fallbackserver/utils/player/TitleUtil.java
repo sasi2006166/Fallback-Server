@@ -14,7 +14,7 @@ public class TitleUtil {
 
     public void sendTitle(int fadeIn, int stay, int fadeOut, String title, String subTitle, Player player) {
 
-        Title.Times times = Title.Times.of(Duration.ofSeconds(fadeIn),
+        Title.Times times = Title.Times.times(Duration.ofSeconds(fadeIn),
                 Duration.ofSeconds(stay),
                 Duration.ofSeconds(fadeOut));
 
@@ -26,7 +26,7 @@ public class TitleUtil {
 
     public void sendReconnectingTitle(int fadeIn, int stay, int dots, VelocityMessages title, VelocityMessages subTitle, Player player) {
 
-        Title.Times times = Title.Times.of(Duration.ofSeconds(fadeIn),
+        Title.Times times = Title.Times.times(Duration.ofSeconds(fadeIn),
                 Duration.ofSeconds(stay),
                 Duration.ofSeconds(1));
 

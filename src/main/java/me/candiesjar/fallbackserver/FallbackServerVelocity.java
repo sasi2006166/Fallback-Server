@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserver;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -12,15 +13,13 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import lombok.Getter;
+import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.FallbackVelocityCommand;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
-import me.candiesjar.fallbackserver.listeners.CommandListener;
-import me.candiesjar.fallbackserver.listeners.FallbackListener;
-import me.candiesjar.fallbackserver.listeners.PlayerListener;
-import me.candiesjar.fallbackserver.listeners.ReconnectListener;
+import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.stats.VelocityMetrics;
@@ -53,31 +52,34 @@ public class FallbackServerVelocity {
     @Getter
     public static final String VERSION = "3.1.3-Alpha1";
 
-    private final ProxyServer server;
-    private final Logger logger;
-    private final VelocityMetrics.Factory metricsFactory;
-    private final Path path;
-
-    private TextFile configTextFile;
-    private TextFile messagesTextFile;
-
-    private ScheduledTask task;
+    @Getter
+    private TextFile config, messages;
 
     @Getter
     private static FallbackServerVelocity instance;
 
     @Getter
+    @Setter
     private boolean isAlpha = false;
 
     @Getter
+    @Setter
     private boolean useAjQueue = false;
 
     @Getter
+    @Setter
     private boolean useMaintenance = false;
 
-    private FallingServerManager fallingServerManager;
-
+    @Setter
     private boolean useLimbo = false;
+
+    private final ProxyServer server;
+    private final Logger logger;
+    private final VelocityMetrics.Factory metricsFactory;
+    private final Path path;
+
+    private FallingServerManager fallingServerManager;
+    private ScheduledTask task;
 
     @Inject
     public FallbackServerVelocity(ProxyServer server, Logger logger, VelocityMetrics.Factory metricsFactory, @DataDirectory Path path) {
@@ -136,7 +138,7 @@ public class FallbackServerVelocity {
         Library library = Library.builder()
                 .groupId("me{}carleslc{}Simple-YAML")
                 .artifactId("Simple-Yaml")
-                .version("1.7.2")
+                .version("1.8.4")
                 .build();
 
         libraryManager.addJitPack();
@@ -147,25 +149,25 @@ public class FallbackServerVelocity {
 
         if (getServer().getPluginManager().getPlugin("ajQueue").isPresent()) {
             getLogger().info("§7[§b!§7] Enabling ajQueue API §7[§b!§7]");
-            useAjQueue = true;
+            setUseAjQueue(true);
         }
 
         if (getServer().getPluginManager().getPlugin("Maintenance").isPresent()) {
             getLogger().info("§7[§b!§7] Enabling Maintenance API §7[§b!§7]");
-            useMaintenance = true;
+            setUseMaintenance(true);
         }
 
         if (getServer().getPluginManager().getPlugin("limboapi").isPresent()) {
             getLogger().info("§7[§b!§7] Enabling LimboAPI §7[§b!§7]");
-            useLimbo = true;
+            setUseLimbo(true);
         }
 
     }
 
     private void loadConfiguration() {
         getLogger().info("§7[§b!§7] Creating configuration files... §7[§b!§7]");
-        configTextFile = new TextFile(path, "config.yml");
-        messagesTextFile = new TextFile(path, "messages.yml");
+        config = new TextFile(path, "config.yml");
+        messages = new TextFile(path, "messages.yml");
     }
 
     private void loadTask() {
@@ -179,7 +181,7 @@ public class FallbackServerVelocity {
     private void checkAlpha() {
 
         if (getVERSION().contains("Alpha")) {
-            isAlpha = true;
+            setAlpha(true);
             getLogger().info(" ");
             getLogger().info("§7You're running an §c§lALPHA VERSION §7of Fallback Server.");
             getLogger().info("§7If you find any bugs, please report them on discord.");
@@ -217,8 +219,8 @@ public class FallbackServerVelocity {
         getLogger().info("§7[§b!§7] Loading commands... §7[§b!§7]");
 
         server.getCommandManager().register("fsv", new FallbackVelocityCommand(this),
-                "fallbackservervelocity",
-                "fallbackserver");
+                "fallbackserver",
+                "fs");
 
         boolean isLobbyCommandEnabled = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
@@ -273,7 +275,7 @@ public class FallbackServerVelocity {
         boolean disabledServers = VelocityConfig.USE_COMMAND_BLOCKER.get(Boolean.class);
 
         if (updateChecker) {
-            server.getEventManager().register(this, new PlayerListener());
+            server.getEventManager().register(this, new PlayerListener(this));
         }
 
         if (disabledServers) {

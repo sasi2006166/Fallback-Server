@@ -75,10 +75,6 @@
             <id>AlessioDP</id>
             <url>https://repo.alessiodp.com/releases/</url>
         </repository>
-        <repository>
-            <id>elytrium-repo</id>
-            <url>https://maven.elytrium.net/repo/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -97,7 +93,7 @@
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
             <artifactId>Simple-Yaml</artifactId>
-            <version>1.7.2</version>
+            <version>1.8.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -115,14 +111,15 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.elytrium.limboapi</groupId>
             <artifactId>api</artifactId>
-            <version>1.1.7</version>
-            <scope>provided</scope>
+            <version>1.1.12</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/limboapi-1.1.12.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

@@ -5,22 +5,20 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public enum VelocityMessages {
 
     PREFIX("MESSAGES.prefix"),
-    PARAMETERS("MESSAGES.correct_syntax"),
-    RELOAD("MESSAGES.reload_message"),
+    CORRECT_SYNTAX("MESSAGES.syntax"),
+    RELOAD("MESSAGES.reloaded"),
     PLAYER_ONLY("MESSAGES.only_player"),
     ALREADY_IN_LOBBY("MESSAGES.already_in_hub"),
-    MOVED_TO_HUB("MESSAGES.connecting_to_hub"),
+    MOVED_TO_HUB("MESSAGES.moved"),
     KICKED_TO_LOBBY("MESSAGES.moved_to_lobby"),
     BLOCKED_COMMAND("MESSAGES.disabled_command"),
     NEW_UPDATE("MESSAGES.new_update"),
     MAIN_COMMAND("MESSAGES.fallback_command"),
-    NO_PERMISSION("MESSAGES.missing_permission"),
+    NO_PERMISSION("MESSAGES.no_permission"),
     NO_SERVER("MESSAGES.no_server"),
 
     EMPTY_SERVER("MESSAGES.empty_server"),
@@ -63,7 +61,7 @@ public enum VelocityMessages {
     }
 
     public <T> T get(Class<T> clazz) {
-        return clazz.cast(instance.getMessagesTextFile().getConfig().get(path));
+        return clazz.cast(instance.getMessages().getConfig().get(path));
     }
 
     public void send(CommandSource commandSource, Placeholder... placeholders) {
@@ -79,11 +77,4 @@ public enum VelocityMessages {
         ChatUtil.sendFormattedList(this, commandSource, placeHolder);
     }
 
-    public String color() {
-        return get(String.class).replace("&", "§");
-    }
-
-    public static TextComponent color(String text) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
-    }
 }

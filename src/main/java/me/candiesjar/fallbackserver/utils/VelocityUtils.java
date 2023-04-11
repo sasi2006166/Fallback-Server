@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.utils;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
@@ -15,7 +16,9 @@ import java.util.concurrent.CompletableFuture;
 
 @UtilityClass
 public class VelocityUtils {
+    @Getter
     private static String remoteVersion = "Loading";
+
     private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
 
     @SneakyThrows(Exception.class)
@@ -73,7 +76,4 @@ public class VelocityUtils {
         return list.contains(message.toLowerCase());
     }
 
-    public String getRemoteVersion() {
-        return remoteVersion;
-    }
 }

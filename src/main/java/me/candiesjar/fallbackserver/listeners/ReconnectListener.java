@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public class ReconnectListener {
 
-    @Subscribe(order = PostOrder.EARLY)
+    @Subscribe(order = PostOrder.FIRST)
     public void onPlayerKick(LoginLimboRegisterEvent event) {
 
         event.setOnKickCallback(kickEvent -> {
@@ -64,6 +64,7 @@ public class ReconnectListener {
 
             connectedPlayer.getTabList().clearAll();
             connectedPlayer.clearTitle();
+
             FallbackLimboHandler fallbackLimboHandler = new FallbackLimboHandler(kickedFrom, player.getUniqueId(), player);
             PlayerCacheManager.getInstance().put(player.getUniqueId(), fallbackLimboHandler);
             WorldUtil.getFallbackWorld().spawnPlayer(player, fallbackLimboHandler);
