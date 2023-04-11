@@ -6,7 +6,6 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
-import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.TitleUtil;
 import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
@@ -22,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReconnectTask {
+
+    private final String LOST_CONNECTION = ProxyServer.getInstance().getTranslation("lost_connection");
 
     private final ProxiedPlayer player;
     private final ServerInfo target;
@@ -49,16 +50,10 @@ public class ReconnectTask {
 
         reconnectTask = instance.getProxy().getScheduler().schedule(instance, () -> {
 
-            System.out.println("Connessione in corso.. per " + player.getName());
-
-            if (!player.isConnected()) {
-                instance.cancelReconnect(uuid);
-                return;
-            }
+            System.out.println("Reconnecting " + player.getName() + " to " + target.getName() + "...");
 
             if (tries.get() == BungeeConfig.RECONNECT_TRIES.getInt()) {
-                BungeeMessages.CONNECTION_FAILED.send(player,
-                        new Placeholder("prefix", instance.getPrefix()));
+                BungeeMessages.CONNECTION_FAILED.send(player);
 
                 boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
 
@@ -67,7 +62,7 @@ public class ReconnectTask {
                     LinkedList<FallingServer> lobbies = Lists.newLinkedList(FallingServer.getServers().values());
 
                     if (lobbies.size() == 0) {
-                        player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new Placeholder("prefix", instance.getPrefix()))));
+                        player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
                         return;
                     }
 
@@ -85,7 +80,7 @@ public class ReconnectTask {
 
                 instance.cancelReconnect(player.getUniqueId());
 
-                player.disconnect(new TextComponent(ProxyServer.getInstance().getTranslation("lost_connection")));
+                player.disconnect(new TextComponent(LOST_CONNECTION));
 
                 return;
             }

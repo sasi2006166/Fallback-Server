@@ -18,7 +18,7 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 
 public class SubCommandManager extends Command implements TabExecutor {
 
@@ -27,10 +27,10 @@ public class SubCommandManager extends Command implements TabExecutor {
     private final HashMap<String, SubCommand> subCommands = Maps.newHashMap();
 
     public SubCommandManager(FallbackServerBungee plugin) {
-        super("fs", null, "fallbackserver", "fallbackserverbungee");
+        super("fs", null, "fallbackserverbungee");
         this.plugin = plugin;
 
-        subCommands.put("reload", new ReloadSubCommand());
+        subCommands.put("reload", new ReloadSubCommand(plugin));
         subCommands.put("update", new UpdateSubCommand());
         subCommands.put("debug", new DebugSubCommand(plugin));
         subCommands.put("language", new LanguageSubCommand());
@@ -46,7 +46,7 @@ public class SubCommandManager extends Command implements TabExecutor {
 
         if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
             sender.sendMessage(ChatUtil.asLegacyComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar"
-                    .replace("%version%", FallbackServerBungee.getInstance().getDescription().getVersion())));
+                    .replace("%version%", plugin.getDescription().getVersion())));
             return;
         }
 
@@ -56,7 +56,7 @@ public class SubCommandManager extends Command implements TabExecutor {
         }
 
         if (!subCommands.containsKey(args[0].toLowerCase())) {
-            BungeeMessages.PARAMETERS.send(sender, new Placeholder("prefix", FallbackServerBungee.getInstance().getPrefix()));
+            BungeeMessages.CORRECT_SYNTAX.send(sender);
             return;
         }
 
@@ -67,7 +67,7 @@ public class SubCommandManager extends Command implements TabExecutor {
         }
 
         if (!sender.hasPermission(subCommand.getPermission())) {
-            BungeeMessages.NO_PERMISSION.send(sender, new Placeholder("permission", subCommand.getPermission()), new Placeholder("prefix", FallbackServerBungee.getInstance().getPrefix()));
+            BungeeMessages.NO_PERMISSION.send(sender, new Placeholder("permission", subCommand.getPermission()));
             return;
         }
 
@@ -85,7 +85,7 @@ public class SubCommandManager extends Command implements TabExecutor {
         }
 
         if (args.length == 1) {
-            LinkedList<String> completions = Lists.newLinkedList(subCommands.keySet());
+            List<String> completions = Lists.newArrayList(subCommands.keySet());
             Collections.sort(completions);
             return completions;
         }

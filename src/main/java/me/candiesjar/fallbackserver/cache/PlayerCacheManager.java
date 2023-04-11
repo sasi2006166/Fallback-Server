@@ -31,6 +31,10 @@ public class PlayerCacheManager {
         reconnectMap.put(key, value);
     }
 
+    public boolean containsKey(UUID key) {
+        return reconnectMap.containsKey(key);
+    }
+
     public ReconnectTask remove(UUID key) {
         return reconnectMap.remove(key);
     }

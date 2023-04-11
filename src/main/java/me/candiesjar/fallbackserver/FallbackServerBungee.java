@@ -1,11 +1,11 @@
 package me.candiesjar.fallbackserver;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.Metrics;
 import me.candiesjar.fallbackserver.objects.TextFile;
@@ -34,18 +34,23 @@ public final class FallbackServerBungee extends Plugin {
     private String version;
 
     @Getter
+    @Setter
     private boolean isAlpha = false;
 
     @Getter
+    @Setter
     private boolean useAjQueue = false;
 
     @Getter
+    @Setter
     private boolean useMaintenance = false;
 
     @Getter
+    @Setter
     private boolean needsUpdate = false;
 
     @Getter
+    @Setter
     private boolean isDebug = false;
 
     public void onEnable() {
@@ -89,7 +94,6 @@ public final class FallbackServerBungee extends Plugin {
             FileUtils.deleteFile(getFile().getName(), getDataFolder());
         }
 
-
         getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling.. §7[§c!§7]");
     }
 
@@ -99,7 +103,7 @@ public final class FallbackServerBungee extends Plugin {
 
         if (useDebug) {
             getLogger().severe("§7[§c!§7] Debug mode is enabled §7[§c!§7]");
-            isDebug = true;
+            setDebug(true);
         }
 
     }
@@ -108,19 +112,19 @@ public final class FallbackServerBungee extends Plugin {
 
         if (getProxy().getPluginManager().getPlugin("ajQueue") != null) {
             getLogger().info("§7[§b!§7] Enabling ajQueue API §7[§b!§7]");
-            useAjQueue = true;
+            setUseAjQueue(true);
         }
 
         if (getProxy().getPluginManager().getPlugin("Maintenance") != null) {
             getLogger().info("§7[§b!§7] Enabling Maintenance API §7[§b!§7]");
-            useMaintenance = true;
+            setUseMaintenance(true);
         }
 
     }
 
     private void checkAlpha() {
         if (version.contains("Alpha")) {
-            isAlpha = true;
+            setAlpha(true);
 
             getLogger().info(" ");
             getLogger().info("§7You're running an §c§lALPHA VERSION §7of Fallback Server.");
@@ -181,22 +185,18 @@ public final class FallbackServerBungee extends Plugin {
         }
 
         if (checkUpdates) {
-            getProxy().getPluginManager().registerListener(this, new PlayerListener());
+            getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
         }
 
     }
 
     private void startMetrics() {
-        getLogger().info("§7[§b!§7] Starting stats service... §7[§b!§7]");
-
         boolean telemetry = BungeeConfig.TELEMETRY.getBoolean();
 
-        if (telemetry)
+        if (telemetry) {
+            getLogger().info("§7[§b!§7] Starting stats service... §7[§b!§7]");
             new Metrics(this, 11817);
-    }
-
-    public void setNeedsUpdate(boolean needsUpdate) {
-        this.needsUpdate = needsUpdate;
+        }
     }
 
     public void cancelReconnect(UUID uuid) {
@@ -206,10 +206,6 @@ public final class FallbackServerBungee extends Plugin {
             task.getTitleTask().cancel();
             task.clear();
         }
-    }
-
-    public String getPrefix() {
-        return getMessagesConfig().getString(BungeeMessages.PREFIX.getPath());
     }
 
     public boolean isHub(ServerInfo server) {

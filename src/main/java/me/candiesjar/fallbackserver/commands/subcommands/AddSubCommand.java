@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserver.commands.subcommands;
 
-import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
@@ -25,7 +24,7 @@ public class AddSubCommand implements SubCommand {
     public void perform(CommandSender sender, String[] arguments) {
 
         if (arguments.length < 2) {
-            BungeeMessages.EMPTY_SERVER.send(sender, new Placeholder("prefix", FallbackServerBungee.getInstance().getPrefix()));
+            BungeeMessages.EMPTY_SERVER.send(sender);
             return;
         }
 

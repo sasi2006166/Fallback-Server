@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserver.commands.base;
 import com.google.common.collect.Lists;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.api.HubAPI;
+import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
@@ -29,7 +30,7 @@ public class HubCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
 
         if (!(sender instanceof ProxiedPlayer)) {
-            BungeeMessages.PLAYER_ONLY.send(sender, new Placeholder("prefix", instance.getPrefix()));
+            BungeeMessages.PLAYER_ONLY.send(sender);
             return;
         }
 
@@ -37,14 +38,21 @@ public class HubCommand extends Command {
         ServerInfo playerServer = player.getServer().getInfo();
 
         if (FallbackServerBungee.getInstance().isHub(playerServer)) {
-            BungeeMessages.ALREADY_IN_LOBBY.send(player, new Placeholder("prefix", instance.getPrefix()));
+            BungeeMessages.ALREADY_IN_LOBBY.send(player);
+            return;
+        }
+
+        boolean isInReconnect = PlayerCacheManager.getInstance().containsKey(player.getUniqueId());
+
+        if (isInReconnect) {
+
             return;
         }
 
         LinkedList<FallingServer> lobbies = Lists.newLinkedList(FallingServer.getServers().values());
 
         if (lobbies.size() == 0) {
-            BungeeMessages.NO_SERVER.send(player, new Placeholder("prefix", instance.getPrefix()));
+            BungeeMessages.NO_SERVER.send(player);
             return;
         }
 
@@ -61,7 +69,7 @@ public class HubCommand extends Command {
 
         player.connect(serverInfo);
 
-        BungeeMessages.MOVED_TO_HUB.send(player, new Placeholder("prefix", instance.getPrefix()), new Placeholder("server", serverInfo.getName()));
+        BungeeMessages.MOVED_TO_HUB.send(player, new Placeholder("server", serverInfo.getName()));
 
         boolean useTitle = BungeeMessages.USE_HUB_TITLE.getBoolean();
 

@@ -18,7 +18,6 @@ public class ReconnectListener implements Listener {
     public void onServerKick(ServerKickEvent event) {
 
         ProxiedPlayer player = event.getPlayer();
-
         ServerInfo kickedFrom = event.getKickedFrom();
 
         if (!player.isConnected()) {
@@ -50,9 +49,6 @@ public class ReconnectListener implements Listener {
         }
 
         event.setCancelled(true);
-
-        event.setCancelServer(kickedFrom);
-
         ReconnectTask task = PlayerCacheManager.getInstance().get(player.getUniqueId());
 
         if (task == null) {

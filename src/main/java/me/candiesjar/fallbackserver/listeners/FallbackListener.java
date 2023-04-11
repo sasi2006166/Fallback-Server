@@ -22,7 +22,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -61,24 +61,17 @@ public class FallbackListener implements Listener {
         if (useBlacklist && BungeeConfig.BLACKLISTED_SERVERS_LIST.getStringList().contains(kickedFrom.getName())) {
             return;
         }
-
-        boolean isMaintenance = ServerUtils.checkMaintenance(kickedFrom);
-
-        if (isMaintenance) {
-            return;
-        }
-
         event.setCancelled(true);
 
         Map<ServerInfo, FallingServer> clonedMap = Maps.newHashMap(FallingServer.getServers());
 
         clonedMap.remove(kickedFrom);
 
-        LinkedList<FallingServer> lobbies = Lists.newLinkedList(clonedMap.values());
+        List<FallingServer> lobbies = Lists.newArrayList(clonedMap.values());
 
         if (lobbies.size() == 0) {
             if (event.getKickReasonComponent() == null) {
-                player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER, new Placeholder("prefix", plugin.getPrefix()))));
+                player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
             }
             player.disconnect(new TextComponent(BaseComponent.toLegacyText(event.getKickReasonComponent())));
             return;
@@ -89,7 +82,7 @@ public class FallbackListener implements Listener {
 
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 
-        isMaintenance = ServerUtils.checkMaintenance(serverInfo);
+        boolean isMaintenance = ServerUtils.checkMaintenance(serverInfo);
 
         if (isMaintenance) {
             player.disconnect(new TextComponent(BaseComponent.toLegacyText(event.getKickReasonComponent())));

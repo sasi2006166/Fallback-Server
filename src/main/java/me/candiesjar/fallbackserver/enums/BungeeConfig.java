@@ -13,7 +13,6 @@ public enum BungeeConfig {
 
     RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
-    RECONNECT_KICK("settings.auto_reconnect.disconnect"),
     RECONNECT_SORT("settings.auto_reconnect.player_sort"),
 
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),

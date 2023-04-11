@@ -8,16 +8,16 @@ import net.md_5.bungee.api.CommandSender;
 public enum BungeeMessages {
 
     PREFIX("MESSAGES.prefix"),
-    PARAMETERS("MESSAGES.correct_syntax"),
-    RELOAD("MESSAGES.reload_message"),
+    CORRECT_SYNTAX("MESSAGES.syntax"),
+    RELOAD("MESSAGES.reloaded"),
     PLAYER_ONLY("MESSAGES.only_player"),
     ALREADY_IN_LOBBY("MESSAGES.already_in_hub"),
-    MOVED_TO_HUB("MESSAGES.connecting_to_hub"),
+    MOVED_TO_HUB("MESSAGES.moved"),
     KICKED_TO_LOBBY("MESSAGES.moved_to_lobby"),
     BLOCKED_COMMAND("MESSAGES.disabled_command"),
     NEW_UPDATE("MESSAGES.new_update"),
     MAIN_COMMAND("MESSAGES.fallback_command"),
-    NO_PERMISSION("MESSAGES.missing_permission"),
+    NO_PERMISSION("MESSAGES.no_permission"),
     NO_SERVER("MESSAGES.no_server"),
 
     EMPTY_SERVER("MESSAGES.empty_server"),
@@ -64,7 +64,7 @@ public enum BungeeMessages {
             return;
         }
 
-        commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeholders)));
+        commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeholders).replace("%prefix%", ChatUtil.getFormattedString(PREFIX))));
     }
 
     public void sendList(CommandSender commandSender, Placeholder... placeHolder) {

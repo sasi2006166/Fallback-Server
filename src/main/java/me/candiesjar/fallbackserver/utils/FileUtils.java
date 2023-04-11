@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 @UtilityClass
 public class FileUtils {
 
-    public static void downloadFile(String fileUrl, String targetDirectory) {
+    public void downloadFile(String fileUrl, String targetDirectory) {
         CompletableFuture.runAsync(() -> {
             try {
                 URL url = new URL(fileUrl);
