@@ -8,7 +8,7 @@
 # ░ ░     ░   ▒     ░ ░     ░ ░    ░    ░   ░   ▒   ░        ░ ░░ ░    ░  ░  ░     ░     ░░   ░      ░░     ░     ░░   ░
 #             ░  ░    ░  ░    ░  ░ ░            ░  ░░ ░      ░  ░            ░     ░  ░   ░           ░     ░  ░   ░
 #                                       ░           ░                                                ░
-# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
+# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/dJ8DG2cSzt | Telegram: @CandiesJar
 # BungeeCord configuration file
 
 # IMPORTANT WARNING: Before reporting any issue on discord, READ carefully the comments!
@@ -55,6 +55,16 @@ settings:
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.
     player_sort: true
+
+    # Ignored reasons for reconnecting.
+    # If players gets kicked for one of those reasons
+    # they will not be reconnected.
+    ignored_reasons:
+      - "ban"
+      - "kick"
+      - "afk"
+      - "whitelist"
+      - "maintenance"
 
     # Title can be customized into messages configuration.
     # Available in messages.yml
@@ -108,7 +118,7 @@ settings:
   # Disable player kicking if the plugin detects any of listed reasons.
   # Example: player gets banned on (only) spigot instance using Essentials
   # FallbackServer will disconnect him instead of kicking.
-  blacklisted_words:
+  ignored_reasons:
     - "ban"
     - "whitelist"
     - "full"
@@ -150,10 +160,6 @@ sub_commands:
   remove: # DISABLED
     enabled: true
     permission: "fallback.admin.remove"
-
-  set: # DISABLED
-    enabled: true
-    permission: "fallback.admin.set"
 
   status: # DISABLED
     enabled: true

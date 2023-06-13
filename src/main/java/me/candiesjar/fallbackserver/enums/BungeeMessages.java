@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserver.enums;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 
 public enum BungeeMessages {

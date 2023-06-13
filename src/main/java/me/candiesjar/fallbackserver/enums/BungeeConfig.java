@@ -12,9 +12,9 @@ public enum BungeeConfig {
     DEBUG_MODE("settings.debug"),
 
     RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
+    RECONNECT_IGNORED_REASONS("settings.auto_reconnect.ignored_reasons"),
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
     RECONNECT_SORT("settings.auto_reconnect.player_sort"),
-
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
 
@@ -23,7 +23,7 @@ public enum BungeeConfig {
     TELEMETRY("settings.stats"),
     USE_COMMAND_BLOCKER("settings.use_command_blocker"),
     LOBBIES_LIST("settings.fallback_list"),
-    IGNORED_REASONS("settings.blacklisted_words"),
+    IGNORED_REASONS("settings.ignored_reasons"),
     ADMIN_NOTIFICATION("settings.admin_notification"),
     USE_BLACKLISTED_SERVERS("settings.server_blacklist"),
     BLACKLISTED_SERVERS_LIST("settings.server_blacklist_list"),
@@ -40,9 +40,6 @@ public enum BungeeConfig {
 
     STATUS_COMMAND("sub_commands.status.enabled"),
     STATUS_COMMAND_PERMISSION("sub_commands.status.permission"),
-
-    SET_COMMAND("sub_commands.set.enabled"),
-    SET_COMMAND_PERMISSION("sub_commands.set.permission"),
 
     LOBBY_COMMAND("settings.lobby_command"),
     LOBBY_ALIASES("settings.lobby_command_aliases"),

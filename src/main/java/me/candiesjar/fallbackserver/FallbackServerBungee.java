@@ -3,16 +3,17 @@ package me.candiesjar.fallbackserver;
 import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
+import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.listeners.*;
-import me.candiesjar.fallbackserver.metrics.Metrics;
+import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.TextFile;
 import me.candiesjar.fallbackserver.utils.FileUtils;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
-import me.candiesjar.fallbackserver.utils.tasks.LobbyPingTask;
-import me.candiesjar.fallbackserver.utils.tasks.ReconnectTask;
+import me.candiesjar.fallbackserver.utils.tasks.PingTask;
+import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -53,6 +54,12 @@ public final class FallbackServerBungee extends Plugin {
     @Setter
     private boolean isDebug = false;
 
+    @Getter
+    private PlayerCacheManager playerCacheManager;
+
+    @Getter
+    private ServerCacheManager serverCacheManager;
+
     public void onEnable() {
         instance = this;
 
@@ -68,6 +75,9 @@ public final class FallbackServerBungee extends Plugin {
 
         loadConfiguration();
 
+        playerCacheManager = PlayerCacheManager.getInstance();
+        serverCacheManager = ServerCacheManager.getInstance();
+
         checkDebug();
 
         checkPlugins();
@@ -79,7 +89,7 @@ public final class FallbackServerBungee extends Plugin {
         startMetrics();
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
-        LobbyPingTask.start();
+        PingTask.start();
 
         checkAlpha();
 
@@ -150,7 +160,7 @@ public final class FallbackServerBungee extends Plugin {
         boolean lobbyCommand = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
         if (lobbyCommand) {
-            getProxy().getPluginManager().registerCommand(this, new HubCommand());
+            getProxy().getPluginManager().registerCommand(this, new HubCommand(this));
         }
     }
 
@@ -195,12 +205,12 @@ public final class FallbackServerBungee extends Plugin {
 
         if (telemetry) {
             getLogger().info("§7[§b!§7] Starting stats service... §7[§b!§7]");
-            new Metrics(this, 11817);
+            new BungeeMetrics(this, 11817);
         }
     }
 
     public void cancelReconnect(UUID uuid) {
-        ReconnectTask task = PlayerCacheManager.getInstance().remove(uuid);
+        ReconnectHandler task = PlayerCacheManager.getInstance().remove(uuid);
         if (task != null) {
             task.getReconnectTask().cancel();
             task.getTitleTask().cancel();

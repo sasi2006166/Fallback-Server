@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.utils;
 
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
@@ -25,13 +26,16 @@ public class FileUtils {
         });
     }
 
+    @SneakyThrows
     public void deleteFile(String name, File folder) {
 
         File oldFile = new File(folder, name);
 
-        if (oldFile.exists()) {
-            oldFile.delete();
+        if (!oldFile.exists()) {
+            return;
         }
+
+        Files.delete(oldFile.toPath());
 
     }
 }

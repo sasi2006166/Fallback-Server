@@ -2,7 +2,6 @@ package me.candiesjar.fallbackserver.objects;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import lombok.Setter;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.Map;
@@ -10,7 +9,9 @@ import java.util.Map;
 @Getter
 public class FallingServer implements Comparable<FallingServer> {
 
+    @Getter
     private static final Map<ServerInfo, FallingServer> servers = Maps.newHashMap();
+
     private final ServerInfo serverInfo;
 
     public FallingServer(ServerInfo serverInfo) {
@@ -23,7 +24,7 @@ public class FallingServer implements Comparable<FallingServer> {
         return Integer.compare(getServerInfo().getPlayers().size(), o.getServerInfo().getPlayers().size());
     }
 
-    public static Map<ServerInfo, FallingServer> getServers() {
-        return servers;
+    public static void removeServer(ServerInfo serverInfo) {
+        servers.remove(serverInfo);
     }
 }

@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.utils.tasks;
+package me.candiesjar.fallbackserver.handlers;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -6,8 +6,8 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
-import me.candiesjar.fallbackserver.utils.TitleUtil;
-import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
+import me.candiesjar.fallbackserver.utils.player.TitleUtil;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -15,12 +15,12 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ReconnectTask {
+public class ReconnectHandler {
 
     private final String LOST_CONNECTION = ProxyServer.getInstance().getTranslation("lost_connection");
 
@@ -28,7 +28,7 @@ public class ReconnectTask {
     private final ServerInfo target;
     private final UUID uuid;
 
-    private final FallbackServerBungee instance = FallbackServerBungee.getInstance();
+    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
 
     @Getter
     private ScheduledTask reconnectTask;
@@ -36,7 +36,7 @@ public class ReconnectTask {
     @Getter
     private ScheduledTask titleTask;
 
-    public ReconnectTask(ProxiedPlayer player, ServerInfo target, UUID uuid) {
+    public ReconnectHandler(ProxiedPlayer player, ServerInfo target, UUID uuid) {
         this.player = player;
         this.target = target;
         this.uuid = uuid;
@@ -48,40 +48,34 @@ public class ReconnectTask {
 
         AtomicInteger tries = new AtomicInteger(0);
 
-        reconnectTask = instance.getProxy().getScheduler().schedule(instance, () -> {
+        reconnectTask = fallbackServerBungee.getProxy().getScheduler().schedule(fallbackServerBungee, () -> {
 
             System.out.println("Reconnecting " + player.getName() + " to " + target.getName() + "...");
 
             if (tries.get() == BungeeConfig.RECONNECT_TRIES.getInt()) {
                 BungeeMessages.CONNECTION_FAILED.send(player);
-
                 boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
 
                 if (fallback) {
+                    List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
 
-                    LinkedList<FallingServer> lobbies = Lists.newLinkedList(FallingServer.getServers().values());
-
-                    if (lobbies.size() == 0) {
+                    if (lobbies.isEmpty()) {
                         player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
                         return;
                     }
 
-                    lobbies.sort(FallingServer::compareTo);
-                    lobbies.sort(Comparator.reverseOrder());
+                    lobbies.sort(Comparator.comparing(server -> server.getServerInfo().getPlayers().size()));
 
                     ServerInfo server = lobbies.get(0).getServerInfo();
 
                     player.connect(server);
-                    instance.cancelReconnect(uuid);
+                    fallbackServerBungee.cancelReconnect(uuid);
 
                     return;
-
                 }
 
-                instance.cancelReconnect(player.getUniqueId());
-
+                fallbackServerBungee.cancelReconnect(player.getUniqueId());
                 player.disconnect(new TextComponent(LOST_CONNECTION));
-
                 return;
             }
 
@@ -93,7 +87,7 @@ public class ReconnectTask {
                 }
 
                 player.connect(target);
-                instance.cancelReconnect(uuid);
+                fallbackServerBungee.cancelReconnect(uuid);
 
             });
 
@@ -104,7 +98,7 @@ public class ReconnectTask {
     private void sendTitle(ProxiedPlayer player) {
         AtomicInteger dots = new AtomicInteger(0);
 
-        titleTask = instance.getProxy().getScheduler().schedule(instance, () -> {
+        titleTask = fallbackServerBungee.getProxy().getScheduler().schedule(fallbackServerBungee, () -> {
 
             if (dots.getAndIncrement() == 4) {
                 dots.set(0);
@@ -115,12 +109,9 @@ public class ReconnectTask {
     }
 
     public void clear() {
-
         ProxyServer.getInstance().createTitle()
                 .reset()
                 .clear()
                 .send(player);
-
     }
-
 }

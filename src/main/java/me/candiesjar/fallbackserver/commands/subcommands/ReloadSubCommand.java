@@ -10,10 +10,10 @@ import net.md_5.bungee.api.CommandSender;
 
 public class ReloadSubCommand implements SubCommand {
 
-    private final FallbackServerBungee plugin;
+    private final FallbackServerBungee fallbackServerBungee;
 
-    public ReloadSubCommand(FallbackServerBungee plugin) {
-        this.plugin = plugin;
+    public ReloadSubCommand(FallbackServerBungee fallbackServerBungee) {
+        this.fallbackServerBungee = fallbackServerBungee;
     }
 
     @Override
@@ -38,9 +38,9 @@ public class ReloadSubCommand implements SubCommand {
         if (hubReload != reloadCommand) {
 
             if (reloadCommand) {
-                plugin.getProxy().getPluginManager().registerCommand(plugin, new HubCommand());
+                fallbackServerBungee.getProxy().getPluginManager().registerCommand(fallbackServerBungee, new HubCommand(fallbackServerBungee));
             } else {
-                plugin.getProxy().getPluginManager().unregisterCommand(new HubCommand());
+                fallbackServerBungee.getProxy().getPluginManager().unregisterCommand(new HubCommand(fallbackServerBungee));
             }
 
         }

@@ -3,13 +3,12 @@ package me.candiesjar.fallbackserver.commands.base;
 import com.google.common.collect.Lists;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.api.HubAPI;
-import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.ServerUtils;
-import me.candiesjar.fallbackserver.utils.TitleUtil;
+import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -17,14 +16,15 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 
 public class HubCommand extends Command {
 
-    private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
+    private final FallbackServerBungee fallbackServerBungee;
 
-    public HubCommand() {
+    public HubCommand(FallbackServerBungee fallbackServerBungee) {
         super(BungeeConfig.LOBBY_ALIASES.getStringList().get(0), null, BungeeConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]));
+        this.fallbackServerBungee = fallbackServerBungee;
     }
 
     public void execute(CommandSender sender, String[] args) {
@@ -37,35 +37,33 @@ public class HubCommand extends Command {
         ProxiedPlayer player = (ProxiedPlayer) sender;
         ServerInfo playerServer = player.getServer().getInfo();
 
-        if (FallbackServerBungee.getInstance().isHub(playerServer)) {
+        if (fallbackServerBungee.isHub(playerServer)) {
             BungeeMessages.ALREADY_IN_LOBBY.send(player);
             return;
         }
 
-        boolean isInReconnect = PlayerCacheManager.getInstance().containsKey(player.getUniqueId());
+        boolean isInReconnect = fallbackServerBungee.getPlayerCacheManager().containsKey(player.getUniqueId());
 
         if (isInReconnect) {
-
             return;
         }
 
-        LinkedList<FallingServer> lobbies = Lists.newLinkedList(FallingServer.getServers().values());
+        List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
 
-        if (lobbies.size() == 0) {
+        boolean hasMaintenance = fallbackServerBungee.isUseMaintenance();
+
+        if (hasMaintenance) {
+            lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
+        }
+
+        if (lobbies.isEmpty()) {
             BungeeMessages.NO_SERVER.send(player);
             return;
         }
 
-        lobbies.sort(FallingServer::compareTo);
-        lobbies.sort(Comparator.reverseOrder());
+        lobbies.sort(Comparator.comparing(server -> server.getServerInfo().getPlayers().size()));
 
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
-
-        boolean isMaintenance = ServerUtils.checkMaintenance(serverInfo);
-
-        if (isMaintenance) {
-            return;
-        }
 
         player.connect(serverInfo);
 
@@ -85,7 +83,7 @@ public class HubCommand extends Command {
 
         }
 
-        ProxyServer.getInstance().getScheduler().runAsync(instance, () -> instance.getProxy().getPluginManager().callEvent(new HubAPI(player, playerServer, serverInfo)));
+        ProxyServer.getInstance().getScheduler().runAsync(fallbackServerBungee, () -> fallbackServerBungee.getProxy().getPluginManager().callEvent(new HubAPI(player, playerServer, serverInfo)));
 
     }
 }

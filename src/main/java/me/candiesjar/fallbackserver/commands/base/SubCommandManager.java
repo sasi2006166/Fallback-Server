@@ -11,7 +11,7 @@ import me.candiesjar.fallbackserver.commands.subcommands.UpdateSubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.chat.ChatUtil;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -23,7 +23,6 @@ import java.util.List;
 public class SubCommandManager extends Command implements TabExecutor {
 
     private final FallbackServerBungee plugin;
-
     private final HashMap<String, SubCommand> subCommands = Maps.newHashMap();
 
     public SubCommandManager(FallbackServerBungee plugin) {
@@ -76,7 +75,9 @@ public class SubCommandManager extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
+        String permission = BungeeConfig.ADMIN_PERMISSION.getString();
+
+        if (!sender.hasPermission(permission)) {
             return Collections.emptyList();
         }
 

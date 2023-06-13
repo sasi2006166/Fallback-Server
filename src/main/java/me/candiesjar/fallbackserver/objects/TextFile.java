@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserver.objects;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -33,16 +34,13 @@ public class TextFile {
 
         file = new File(plugin.getDataFolder(), path);
 
-        try {
-            config = create();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        config = create();
 
         list.add(this);
     }
 
-    private Configuration create() throws IOException {
+    @SneakyThrows
+    private Configuration create() {
         if (!file.exists()) {
             Files.copy(plugin.getResourceAsStream(path), file.toPath());
         }
