@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.listeners;
 
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
@@ -49,7 +50,7 @@ public class PlayerListener {
         });
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void onDisconnect(DisconnectEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();

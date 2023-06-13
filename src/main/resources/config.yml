@@ -33,6 +33,13 @@ settings:
   # IMPORTANT: This option requires a proxy reboot.
   fallback_mode: DEFAULT
 
+  # If you want to use the reconnect mode, fallback_mode must be set to RECONNECT.
+  # Those values will clear the chat on reconnect (after success) or when players
+  # get fallback-ed to another server.
+  clear_chat:
+    fallback: true
+    reconnect: false
+
   # Add here fallback lobbies, also used for /hub command.
   fallback_list:
     - lobby1
@@ -42,19 +49,61 @@ settings:
   # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
   # Customize things like delays and title mode, everything in seconds.
   auto_reconnect:
-    # Tries before disconnecting or moving player to lobbies.
-    max_tries: 5
+
+    # Determines if the plugin should use sockets for reconnecting.
+    # This will make pinging method more precise for reconnecting players.
+    # If you don't want to use this method for some incompatibility reasons
+    # Such as server panels (Pterodactyl, Multicraft, etc.) you can disable it.
+    # And leave normal pinging method still using the Fallback-Server-Spigot-Addon.
+    # That will auto-setup the spigot instance for you.
+    use_sockets: true
+
+    # DEBUG for now.
+    socket_port: 59699
+
+    # Time for time-outing the server on ping.
+    # In Milliseconds, 5000 for example = 5 seconds.
+    ping_timeout: 5000
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
-    ping_delay: 5
+    # In seconds.
+    ping_delay: 7
 
-    # Time for time-outing the server on ping.
-    ping_timeout: 5000 # In Milliseconds
+    # This task receives the ip:port information
+    # from spigot instances with FallbackServerAddon.
+    # Ideal delay is 5 seconds, don't put values under 1.
+    # Change it only if you're experiencing issues
+    # or if your spigot instances go offline very often.
+    socket_task: 15 # In Seconds
+
+    # Tries before disconnecting or moving player to lobbies.
+    max_tries: 5
 
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.
     player_sort: true
+
+    # Time before starting the server pinging on reconnect.
+    # Don't put values under 1, they will NOT work.
+    # In seconds.
+    first_delay: 3
+
+    # Ignored reasons for reconnecting.
+    # If players gets kicked for one of those reasons
+    # they will not be reconnected.
+    ignored_reasons:
+      - "ban"
+      - "kick"
+      - "afk"
+      - "whitelist"
+      - "maintenance"
+
+    # Option to choose if making the player join a limbo server
+    # while reconnecting.
+    # True: Player will be moved to limbo while reconnecting.
+    # False: Player stay on kicked server while reconnecting.
+    join_limbo: false
 
     # Title can be customized into messages configuration.
     # Available in messages.yml
@@ -68,7 +117,7 @@ settings:
 
   # True: Normal players will not be able to see the /fs output.
   # False: Everyone will be able to see the simple "running fallbackserver" message.
-  hide_command: true
+  hide_command: false
 
   # Choose if you want to enable the updater.
   updater: true
@@ -93,10 +142,14 @@ settings:
   admin_notification: true
 
   # Choose if you want to use fallbackserver's built-in command blocker.
-  use_command_blocker: true
+  command_blocker: true
 
   # WARNING: will only work if "use_command_blocker" is set on true.
   # Add here the servers with the command(s) you want to block.
+  # TEMPLATE:
+  # SERVERNAME:
+  #   - COMMAND1
+  #   - COMMAND2
   command_blocker_list:
     hack_control:
       - lobby
@@ -108,12 +161,11 @@ settings:
   # Disable player kicking if the plugin detects any of listed reasons.
   # Example: player gets banned on (only) spigot instance using Essentials
   # FallbackServer will disconnect him instead of kicking.
-  blacklisted_words:
+  ignored_reasons:
     - "ban"
     - "whitelist"
     - "full"
 
-  # WARNING: Requires proxy reboot.
   # If you want to use the /lobby command.
   lobby_command: true
 
@@ -150,10 +202,6 @@ sub_commands:
   remove:
     enabled: true
     permission: "fallback.admin.remove"
-
-  set:
-    enabled: true
-    permission: "fallback.admin.set"
 
   status:
     enabled: true

@@ -52,6 +52,8 @@ public class ReloadSubCommand implements SubCommand {
 
         }
 
+        fallbackServerVelocity.reloadTasks();
+
         VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
     }
 }

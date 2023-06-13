@@ -40,6 +40,10 @@ public enum VelocityMessages {
 
     RECONNECT_TITLE("TITLES.reconnect.reconnect_title"),
     RECONNECT_SUB_TITLE("TITLES.reconnect.reconnect_sub_title"),
+    CONNECTING_TITLE("TITLES.reconnect.connecting_title"),
+    CONNECTING_SUB_TITLE("TITLES.reconnect.connecting_sub_title"),
+    CONNECTED_TITLE("TITLES.reconnect.connected_title"),
+    CONNECTED_SUB_TITLE("TITLES.reconnect.connected_sub_title"),
 
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),

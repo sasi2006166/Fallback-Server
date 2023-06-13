@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.utils.player;
 
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.Player;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
@@ -71,8 +72,14 @@ public class ChatUtil {
         sendList(commandSource, color(getStringList(velocityMessages, placeholders)));
     }
 
-
     public String componentToString(Component component) {
         return PlainTextComponentSerializer.plainText().serialize(component);
     }
+
+    public void clearChat(Player player) {
+        for (int i = 0; i < 100; i++) {
+            player.sendMessage(Component.text(""));
+        }
+    }
+
 }

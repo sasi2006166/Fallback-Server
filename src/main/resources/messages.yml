@@ -68,8 +68,12 @@ TITLES: # Everything in seconds.
   # Reconnect title values are automatic.
   # You can enable / disable it in config.yml
   reconnect:
-    reconnect_title: "&a&lReconnecting&7%dots%"
+    reconnect_title: "&c&lReconnecting&7%dots%"
     reconnect_sub_title: "&7Please wait!"
+    connecting_title: "&6&lConnecting&7%dots%"
+    connecting_sub_title: "&7Waiting for response..."
+    connected_title: "&a&lConnected&7%dots%"
+    connected_sub_title: "&7You've been connected to &b%server%"
 
   lobby:
     enabled: true

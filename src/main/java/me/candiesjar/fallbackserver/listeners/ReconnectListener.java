@@ -15,6 +15,7 @@ import net.elytrium.limboapi.api.event.LoginLimboRegisterEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ReconnectListener {
@@ -29,7 +30,7 @@ public class ReconnectListener {
             Player player = event.getPlayer();
             ConnectedPlayer connectedPlayer = (ConnectedPlayer) player;
 
-            if (!player.isActive() || kickEvent.kickedDuringServerConnect()) {
+            if (kickEvent.kickedDuringServerConnect()) {
                 return false;
             }
 
@@ -41,10 +42,10 @@ public class ReconnectListener {
 
             Optional<Component> componentOptional = kickEvent.getServerKickReason();
             boolean isEmpty = componentOptional.isEmpty();
-
             String kickReasonString = isEmpty ? "" : ChatUtil.componentToString(componentOptional.get());
+            List<String> ignoredReasons = VelocityConfig.RECONNECT_IGNORED_REASONS.getStringList();
 
-            for (String blacklist : VelocityConfig.IGNORED_REASONS.getStringList()) {
+            for (String blacklist : ignoredReasons) {
 
                 if (isEmpty) {
                     break;

@@ -4,6 +4,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
+import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import net.elytrium.limboapi.api.Limbo;
 import net.elytrium.limboapi.api.LimboFactory;
 import net.elytrium.limboapi.api.chunk.Dimension;
@@ -26,10 +27,12 @@ public class WorldUtil {
                 (float) 90, (float) 90
         );
 
+        boolean shouldJoin = VelocityConfig.RECONNECT_JOIN_LIMBO.get(Boolean.class);
+
         fallbackWorld = factory.createLimbo(world)
                 .setName("FallbackLimbo")
                 .setWorldTime(6000)
-                .setShouldRejoin(false)
+                .setShouldRejoin(shouldJoin)
                 .setShouldRespawn(false);
     }
 
