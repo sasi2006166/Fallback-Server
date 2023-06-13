@@ -168,6 +168,7 @@ public final class FallbackServerBungee extends Plugin {
         getLogger().info("§7[§b!§7] Starting all listeners.. §7[§b!§7]");
 
         getProxy().getPluginManager().registerListener(this, new ServerConnectListener(this));
+        getProxy().getPluginManager().registerListener(this, new ServerSwitchListener());
 
         String mode = BungeeConfig.FALLBACK_MODE.getString();
 
