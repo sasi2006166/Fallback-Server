@@ -303,7 +303,7 @@ public class FallbackServerVelocity {
                             "\nLimboAPI is missing from your plugins folder, for enabling \n" +
                                     "reconnect method you need to install LimboAPI. \n" +
                                     "You can download it from https://github.com/Elytrium/LimboAPI/releases \n" +
-                                    "Using default method instead.");
+                                    "Switching to fallback method.");
                     server.getEventManager().register(this, new FallbackListener(this));
                     return;
                 }
@@ -358,8 +358,7 @@ public class FallbackServerVelocity {
     public void reloadTasks() {
         task.cancel();
         loadTask();
-        SocketHandler.stop();
-        SocketHandler.start();
+        SocketHandler.reload();
     }
 
 }

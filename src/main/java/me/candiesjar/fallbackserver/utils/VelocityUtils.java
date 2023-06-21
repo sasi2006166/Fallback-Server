@@ -19,15 +19,15 @@ public class VelocityUtils {
     @Getter
     private static String remoteVersion = "Loading";
 
-    private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
+    private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
 
     @SneakyThrows(Exception.class)
     public CompletableFuture<Boolean> getUpdates() {
 
-        if (instance.isAlpha()) {
+        if (fallbackServerVelocity.isAlpha()) {
             return CompletableFuture.supplyAsync(() -> {
-                instance.getLogger().info("§7Updater is disabled in alpha version(s).");
-                instance.getLogger().info(" ");
+                fallbackServerVelocity.getLogger().info("§7Updater is disabled in alpha version(s).");
+                fallbackServerVelocity.getLogger().info(" ");
                 return false;
             });
         }
@@ -49,6 +49,10 @@ public class VelocityUtils {
 
             return isUpdateAvailable;
         });
+    }
+
+    public void printDebug(String s) {
+        fallbackServerVelocity.getLogger().info("[DEBUG] " + s);
     }
 
     public String getDots(int s) {

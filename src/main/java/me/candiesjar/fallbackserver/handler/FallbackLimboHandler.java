@@ -13,6 +13,7 @@ import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
+import me.candiesjar.fallbackserver.utils.VelocityUtils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.elytrium.limboapi.api.Limbo;
@@ -57,43 +58,61 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         AtomicInteger tries = new AtomicInteger(0);
 
         reconnectTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> {
-
-            boolean maxTries = tries.getAndIncrement() == VelocityConfig.RECONNECT_TRIES.get(Integer.class);
-
-            if (maxTries) {
-                boolean fallback = VelocityConfig.RECONNECT_FALLBACK.get(Boolean.class);
-
-                if (fallback) {
-                    handleFallback(limboPlayer);
-                    return;
-                }
-
-                fallbackServerVelocity.cancelReconnect(uuid);
-                limboPlayer.disconnect();
-                return;
-            }
-
-            boolean useSockets = fallbackServerVelocity.isUseSockets();
-
-            if (useSockets) {
-                String reconnectAddress = target.getServerInfo().getAddress().getHostName();
-                String translatedAddress = translateAddress(reconnectAddress);
-
-                if (serverCacheManager.containsKey(translatedAddress)) {
-                    reconnect(limboPlayer);
-                }
-
-                return;
-            }
-
-            reconnect(limboPlayer);
+            start(tries, limboPlayer);
         }).repeat(VelocityConfig.RECONNECT_DELAY.get(Integer.class), TimeUnit.SECONDS).schedule();
+    }
+
+    private void start(AtomicInteger tries, LimboPlayer limboPlayer) {
+
+        VelocityUtils.printDebug("Reconnect task started for " + player.getUsername());
+
+        boolean maxTries = tries.getAndIncrement() == VelocityConfig.RECONNECT_TRIES.get(Integer.class);
+
+        VelocityUtils.printDebug("Tries: " + tries.get() + " | Max tries: " + maxTries);
+
+        if (maxTries) {
+
+            VelocityUtils.printDebug("Max tries reached for " + player.getUsername());
+
+            boolean fallback = VelocityConfig.RECONNECT_FALLBACK.get(Boolean.class);
+
+            if (fallback) {
+                handleFallback(limboPlayer);
+                return;
+            }
+
+            fallbackServerVelocity.cancelReconnect(uuid);
+            limboPlayer.disconnect();
+            return;
+        }
+
+        boolean useSockets = fallbackServerVelocity.isUseSockets();
+
+        if (useSockets) {
+
+            VelocityUtils.printDebug("Using sockets for " + player.getUsername());
+
+            String reconnectAddress = target.getServerInfo().getAddress().getHostName();
+            String translatedAddress = translateAddress(reconnectAddress);
+
+            if (serverCacheManager.containsKey(translatedAddress)) {
+                VelocityUtils.printDebug("Server cache contains " + translatedAddress + " for " + player.getUsername());
+                reconnect(limboPlayer);
+            }
+
+            return;
+        }
+
+        reconnect(limboPlayer);
     }
 
     private void reconnect(LimboPlayer limboPlayer) {
         boolean isReachable = ping(target, VelocityConfig.RECONNECT_PING_TIMEOUT.get(Integer.class));
 
+        VelocityUtils.printDebug("Server is reachable: " + isReachable + " for " + player.getUsername());
+
         if (isReachable) {
+            reconnectTask.cancel();
             titleTask.cancel();
 
             clear();
@@ -103,6 +122,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
                 limboPlayer.disconnect(target);
                 clear();
                 titleTask.cancel();
+                VelocityUtils.printDebug("Scheduled connection");
                 sendTitle(player, VelocityMessages.CONNECTED_TITLE, VelocityMessages.CONNECTED_SUB_TITLE);
 
                 boolean clearChat = VelocityConfig.CLEAR_CHAT_RECONNECT.get(Boolean.class);

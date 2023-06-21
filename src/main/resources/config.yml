@@ -8,7 +8,7 @@
 # ░ ░     ░   ▒     ░ ░     ░ ░    ░    ░   ░   ▒   ░        ░ ░░ ░    ░  ░  ░     ░     ░░   ░      ░░     ░     ░░   ░
 #             ░  ░    ░  ░    ░  ░ ░            ░  ░░ ░      ░  ░            ░     ░  ░   ░           ░     ░  ░   ░
 #                                       ░           ░                                                ░
-# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/fmUc6g3x | Telegram: @CandiesJar
+# Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/dJ8DG2cSzt | Telegram: @CandiesJar
 # Velocity configuration file
 
 # IMPORTANT WARNING: Before reporting any issue on discord, READ carefully the comments!
@@ -97,6 +97,7 @@ settings:
       - "kick"
       - "afk"
       - "whitelist"
+      - "spam"
       - "maintenance"
 
     # Option to choose if making the player join a limbo server
