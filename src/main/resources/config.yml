@@ -42,6 +42,13 @@ settings:
     - lobby2
     - lobby3
 
+  # If you want to use the reconnect mode, fallback_mode must be set to RECONNECT.
+  # Those values will clear the chat on reconnect (after success) or when players
+  # get fallback-ed to another server.
+  clear_chat:
+    fallback: true
+    reconnect: false
+
   # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
   # Customize things like delays and title mode, everything in seconds.
   auto_reconnect:
@@ -56,6 +63,16 @@ settings:
     # Sorting players in various lobbies.
     player_sort: true
 
+    # Delay before actual connecting the player to the server, useful
+    # for preventing spigot instance overload.
+    # In seconds.
+    connection_delay: 7
+
+    # This is the timeout for checking if the server
+    # is online or not using a pinging method.
+    # In milliseconds.
+    ping_threshold: 2000
+
     # Ignored reasons for reconnecting.
     # If players gets kicked for one of those reasons
     # they will not be reconnected.
@@ -63,7 +80,11 @@ settings:
       - "ban"
       - "kick"
       - "afk"
+      - "outdated"
       - "whitelist"
+      - "connected"
+      - "full"
+      - "spam"
       - "maintenance"
 
     # Title can be customized into messages configuration.

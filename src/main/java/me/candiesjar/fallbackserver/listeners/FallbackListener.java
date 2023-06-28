@@ -1,8 +1,8 @@
 package me.candiesjar.fallbackserver.listeners;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.api.FallbackAPI;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
@@ -21,16 +21,15 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 public class FallbackListener implements Listener {
 
     private final FallbackServerBungee fallbackServerBungee;
-    private final Map<String, LongAdder> pendingConnections = new ConcurrentHashMap<>();
+    private final HashMap<String, LongAdder> pendingConnections = Maps.newHashMap();
 
     public FallbackListener(FallbackServerBungee fallbackServerBungee) {
         this.fallbackServerBungee = fallbackServerBungee;
@@ -40,6 +39,7 @@ public class FallbackListener implements Listener {
     public void onServerKick(ServerKickEvent event) {
 
         ProxiedPlayer player = event.getPlayer();
+
         ServerInfo kickedFrom = event.getKickedFrom();
 
         if (!player.isConnected()) {
@@ -73,7 +73,7 @@ public class FallbackListener implements Listener {
         FallingServer.removeServer(kickedFrom);
         List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
 
-        boolean hasMaintenance = fallbackServerBungee.isUseMaintenance();
+        boolean hasMaintenance = fallbackServerBungee.isMaintenance();
 
         if (hasMaintenance) {
             lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
@@ -92,10 +92,16 @@ public class FallbackListener implements Listener {
 
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 
-        event.setCancelServer(serverInfo);
+        player.connect(serverInfo);
 
         incrementPendingConnections(serverInfo.getName());
         fallbackServerBungee.getProxy().getScheduler().schedule(fallbackServerBungee, () -> decrementPendingConnections(serverInfo.getName()), 1, TimeUnit.SECONDS);
+
+        boolean clearChat = BungeeConfig.CLEAR_CHAT_FALLBACK.getBoolean();
+
+        if (clearChat) {
+            ChatUtil.clearChat(player);
+        }
 
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", serverInfo.getName()),
@@ -115,15 +121,6 @@ public class FallbackListener implements Listener {
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
 
-        boolean notification = BungeeConfig.ADMIN_NOTIFICATION.getBoolean();
-
-        if (notification) {
-
-            ProxyServer.getInstance().getPlayers().stream().filter(all -> all != player);
-
-        }
-
-        ProxyServer.getInstance().getScheduler().runAsync(fallbackServerBungee, () -> fallbackServerBungee.getProxy().getPluginManager().callEvent(new FallbackAPI(player, kickedFrom, serverInfo, BaseComponent.toLegacyText(event.getKickReasonComponent()))));
     }
 
     private int getPendingConnections(String serverName) {

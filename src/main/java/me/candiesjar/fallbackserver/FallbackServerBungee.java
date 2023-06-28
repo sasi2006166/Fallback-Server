@@ -7,18 +7,19 @@ import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.TextFile;
 import me.candiesjar.fallbackserver.utils.FileUtils;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public final class FallbackServerBungee extends Plugin {
 
@@ -36,15 +37,15 @@ public final class FallbackServerBungee extends Plugin {
 
     @Getter
     @Setter
-    private boolean isAlpha = false;
+    private boolean alpha = false;
 
     @Getter
     @Setter
-    private boolean useAjQueue = false;
+    private boolean ajQueue = false;
 
     @Getter
     @Setter
-    private boolean useMaintenance = false;
+    private boolean maintenance = false;
 
     @Getter
     @Setter
@@ -53,6 +54,13 @@ public final class FallbackServerBungee extends Plugin {
     @Getter
     @Setter
     private boolean isDebug = false;
+
+    @Getter
+    @Setter
+    private boolean isReconnect = false;
+
+    @Getter
+    private boolean reconnectError = false;
 
     @Getter
     private PlayerCacheManager playerCacheManager;
@@ -122,18 +130,18 @@ public final class FallbackServerBungee extends Plugin {
 
         if (getProxy().getPluginManager().getPlugin("ajQueue") != null) {
             getLogger().info("§7[§b!§7] Enabling ajQueue API §7[§b!§7]");
-            setUseAjQueue(true);
+            setAjQueue(true);
         }
 
         if (getProxy().getPluginManager().getPlugin("Maintenance") != null) {
             getLogger().info("§7[§b!§7] Enabling Maintenance API §7[§b!§7]");
-            setUseMaintenance(true);
+            setMaintenance(true);
         }
 
     }
 
     private void checkAlpha() {
-        if (version.contains("Alpha")) {
+        if (version.contains("Alpha") || version.contains("Beta")) {
             setAlpha(true);
 
             getLogger().info(" ");
@@ -168,16 +176,16 @@ public final class FallbackServerBungee extends Plugin {
         getLogger().info("§7[§b!§7] Starting all listeners.. §7[§b!§7]");
 
         getProxy().getPluginManager().registerListener(this, new ServerConnectListener(this));
-        getProxy().getPluginManager().registerListener(this, new ServerSwitchListener());
-
+        getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
         String mode = BungeeConfig.FALLBACK_MODE.getString();
 
         switch (mode) {
-            case "DEFAULT":
+            case "NORMAL":
                 getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
                 getLogger().info("§7[§b!§7] Using default method §7[§b!§7]");
                 break;
             case "RECONNECT":
+                setReconnect(true);
                 getProxy().getPluginManager().registerListener(this, new ReconnectListener());
                 getLogger().info("§7[§b!§7] Using reconnect method §7[§b!§7]");
                 break;
@@ -216,11 +224,19 @@ public final class FallbackServerBungee extends Plugin {
             task.getReconnectTask().cancel();
             task.getTitleTask().cancel();
             task.clear();
+            if (task.getConnectTask() != null) {
+                task.getConnectTask().cancel();
+            }
         }
     }
 
     public boolean isHub(ServerInfo server) {
         return BungeeConfig.LOBBIES_LIST.getStringList().contains(server.getName());
+    }
+
+    public void setReconnectError(boolean b) {
+        this.reconnectError = b;
+        getProxy().getScheduler().schedule(this, () -> setReconnectError(false), 10, TimeUnit.SECONDS);
     }
 
     public Configuration getConfig() {

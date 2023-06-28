@@ -46,14 +46,15 @@ public class Utils {
         });
     }
 
-    public boolean checkMessage(String message, String name) {
-        for (String text : fallbackServerBungee.getConfig().getStringList("settings.command_blocker_list." + name)) {
-            text = "/" + text;
-            if (text.equalsIgnoreCase(message)) {
-                return true;
-            }
+    public void printDebug(String s, boolean exception) {
+
+        if (!exception) {
+            fallbackServerBungee.getLogger().warning("[DEBUG] " + s);
+            return;
         }
-        return false;
+
+        fallbackServerBungee.getLogger().severe("[ERROR] " + s);
+
     }
 
     public String getDots(int s) {

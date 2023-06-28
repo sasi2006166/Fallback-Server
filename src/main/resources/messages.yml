@@ -26,6 +26,7 @@ MESSAGES:
   server_not_available: "%prefix% &b%server% &7isn't contained in BungeeCord configuration."
   server_added: "%prefix% &b%server% &7has been added to configuration."
   connection_failed: "%prefix% &7Re-connection &c&lfailed&7! Moving to fallback."
+  exiting_reconnect: "%prefix% &7Exiting re-connection mode."
 
   moved_to_lobby:
     - ""
@@ -68,8 +69,17 @@ TITLES: # Everything in seconds.
   # Reconnect title values are automatic.
   # You can enable / disable it in config.yml
   reconnect:
-    reconnect_title: "&a&lReconnecting&7%dots%"
+    reconnect_title: "&c&lReconnecting&7%dots%"
     reconnect_sub_title: "&7Please wait!"
+    connecting_title: "&6&lConnecting&7%dots%"
+    connecting_sub_title: "&7Waiting for response from server."
+    connected:
+      delay: 2
+      fade_in: 1
+      fade_out: 1
+      stay: 2
+      title: "&a&lConnected!"
+      sub_title: "&7You've been connected to &b%server%"
 
   lobby:
     enabled: true

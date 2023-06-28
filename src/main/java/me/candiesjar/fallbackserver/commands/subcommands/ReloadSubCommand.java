@@ -6,6 +6,7 @@ import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.TextFile;
+import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 import net.md_5.bungee.api.CommandSender;
 
 public class ReloadSubCommand implements SubCommand {
@@ -44,6 +45,9 @@ public class ReloadSubCommand implements SubCommand {
             }
 
         }
+
+        PingTask.getTask().cancel();
+        PingTask.start();
 
         BungeeMessages.RELOAD.send(sender);
     }

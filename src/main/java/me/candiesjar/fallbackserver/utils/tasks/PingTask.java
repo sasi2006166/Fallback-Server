@@ -1,11 +1,13 @@
 package me.candiesjar.fallbackserver.utils.tasks;
 
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,8 +18,12 @@ public class PingTask {
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
     private final ProxyServer proxyServer = ProxyServer.getInstance();
 
+    @Getter
+    private ScheduledTask task;
+
     public void start() {
-        proxyServer.getScheduler().schedule(fallbackServerBungee, PingTask::pingServers, 0, BungeeConfig.PING_DELAY.getInt(), TimeUnit.SECONDS);
+        int delay = BungeeConfig.PING_DELAY.getInt();
+        task =  proxyServer.getScheduler().schedule(fallbackServerBungee, PingTask::pingServers, 0, delay, TimeUnit.SECONDS);
     }
 
     private void pingServers() {
@@ -36,6 +42,7 @@ public class PingTask {
     }
 
     private void pingServer(ServerInfo serverInfo) {
+
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
                 return;

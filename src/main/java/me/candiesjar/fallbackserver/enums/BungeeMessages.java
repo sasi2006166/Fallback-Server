@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.enums;
 
+import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -19,6 +20,7 @@ public enum BungeeMessages {
     MAIN_COMMAND("MESSAGES.fallback_command"),
     NO_PERMISSION("MESSAGES.no_permission"),
     NO_SERVER("MESSAGES.no_server"),
+    EXITING_RECONNECT("MESSAGES.exiting_reconnect"),
 
     EMPTY_SERVER("MESSAGES.empty_server"),
     SERVER_CONTAINED("MESSAGES.server_is_added"),
@@ -39,6 +41,14 @@ public enum BungeeMessages {
 
     RECONNECT_TITLE("TITLES.reconnect.reconnect_title"),
     RECONNECT_SUB_TITLE("TITLES.reconnect.reconnect_sub_title"),
+    CONNECTING_TITLE("TITLES.reconnect.connecting_title"),
+    CONNECTING_SUB_TITLE("TITLES.reconnect.connecting_sub_title"),
+    CONNECTED_TITLE("TITLES.reconnect.connected.title"),
+    CONNECTED_SUB_TITLE("TITLES.reconnect.connected.sub_title"),
+    CONNECTED_DELAY("TITLES.reconnect.connected.delay"),
+    CONNECTED_FADE_IN("TITLES.reconnect.connected.fade_in"),
+    CONNECTED_FADE_OUT("TITLES.reconnect.connected.fade_out"),
+    CONNECTED_STAY("TITLES.reconnect.connected.stay"),
 
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),
@@ -47,15 +57,13 @@ public enum BungeeMessages {
     HUB_TITLE("TITLES.lobby.lobby_title"),
     HUB_SUB_TITLE("TITLES.lobby.lobby_sub_title");
 
+    @Getter
     private final String path;
-    private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
+
+    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
 
     BungeeMessages(String path) {
         this.path = path;
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public void send(CommandSender commandSender, Placeholder... placeholders) {
@@ -72,11 +80,11 @@ public enum BungeeMessages {
     }
 
     public boolean getBoolean() {
-        return instance.getMessagesConfig().getBoolean(path);
+        return fallbackServerBungee.getMessagesConfig().getBoolean(path);
     }
 
     public int getInt() {
-        return instance.getMessagesConfig().getInt(path);
+        return fallbackServerBungee.getMessagesConfig().getInt(path);
     }
 
 }

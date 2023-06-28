@@ -2,7 +2,6 @@ package me.candiesjar.fallbackserver.commands.base;
 
 import com.google.common.collect.Lists;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.api.HubAPI;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
@@ -10,7 +9,6 @@ import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.ServerUtils;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -42,15 +40,9 @@ public class HubCommand extends Command {
             return;
         }
 
-        boolean isInReconnect = fallbackServerBungee.getPlayerCacheManager().containsKey(player.getUniqueId());
-
-        if (isInReconnect) {
-            return;
-        }
-
         List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
 
-        boolean hasMaintenance = fallbackServerBungee.isUseMaintenance();
+        boolean hasMaintenance = fallbackServerBungee.isMaintenance();
 
         if (hasMaintenance) {
             lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
@@ -82,8 +74,6 @@ public class HubCommand extends Command {
                     player);
 
         }
-
-        ProxyServer.getInstance().getScheduler().runAsync(fallbackServerBungee, () -> fallbackServerBungee.getProxy().getPluginManager().callEvent(new HubAPI(player, playerServer, serverInfo)));
 
     }
 }

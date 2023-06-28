@@ -21,7 +21,7 @@ public class TitleUtil {
         createdTitle.fadeOut(fadeOut * 20);
 
         createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title).replace("%server%", serverInfo.getName())));
-        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)));
+        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle).replace("%server%", serverInfo.getName())));
 
         createdTitle.send(proxiedPlayer);
 

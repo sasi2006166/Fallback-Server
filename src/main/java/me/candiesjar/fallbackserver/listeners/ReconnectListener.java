@@ -3,6 +3,8 @@ package me.candiesjar.fallbackserver.listeners;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import net.md_5.bungee.ServerConnection;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -20,6 +22,8 @@ public class ReconnectListener implements Listener {
 
         ProxiedPlayer player = event.getPlayer();
         ServerInfo kickedFrom = event.getKickedFrom();
+        UserConnection userConnection = (UserConnection) player;
+        ServerConnection serverConnection = userConnection.getServer();
 
         if (!player.isConnected()) {
             return;
@@ -46,17 +50,18 @@ public class ReconnectListener implements Listener {
             return;
         }
 
-        event.setCancelled(false);
-        event.setState(ServerKickEvent.State.CONNECTING);
-        event.setCause(ServerKickEvent.Cause.UNKNOWN);
+        event.setCancelled(true);
 
         ReconnectHandler task = PlayerCacheManager.getInstance().get(player.getUniqueId());
 
         if (task == null) {
-            PlayerCacheManager.getInstance().put(player.getUniqueId(), task = new ReconnectHandler(player, kickedFrom, player.getUniqueId()));
+            PlayerCacheManager.getInstance().put(player.getUniqueId(), task = new ReconnectHandler(player, serverConnection, player.getUniqueId()));
         }
 
-        task.reconnect();
+        userConnection.getServerSentScoreboard().clear();
+        userConnection.resetTabHeader();
+
+        task.start();
 
     }
 

@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserver.listeners;
 
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.utils.Utils;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -34,7 +34,7 @@ public class ChatListener implements Listener {
             message = args[0];
         }
 
-        boolean checkMessage = Utils.checkMessage(message, playerServer);
+        boolean checkMessage = ChatUtil.checkMessage(message, playerServer);
 
         if (checkMessage) {
             event.setCancelled(true);

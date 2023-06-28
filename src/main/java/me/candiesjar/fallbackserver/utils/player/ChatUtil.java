@@ -92,4 +92,14 @@ public class ChatUtil {
         }
     }
 
+    public boolean checkMessage(String message, String name) {
+        for (String text : fallbackServerBungee.getConfig().getStringList("settings.command_blocker_list." + name)) {
+            text = "/" + text;
+            if (text.equalsIgnoreCase(message)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

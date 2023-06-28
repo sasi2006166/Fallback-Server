@@ -14,7 +14,7 @@ public class ServerUtils {
 
     public boolean checkMaintenance(ServerInfo serverInfo) {
 
-        boolean useMaintenance = instance.isUseMaintenance();
+        boolean useMaintenance = instance.isMaintenance();
 
         if (useMaintenance) {
 
