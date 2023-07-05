@@ -87,8 +87,17 @@ settings:
       - "spam"
       - "maintenance"
 
+    ignored_servers:
+      - lobby1
+      - lobby2
+      - lobby3
+      - bw1
+      - bw2
+      - bw3
+
     # Title can be customized into messages configuration.
     # Available in messages.yml
+    # DISABLED.
     title:
       enable: true
       # NORMAL: The normal animated title with dots
@@ -155,13 +164,13 @@ settings:
     - lobby
 
   # Enable server blacklist feature, such for authentication servers.
-  server_blacklist: true
+  use_ignored_servers: true
 
   # WARNING: Works only if "server_blacklist" is set on true.
   # Add here your pre-lobbies or any server you want to disable.
   # Kicking will be disabled on those and player will be disconnected.
-  server_blacklist_list:
-    - testserver
+  ignored_servers_list:
+    - prelobby1
 
 sub_commands:
 

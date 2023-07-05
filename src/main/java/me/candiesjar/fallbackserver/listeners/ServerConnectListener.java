@@ -1,7 +1,6 @@
 package me.candiesjar.fallbackserver.listeners;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -23,8 +22,6 @@ public class ServerConnectListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerConnect(ServerConnectEvent event) {
-
-        Utils.printDebug("Called shit event by md5 technology", true);
 
         ProxiedPlayer player = event.getPlayer();
         ServerInfo target = event.getTarget();

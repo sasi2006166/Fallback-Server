@@ -186,7 +186,7 @@ public final class FallbackServerBungee extends Plugin {
                 break;
             case "RECONNECT":
                 setReconnect(true);
-                getProxy().getPluginManager().registerListener(this, new ReconnectListener());
+                getProxy().getPluginManager().registerListener(this, new ReconnectListener(this));
                 getLogger().info("§7[§b!§7] Using reconnect method §7[§b!§7]");
                 break;
             default:

@@ -9,7 +9,6 @@ import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -41,7 +40,6 @@ public class ServerSwitchListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (event.getFrom() == null) {
-            player.disconnect(new TextComponent("exploded"));
             return;
         }
 

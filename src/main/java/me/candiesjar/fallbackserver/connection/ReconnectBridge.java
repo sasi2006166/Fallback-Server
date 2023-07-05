@@ -1,9 +1,9 @@
 package me.candiesjar.fallbackserver.connection;
 
-import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -33,7 +33,7 @@ public class ReconnectBridge extends DownstreamBridge {
     @Override
     public void disconnected(ChannelWrapper channel) {
 
-        Utils.printDebug("Disconnected " + userConnection.getName(), true);
+        String reason = proxyServer.getTranslation("lost_connection");
 
         server.getInfo().removePlayer(userConnection);
 
@@ -47,16 +47,14 @@ public class ReconnectBridge extends DownstreamBridge {
 
         server.setObsolete(true);
 
-        ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
-
-        ServerKickEvent serverKickEvent = new ServerKickEvent(userConnection, server.getInfo(), ComponentSerializer.parse("crash"), nextServer, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER);
-
         if (userConnection.isConnected()) {
+            ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
+            ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacyText(reason), nextServer, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.LOST_CONNECTION));
+
             if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
                 userConnection.connectNow(serverKickEvent.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
-            } else {
-                proxyServer.getPluginManager().callEvent(serverKickEvent);
             }
+
         }
 
         ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent(userConnection, server.getInfo());
@@ -66,8 +64,7 @@ public class ReconnectBridge extends DownstreamBridge {
 
     @Override
     public void exception(Throwable t) {
-
-        Utils.printDebug("Exception " + userConnection.getName(), true);
+        String reason = proxyServer.getTranslation("lost_connection");
 
         if (server.isObsolete()) {
             return;
@@ -76,32 +73,22 @@ public class ReconnectBridge extends DownstreamBridge {
         server.setObsolete(true);
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
-
-        ServerKickEvent serverKickEvent = new ServerKickEvent(userConnection, server.getInfo(), ComponentSerializer.parse("crash"), nextServer, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER);
+        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacyText(reason), nextServer, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.LOST_CONNECTION));
 
         if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
             userConnection.connectNow(serverKickEvent.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
-            return;
-        }
-
-        if (userConnection.isConnected()) {
-            proxyServer.getPluginManager().callEvent(serverKickEvent);
         }
 
     }
 
     @Override
-    public void handle(Kick kick) throws Exception {
-
-        Utils.printDebug("Kick " + userConnection.getName(), true);
+    public void handle(Kick kick) {
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
-        ServerKickEvent serverKickEvent = new ServerKickEvent(userConnection, server.getInfo(), ComponentSerializer.parse(kick.getMessage()), nextServer, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER);
+        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), ComponentSerializer.parse(kick.getMessage()), nextServer, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION));
 
         if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
             userConnection.connectNow(serverKickEvent.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
-        } else {
-            proxyServer.getPluginManager().callEvent(serverKickEvent);
         }
 
         server.setObsolete(true);

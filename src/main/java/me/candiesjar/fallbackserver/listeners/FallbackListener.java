@@ -39,10 +39,14 @@ public class FallbackListener implements Listener {
     public void onServerKick(ServerKickEvent event) {
 
         ProxiedPlayer player = event.getPlayer();
-
         ServerInfo kickedFrom = event.getKickedFrom();
+        ServerKickEvent.State state = event.getState();
 
         if (!player.isConnected()) {
+            return;
+        }
+
+        if (state != ServerKickEvent.State.CONNECTED) {
             return;
         }
 
@@ -62,7 +66,7 @@ public class FallbackListener implements Listener {
 
         }
 
-        boolean useBlacklist = BungeeConfig.USE_BLACKLISTED_SERVERS.getBoolean();
+        boolean useBlacklist = BungeeConfig.USE_IGNORED_SERVERS.getBoolean();
 
         if (useBlacklist && BungeeConfig.BLACKLISTED_SERVERS_LIST.getStringList().contains(kickedFrom.getName())) {
             return;
