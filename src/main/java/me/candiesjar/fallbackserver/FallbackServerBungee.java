@@ -120,8 +120,15 @@ public final class FallbackServerBungee extends Plugin {
         boolean useDebug = BungeeConfig.DEBUG_MODE.getBoolean();
 
         if (useDebug) {
-            getLogger().severe("§7[§c!§7] Debug mode is enabled §7[§c!§7]");
             setDebug(true);
+            getLogger().warning(" ");
+            getLogger().warning("You are using the debug mode");
+            getLogger().warning("which can cause a lot of spam in the console");
+            getLogger().warning("Remember that this mode should be enabled");
+            getLogger().warning("only if developer is asking for it");
+            getLogger().warning("or if you want to report a bug.");
+            getLogger().warning("Thanks for using FallbackServer!");
+            getLogger().warning(" ");
         }
 
     }
@@ -180,7 +187,7 @@ public final class FallbackServerBungee extends Plugin {
         String mode = BungeeConfig.FALLBACK_MODE.getString();
 
         switch (mode) {
-            case "NORMAL":
+            case "DEFAULT":
                 getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
                 getLogger().info("§7[§b!§7] Using default method §7[§b!§7]");
                 break;

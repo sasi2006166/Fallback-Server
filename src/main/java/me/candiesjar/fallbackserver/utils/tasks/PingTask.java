@@ -23,7 +23,7 @@ public class PingTask {
 
     public void start() {
         int delay = BungeeConfig.PING_DELAY.getInt();
-        task =  proxyServer.getScheduler().schedule(fallbackServerBungee, PingTask::pingServers, 0, delay, TimeUnit.SECONDS);
+        task = proxyServer.getScheduler().schedule(fallbackServerBungee, PingTask::pingServers, 0, delay, TimeUnit.SECONDS);
     }
 
     private void pingServers() {

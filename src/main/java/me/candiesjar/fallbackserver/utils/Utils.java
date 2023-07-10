@@ -3,11 +3,14 @@ package me.candiesjar.fallbackserver.utils;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.netty.ChannelWrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -19,6 +22,7 @@ public class Utils {
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
     private final ProxyServer proxyServer = ProxyServer.getInstance();
+    private Field userChannelWrapperField = null;
 
     public void checkUpdates() {
         proxyServer.getScheduler().runAsync(fallbackServerBungee, () -> {
@@ -74,6 +78,27 @@ public class Utils {
     public void writeToServerList(String section, String arguments) {
         BungeeConfig.LOBBIES_LIST.getStringList().add(arguments);
         fallbackServerBungee.getConfig().set(section, BungeeConfig.LOBBIES_LIST.getStringList());
+    }
+
+    public ChannelWrapper getUserChannelWrapper(UserConnection user) {
+        if (user != null) {
+            try {
+                return (ChannelWrapper) userChannelWrapperField.get(user);
+            } catch (ClassCastException | IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    static {
+        for (Field f : UserConnection.class.getDeclaredFields()) {
+            if (ChannelWrapper.class.isAssignableFrom(f.getType())) {
+                userChannelWrapperField = f;
+                userChannelWrapperField.setAccessible(true);
+                break;
+            }
+        }
     }
 
     public boolean isUpdateAvailable() {

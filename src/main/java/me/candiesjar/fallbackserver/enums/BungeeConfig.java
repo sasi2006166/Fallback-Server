@@ -19,6 +19,7 @@ public enum BungeeConfig {
     RECONNECT_PING_THRESHOLD("settings.auto_reconnect.ping_threshold"),
     RECONNECT_CONNECTION_DELAY("settings.auto_reconnect.connection_delay"),
     RECONNECT_SORT("settings.auto_reconnect.player_sort"),
+    RECONNECT_TASK_DELAY("settings.auto_reconnect.task_delay"),
     RECONNECT_IGNORED_SERVERS("settings.auto_reconnect.ignored_servers"),
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
@@ -36,6 +37,8 @@ public enum BungeeConfig {
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
     RELOAD_PERMISSION("sub_commands.reload.permission"),
+
+    DEBUG_COMMAND_PERMISSION("sub_commands.debug.permission"),
 
     ADD_COMMAND("sub_commands.add.enabled"),
     ADD_COMMAND_PERMISSION("sub_commands.add.permission"),

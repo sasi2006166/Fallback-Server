@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.util.internal.PlatformDependent;
 import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
@@ -25,8 +26,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
+import net.md_5.bungee.api.scheduler.TaskScheduler;
 import net.md_5.bungee.netty.PipelineUtils;
 
+import java.net.InetSocketAddress;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -36,10 +39,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ReconnectHandler {
 
     private final String LOST_CONNECTION = ProxyServer.getInstance().getTranslation("lost_connection");
+    private final AtomicInteger DOTS = new AtomicInteger(0);
+    private final AtomicInteger TRIES = new AtomicInteger(0);
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
     private final ProxyServer proxyServer = ProxyServer.getInstance();
-    private final AtomicInteger dots = new AtomicInteger(0);
+    private final TaskScheduler taskScheduler = proxyServer.getScheduler();
 
     private final ProxiedPlayer player;
     private final ServerConnection serverConnection;
@@ -63,17 +68,19 @@ public class ReconnectHandler {
     }
 
     public void start() {
-        titleTask = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> sendTitle(player, BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE, dots), 0, 1, TimeUnit.SECONDS);
-        AtomicInteger tries = new AtomicInteger(0);
-        reconnectTask = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> reconnect(tries), 0, BungeeConfig.RECONNECT_DELAY.getInt(), TimeUnit.SECONDS);
+        titleTask = taskScheduler.schedule(fallbackServerBungee, () -> sendTitle(BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE), 0, 1, TimeUnit.SECONDS);
+
+        int reconnectDelay = BungeeConfig.RECONNECT_DELAY.getInt();
+        int taskDelay = BungeeConfig.RECONNECT_TASK_DELAY.getInt();
+
+        reconnectTask = taskScheduler.schedule(fallbackServerBungee, this::reconnect, taskDelay, reconnectDelay, TimeUnit.SECONDS);
     }
 
-    private void reconnect(AtomicInteger tries) {
+    private void reconnect() {
 
-        boolean maxTries = tries.incrementAndGet() == BungeeConfig.RECONNECT_TRIES.getInt();
+        boolean maxTries = TRIES.incrementAndGet() == BungeeConfig.RECONNECT_TRIES.getInt();
 
         if (maxTries) {
-            BungeeMessages.CONNECTION_FAILED.send(player);
             boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
 
             if (fallback) {
@@ -86,24 +93,26 @@ public class ReconnectHandler {
             return;
         }
 
-        pingServer(targetServerInfo, (result, error) -> {
+        targetServerInfo.ping(((result, error) -> {
+
             if (error != null || result == null) {
                 return;
             }
 
-            titleTask.cancel();
-            resetDots();
-            reconnectTask.cancel();
-            clear();
+            int maxPlayers = result.getPlayers().getMax();
 
-            titleTask = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> sendTitle(player, BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE, dots), 0, 1, TimeUnit.SECONDS);
-            connectTask = proxyServer.getScheduler().schedule(fallbackServerBungee, this::handleConnection, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), TimeUnit.SECONDS);
-        });
+            if (maxPlayers == -1) {
+                titleTask.cancel();
+                resetDots();
+                reconnectTask.cancel();
+                clear();
 
-    }
+                titleTask = taskScheduler.schedule(fallbackServerBungee, () -> sendTitle(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 0, 1, TimeUnit.SECONDS);
+                connectTask = taskScheduler.schedule(fallbackServerBungee, this::handleConnection, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), TimeUnit.SECONDS);
+            }
 
-    private void resetDots() {
-        dots.set(0);
+        }));
+
     }
 
     private void handleConnection() {
@@ -119,7 +128,12 @@ public class ReconnectHandler {
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo);
         ChannelFutureListener listener = channelFuture -> proxyServer.getScheduler().schedule(fallbackServerBungee, () -> TitleUtil.sendTitle(fadeIn, stay, fadeOut, BungeeMessages.CONNECTED_TITLE, BungeeMessages.CONNECTED_SUB_TITLE, targetServerInfo, player), delay, TimeUnit.SECONDS);
 
-        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(targetServerInfo.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout).remoteAddress(targetServerInfo.getAddress());
+        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(targetServerInfo.getAddress())).group(Utils.getUserChannelWrapper(userConnection).getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout).remoteAddress(targetServerInfo.getAddress());
+
+        if (userConnection.getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows()) {
+            bootstrap.localAddress(((InetSocketAddress) userConnection.getPendingConnection().getListener().getSocketAddress()).getHostString(), 0);
+        }
+
         bootstrap.connect().addListener(listener);
 
         boolean clearChat = BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean();
@@ -139,6 +153,7 @@ public class ReconnectHandler {
                 }
 
                 fallbackServerBungee.setReconnectError(true);
+
                 if (!player.isConnected()) {
                     fallbackServerBungee.cancelReconnect(uuid);
                     return;
@@ -146,6 +161,7 @@ public class ReconnectHandler {
 
                 handleFallback();
             }
+
         });
 
         fallbackServerBungee.cancelReconnect(uuid);
@@ -153,6 +169,7 @@ public class ReconnectHandler {
 
     private void handleFallback() {
         clear();
+
         FallingServer.removeServer(targetServerInfo);
         List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
 
@@ -164,6 +181,7 @@ public class ReconnectHandler {
 
         if (lobbies.isEmpty()) {
             player.disconnect(new TextComponent(LOST_CONNECTION));
+            fallbackServerBungee.cancelReconnect(uuid);
             return;
         }
 
@@ -172,6 +190,14 @@ public class ReconnectHandler {
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 
         player.connect(serverInfo);
+
+        boolean clearChat = BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean();
+
+        if (clearChat) {
+            ChatUtil.clearChat(player);
+        }
+
+        BungeeMessages.CONNECTION_FAILED.send(player);
 
         proxyServer.getScheduler().schedule(fallbackServerBungee, () -> TitleUtil.sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
                         BungeeMessages.FALLBACK_STAY.getInt(),
@@ -190,14 +216,18 @@ public class ReconnectHandler {
         bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }
 
-    private void sendTitle(ProxiedPlayer player, BungeeMessages title, BungeeMessages subTitle, AtomicInteger dots) {
+    private void sendTitle(BungeeMessages title, BungeeMessages subTitle) {
         int maxDots = 4;
 
-        if (dots.getAndIncrement() == maxDots) {
-            dots.set(0);
+        if (DOTS.getAndIncrement() == maxDots) {
+            DOTS.set(0);
         }
 
-        TitleUtil.sendReconnectingTitle(0, 1 + 20, dots.get(), title, subTitle, player);
+        TitleUtil.sendReconnectingTitle(0, 1 + 20, DOTS.get(), title, subTitle, player);
+    }
+
+    private void resetDots() {
+        DOTS.set(0);
     }
 
     public void clear() {
