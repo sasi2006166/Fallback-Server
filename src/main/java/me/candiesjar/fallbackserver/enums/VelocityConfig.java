@@ -5,19 +5,17 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import java.util.List;
 
 public enum VelocityConfig {
+    DEBUG_MODE("settings.debug"),
     TAB_COMPLETE("settings.command_tab_complete"),
     HIDE_COMMAND("settings.hide_command"),
     FALLBACK_MODE("settings.fallback_mode"),
     CLEAR_CHAT_RECONNECT("settings.clear_chat.reconnect"),
     CLEAR_CHAT_FALLBACK("settings.clear_chat.fallback"),
-    DEBUG_MODE("settings.debug"),
 
-    RECONNECT_USE_SOCKETS("settings.auto_reconnect.use_sockets"),
-    RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
-    RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
-    RECONNECT_SOCKET_PORT("settings.auto_reconnect.socket_port"),
-    RECONNECT_FALLBACK("settings.auto_reconnect.player_sort"),
-    RECONNECT_SOCKET_TASK("settings.auto_reconnect.socket_task"),
+    RECONNECT_MAX_TRIES("settings.auto_reconnect.max_tries"),
+    RECONNECT_TASK_DELAY("settings.auto_reconnect.ping_delay"),
+    RECONNECT_IGNORED_SERVERS("settings.auto_reconnect.ignored_servers"),
+    RECONNECT_USE_FALLBACK("settings.auto_reconnect.player_sort"),
     RECONNECT_IGNORED_REASONS("settings.auto_reconnect.ignored_reasons"),
     RECONNECT_JOIN_LIMBO("settings.auto_reconnect.join_limbo"),
     RECONNECT_PING_TIMEOUT("settings.auto_reconnect.ping_timeout"),
@@ -38,6 +36,10 @@ public enum VelocityConfig {
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
     RELOAD_PERMISSION("sub_commands.reload.permission"),
+    DEBUG_PERMISSION("sub_commands.debug.permission"),
+
+    LOBBY_COMMAND("settings.lobby_command"),
+    LOBBY_ALIASES("settings.lobby_command_aliases"),
 
     ADD_COMMAND("sub_commands.add.enabled"),
     ADD_COMMAND_PERMISSION("sub_commands.add.permission"),
@@ -47,9 +49,6 @@ public enum VelocityConfig {
 
     STATUS_COMMAND("sub_commands.status.enabled"),
     STATUS_COMMAND_PERMISSION("sub_commands.status.permission"),
-
-    LOBBY_COMMAND("settings.lobby_command"),
-    LOBBY_ALIASES("settings.lobby_command_aliases"),
 
     UPDATE_COMMAND("sub_commands.update.enabled"),
     UPDATE_COMMAND_PERMISSION("sub_commands.update.permission");

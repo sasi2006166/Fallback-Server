@@ -14,20 +14,15 @@ import com.velocitypowered.api.scheduler.ScheduledTask;
 import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
-import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.FallbackVelocityCommand;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
-import me.candiesjar.fallbackserver.handler.SocketHandler;
-import me.candiesjar.fallbackserver.listeners.CommandListener;
-import me.candiesjar.fallbackserver.listeners.FallbackListener;
-import me.candiesjar.fallbackserver.listeners.PlayerListener;
-import me.candiesjar.fallbackserver.listeners.ReconnectListener;
+import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.stats.VelocityMetrics;
-import me.candiesjar.fallbackserver.utils.VelocityUtils;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.WorldUtil;
 import me.candiesjar.fallbackserver.utils.tasks.LobbyTask;
 import net.byteflux.libby.Library;
@@ -42,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "fallbackservervelocity",
         name = "FallbackServerVelocity",
-        version = "3.1.3-Alpha2",
+        version = "3.2.0-Beta1",
         url = "github.com/sasi2006166",
         authors = "CandiesJar",
         dependencies = {
@@ -54,39 +49,32 @@ import java.util.concurrent.TimeUnit;
 public class FallbackServerVelocity {
 
     @Getter
-    public static final String VERSION = "3.1.3-Alpha2";
+    private static FallbackServerVelocity instance;
+
+    @Getter
+    public static final String VERSION = "3.2.0-Beta1";
 
     @Getter
     private TextFile config, messages;
 
     @Getter
-    private static FallbackServerVelocity instance;
+    @Setter
+    private boolean alpha = false;
 
     @Getter
     @Setter
-    private boolean isAlpha = false;
+    private boolean ajQueue = false;
 
     @Getter
     @Setter
-    private boolean useAjQueue = false;
-
-    @Getter
-    @Setter
-    private boolean useMaintenance = false;
+    private boolean maintenance = false;
 
     @Getter
     @Setter
     private boolean debug = false;
 
-    @Getter
     @Setter
-    private boolean useSockets = false;
-
-    @Setter
-    private boolean useLimbo = false;
-
-    @Getter
-    private ServerCacheManager serverCacheManager;
+    private boolean limboApi = false;
 
     private final ProxyServer server;
     private final Logger logger;
@@ -94,6 +82,7 @@ public class FallbackServerVelocity {
     private final Path path;
 
     private FallingServerManager fallingServerManager;
+    private PlayerCacheManager playerCacheManager;
     private ScheduledTask task;
 
     @Inject
@@ -121,13 +110,11 @@ public class FallbackServerVelocity {
         loadConfiguration();
 
         fallingServerManager = new FallingServerManager();
-        serverCacheManager = ServerCacheManager.getInstance();
+        playerCacheManager = PlayerCacheManager.getInstance();
 
         loadCommands();
 
         checkPlugins();
-
-        checkSocket();
 
         loadListeners();
 
@@ -147,7 +134,6 @@ public class FallbackServerVelocity {
     public void onProxyShutdown(ProxyShutdownEvent event) {
         getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling.. §7[§c!§7]");
         task.cancel();
-        SocketHandler.stop();
     }
 
     private void loadDependencies() {
@@ -188,17 +174,17 @@ public class FallbackServerVelocity {
 
         if (getServer().getPluginManager().getPlugin("ajQueue").isPresent()) {
             getLogger().info("§7[§b!§7] Hooking in AjQueue §7[§b!§7]");
-            setUseAjQueue(true);
+            setAjQueue(true);
         }
 
         if (getServer().getPluginManager().getPlugin("Maintenance").isPresent()) {
             getLogger().info("§7[§b!§7] Hooking in Maintenance §7[§b!§7]");
-            setUseMaintenance(true);
+            setMaintenance(true);
         }
 
         if (getServer().getPluginManager().getPlugin("limboapi").isPresent()) {
             getLogger().info("§7[§b!§7] Hooking in LimboAPI §7[§b!§7]");
-            setUseLimbo(true);
+            setLimboApi(true);
         }
 
     }
@@ -218,10 +204,10 @@ public class FallbackServerVelocity {
 
     private void checkAlpha() {
 
-        if (getVERSION().contains("Alpha")) {
+        if (getVERSION().contains("Alpha") || getVERSION().contains("Beta")) {
             setAlpha(true);
             getLogger().info(" ");
-            getLogger().info("§7You're running an §c§lALPHA VERSION §7of Fallback Server.");
+            getLogger().info("§7You're running an §c§lBETA VERSION §7of Fallback Server.");
             getLogger().info("§7If you find any bugs, please report them on discord.");
             getLogger().info(" ");
         }
@@ -229,7 +215,7 @@ public class FallbackServerVelocity {
     }
 
     private void checkUpdate() {
-        VelocityUtils.getUpdates().whenComplete((result, throwable) -> {
+        Utils.getUpdates().whenComplete((result, throwable) -> {
             if (throwable != null) {
                 getLogger().error("§7[§b!§7] An error occurred while checking for updates §7[§b!§7]");
                 getLogger().error(throwable.getMessage());
@@ -249,18 +235,6 @@ public class FallbackServerVelocity {
         if (shouldUseStatistics) {
             factory.make(this, 12602);
         }
-    }
-
-    private void checkSocket() {
-
-        boolean useSocket = VelocityConfig.RECONNECT_USE_SOCKETS.get(Boolean.class);
-
-        if (useSocket) {
-            getLogger().info("§7[§b!§7] Starting socket... §7[§b!§7]");
-            SocketHandler.start();
-            setUseSockets(true);
-        }
-
     }
 
     private void loadCommands() {
@@ -298,7 +272,7 @@ public class FallbackServerVelocity {
             case "RECONNECT":
                 getLogger().info("§7[§b!§7] Running pre-checks §7[§b!§7]");
 
-                if (!useLimbo) {
+                if (!limboApi) {
                     getLogger().error(
                             "\nLimboAPI is missing from your plugins folder, for enabling \n" +
                                     "reconnect method you need to install LimboAPI. \n" +
@@ -309,7 +283,8 @@ public class FallbackServerVelocity {
                 }
 
                 WorldUtil.createWorld();
-                server.getEventManager().register(this, new ReconnectListener());
+                server.getEventManager().register(this, new ServerSwitchListener(this));
+                server.getEventManager().register(this, new ReconnectListener(this));
                 getLogger().info("§7[§b!§7] Enabled reconnect method §7[§b!§7]");
                 break;
             default:
@@ -333,14 +308,14 @@ public class FallbackServerVelocity {
     }
 
     public void cancelReconnect(UUID uuid) {
-        FallbackLimboHandler limbo = PlayerCacheManager.getInstance().remove(uuid);
-        if (limbo != null) {
-            limbo.getReconnectTask().cancel();
-            limbo.getTitleTask().cancel();
-            if (limbo.getConnectTask() != null) {
-                limbo.getConnectTask().cancel();
+        FallbackLimboHandler limboHandler = playerCacheManager.remove(uuid);
+        if (limboHandler != null) {
+            limboHandler.getReconnectTask().cancel();
+            limboHandler.getTitleTask().cancel();
+            if (limboHandler.getConnectTask() != null) {
+                limboHandler.getConnectTask().cancel();
             }
-            limbo.clear();
+            limboHandler.clear();
         }
     }
 
@@ -358,7 +333,6 @@ public class FallbackServerVelocity {
     public void reloadTasks() {
         task.cancel();
         loadTask();
-        SocketHandler.reload();
     }
 
 }

@@ -1,14 +1,12 @@
 package me.candiesjar.fallbackserver.listeners;
 
 import com.google.common.collect.Lists;
-import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
@@ -30,17 +28,15 @@ import java.util.concurrent.atomic.LongAdder;
 public class FallbackListener {
     private final FallbackServerVelocity fallbackServerVelocity;
     private final FallingServerManager fallingServerManager;
-    private final ServerCacheManager serverCacheManager;
     private final Map<String, LongAdder> pendingConnections = new ConcurrentHashMap<>();
 
     public FallbackListener(FallbackServerVelocity fallbackServerVelocity) {
         this.fallbackServerVelocity = fallbackServerVelocity;
         this.fallingServerManager = fallbackServerVelocity.getFallingServerManager();
-        this.serverCacheManager = fallbackServerVelocity.getServerCacheManager();
     }
 
     @Subscribe(order = PostOrder.FIRST)
-    public void onPlayerKick(KickedFromServerEvent event, Continuation continuation) {
+    public void onPlayerKick(KickedFromServerEvent event) {
         Player player = event.getPlayer();
         RegisteredServer kickedFrom = event.getServer();
         String serverName = kickedFrom.getServerInfo().getName();
@@ -60,24 +56,21 @@ public class FallbackListener {
             }
 
             if (PlainTextComponentSerializer.plainText().serialize(componentOptional.get()).contains(blacklist)) {
-                continuation.resume();
                 event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(kickReasonString))));
                 return;
             }
         }
 
         if (shouldUseBlacklistedServer(serverName)) {
-            continuation.resume();
             event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(kickReasonString))));
             return;
         }
 
         fallingServerManager.remove(serverName);
-        serverCacheManager.removeIfContains(serverName);
 
         List<RegisteredServer> lobbies = Lists.newArrayList(fallingServerManager.getAll());
 
-        boolean useMaintenance = fallbackServerVelocity.isUseMaintenance();
+        boolean useMaintenance = fallbackServerVelocity.isMaintenance();
 
         if (useMaintenance) {
             lobbies.removeIf(ServerUtils::isMaintenance);
@@ -85,12 +78,10 @@ public class FallbackListener {
 
         if (lobbies.isEmpty()) {
             if (kickReasonString.isEmpty()) {
-                continuation.resume();
                 String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", ChatUtil.getFormattedString(VelocityMessages.PREFIX));
                 event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(disconnectMessage))));
                 return;
             }
-            continuation.resume();
             event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(kickReasonString))));
             return;
         }
@@ -105,6 +96,12 @@ public class FallbackListener {
         fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> decrementPendingConnections(selectedServer.getServerInfo().getName()))
                 .delay(1, TimeUnit.SECONDS)
                 .schedule();
+
+        boolean clearChat = VelocityConfig.CLEAR_CHAT_FALLBACK.get(Boolean.class);
+
+        if (clearChat) {
+            ChatUtil.clearChat(player);
+        }
 
         VelocityMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", selectedServer.getServerInfo().getName()),
@@ -124,12 +121,6 @@ public class FallbackListener {
                                     player
                             )).delay(VelocityMessages.FALLBACK_DELAY.get(Integer.class), TimeUnit.SECONDS)
                     .schedule();
-        }
-
-        boolean clearChat = VelocityConfig.CLEAR_CHAT_FALLBACK.get(Boolean.class);
-
-        if (clearChat) {
-            ChatUtil.clearChat(player);
         }
 
     }

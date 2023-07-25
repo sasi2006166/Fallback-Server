@@ -6,7 +6,6 @@ import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 
@@ -16,8 +15,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LobbyTask implements Runnable {
 
-    private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
-    private final ServerCacheManager serverCacheManager = fallbackServerVelocity.getServerCacheManager();
     private final FallingServerManager fallingServerManager;
 
     public List<String> getAllowedServers() {
@@ -55,7 +52,6 @@ public class LobbyTask implements Runnable {
     private void pingServers(List<RegisteredServer> serverList) {
         serverList.forEach(server -> server.ping().whenComplete((result, throwable) -> {
             if (throwable != null || result == null) {
-                serverCacheManager.removeIfContains(server.getServerInfo().getName());
                 return;
             }
 

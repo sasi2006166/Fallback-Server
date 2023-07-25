@@ -35,4 +35,8 @@ public class PlayerCacheManager {
         return reconnectMap.remove(key);
     }
 
+    public boolean containsKey(UUID key) {
+        return reconnectMap.containsKey(key);
+    }
+
 }

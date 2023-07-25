@@ -3,7 +3,7 @@ package me.candiesjar.fallbackserver.utils.player;
 import com.velocitypowered.api.proxy.Player;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.utils.VelocityUtils;
+import me.candiesjar.fallbackserver.utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
@@ -30,7 +30,7 @@ public class TitleUtil {
                 Duration.ofSeconds(stay),
                 Duration.ofSeconds(1));
 
-        Title createdTitle = Title.title(Component.text(ChatUtil.getFormattedString(title).replace("%dots%", VelocityUtils.getDots(dots))),
+        Title createdTitle = Title.title(Component.text(ChatUtil.getFormattedString(title).replace("%dots%", Utils.getDots(dots))),
                 Component.text(ChatUtil.getFormattedString(subTitle)), times);
 
         player.showTitle(createdTitle);

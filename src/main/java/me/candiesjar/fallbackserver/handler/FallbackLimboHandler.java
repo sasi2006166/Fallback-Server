@@ -5,15 +5,15 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import com.velocitypowered.api.scheduler.Scheduler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
-import me.candiesjar.fallbackserver.utils.VelocityUtils;
+import me.candiesjar.fallbackserver.utils.ServerUtils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.elytrium.limboapi.api.Limbo;
@@ -32,9 +32,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class FallbackLimboHandler implements LimboSessionHandler {
 
+    private final AtomicInteger TRIES = new AtomicInteger(0);
+    private final AtomicInteger DOTS = new AtomicInteger(0);
+    private final int TIMEOUT = VelocityConfig.RECONNECT_PING_TIMEOUT.get(Integer.class);
+    private final int MAX_TRIES = VelocityConfig.RECONNECT_MAX_TRIES.get(Integer.class);
+    private final PingOptions.Builder PING_OPTIONS = PingOptions.builder().timeout(Duration.ofSeconds(TIMEOUT));
+
     private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
+    private final Scheduler scheduler = fallbackServerVelocity.getServer().getScheduler();
     private final FallingServerManager fallingServerManager = fallbackServerVelocity.getFallingServerManager();
-    private final ServerCacheManager serverCacheManager = fallbackServerVelocity.getServerCacheManager();
 
     private final RegisteredServer target;
     private final UUID uuid;
@@ -53,28 +59,18 @@ public class FallbackLimboHandler implements LimboSessionHandler {
     public void onSpawn(Limbo server, LimboPlayer limboPlayer) {
         limboPlayer.disableFalling();
 
-        sendTitle(player, VelocityMessages.RECONNECT_TITLE, VelocityMessages.RECONNECT_SUB_TITLE);
+        titleTask = scheduler.buildTask(fallbackServerVelocity, () -> sendTitle(VelocityMessages.RECONNECT_TITLE, VelocityMessages.RECONNECT_SUB_TITLE)).repeat(1, TimeUnit.SECONDS).schedule();
 
-        AtomicInteger tries = new AtomicInteger(0);
+        int delay = VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class);
 
-        reconnectTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> {
-            start(tries, limboPlayer);
-        }).repeat(VelocityConfig.RECONNECT_DELAY.get(Integer.class), TimeUnit.SECONDS).schedule();
+        reconnectTask = scheduler.buildTask(fallbackServerVelocity, () -> start(limboPlayer)).repeat(delay, TimeUnit.SECONDS).schedule();
     }
 
-    private void start(AtomicInteger tries, LimboPlayer limboPlayer) {
-
-        VelocityUtils.printDebug("Reconnect task started for " + player.getUsername());
-
-        boolean maxTries = tries.getAndIncrement() == VelocityConfig.RECONNECT_TRIES.get(Integer.class);
-
-        VelocityUtils.printDebug("Tries: " + tries.get() + " | Max tries: " + maxTries);
+    private void start(LimboPlayer limboPlayer) {
+        boolean maxTries = TRIES.getAndIncrement() == MAX_TRIES;
 
         if (maxTries) {
-
-            VelocityUtils.printDebug("Max tries reached for " + player.getUsername());
-
-            boolean fallback = VelocityConfig.RECONNECT_FALLBACK.get(Boolean.class);
+            boolean fallback = VelocityConfig.RECONNECT_USE_FALLBACK.get(Boolean.class);
 
             if (fallback) {
                 handleFallback(limboPlayer);
@@ -86,72 +82,52 @@ public class FallbackLimboHandler implements LimboSessionHandler {
             return;
         }
 
-        boolean useSockets = fallbackServerVelocity.isUseSockets();
-
-        if (useSockets) {
-
-            VelocityUtils.printDebug("Using sockets for " + player.getUsername());
-
-            String reconnectAddress = target.getServerInfo().getAddress().getHostName();
-            String translatedAddress = translateAddress(reconnectAddress);
-
-            if (serverCacheManager.containsKey(translatedAddress)) {
-                VelocityUtils.printDebug("Server cache contains " + translatedAddress + " for " + player.getUsername());
-                reconnect(limboPlayer);
+        target.ping(PING_OPTIONS.build()).whenComplete((ping, throwable) -> {
+            if (throwable != null || ping == null) {
+                return;
             }
 
-            return;
-        }
+            int maxPlayers = ping.asBuilder().getMaximumPlayers();
 
-        reconnect(limboPlayer);
-    }
-
-    private void reconnect(LimboPlayer limboPlayer) {
-        boolean isReachable = ping(target, VelocityConfig.RECONNECT_PING_TIMEOUT.get(Integer.class));
-
-        VelocityUtils.printDebug("Server is reachable: " + isReachable + " for " + player.getUsername());
-
-        if (isReachable) {
-            reconnectTask.cancel();
-            titleTask.cancel();
-
-            clear();
-            sendTitle(player, VelocityMessages.CONNECTING_TITLE, VelocityMessages.CONNECTING_SUB_TITLE);
-
-            connectTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> {
-                limboPlayer.disconnect(target);
+            if (maxPlayers == -1) {
+                killTasks();
                 clear();
-                titleTask.cancel();
-                VelocityUtils.printDebug("Scheduled connection");
-                sendTitle(player, VelocityMessages.CONNECTED_TITLE, VelocityMessages.CONNECTED_SUB_TITLE);
+                resetDots();
 
-                boolean clearChat = VelocityConfig.CLEAR_CHAT_RECONNECT.get(Boolean.class);
+                titleTask = scheduler.buildTask(fallbackServerVelocity, () -> sendTitle(VelocityMessages.CONNECTING_TITLE, VelocityMessages.CONNECTING_SUB_TITLE)).repeat(1, TimeUnit.SECONDS).schedule();
+                connectTask = scheduler.buildTask(fallbackServerVelocity, () -> handleConnection(limboPlayer)).delay(VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class), TimeUnit.SECONDS).schedule();
+            }
 
-                if (clearChat) {
-                    ChatUtil.clearChat(player);
-                }
+        });
 
-                fallbackServerVelocity.cancelReconnect(uuid);
-            }).delay(VelocityConfig.RECONNECT_DELAY.get(Integer.class), TimeUnit.SECONDS).schedule();
-        } else {
-            serverCacheManager.removeIfContains(target.getServerInfo().getAddress().getHostName());
-        }
     }
 
-    private void sendTitle(Player player, VelocityMessages title, VelocityMessages subTitle) {
-        AtomicInteger dots = new AtomicInteger(0);
+    private void handleConnection(LimboPlayer limboPlayer) {
+        limboPlayer.disconnect(target);
+        clear();
+        titleTask.cancel();
+        sendTitle(VelocityMessages.CONNECTED_TITLE, VelocityMessages.CONNECTED_SUB_TITLE);
 
-        titleTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> {
-            int currentDots = dots.incrementAndGet() % 5;
-            TitleUtil.sendReconnectingTitle(0, 1 + 20, currentDots, title, subTitle, player);
-        }).repeat(1, TimeUnit.SECONDS).schedule();
+        boolean clearChat = VelocityConfig.CLEAR_CHAT_RECONNECT.get(Boolean.class);
+
+        if (clearChat) {
+            ChatUtil.clearChat(player);
+        }
+
+        fallbackServerVelocity.cancelReconnect(uuid);
     }
 
     private void handleFallback(LimboPlayer limboPlayer) {
         List<RegisteredServer> lobbies = Lists.newArrayList(fallingServerManager.getAll());
 
+        boolean hasMaintenance = fallbackServerVelocity.isMaintenance();
+
+        if (hasMaintenance) {
+            lobbies.removeIf(ServerUtils::isMaintenance);
+        }
+
         if (lobbies.isEmpty()) {
-            limboPlayer.getProxyPlayer().disconnect(Component.text(ChatUtil.getFormattedString(VelocityMessages.NO_SERVER, new Placeholder("prefix", VelocityMessages.PREFIX.get(String.class)))));
+            player.disconnect(Component.text(ChatUtil.getFormattedString(VelocityMessages.NO_SERVER, new Placeholder("prefix", VelocityMessages.PREFIX.get(String.class)))));
             fallbackServerVelocity.cancelReconnect(uuid);
             return;
         }
@@ -162,18 +138,44 @@ public class FallbackLimboHandler implements LimboSessionHandler {
 
         limboPlayer.disconnect(registeredServer);
         fallbackServerVelocity.cancelReconnect(uuid);
+
+        boolean clearChat = VelocityConfig.CLEAR_CHAT_FALLBACK.get(Boolean.class);
+
+        if (clearChat) {
+            ChatUtil.clearChat(player);
+        }
+
         VelocityMessages.CONNECTION_FAILED.send(player, new Placeholder("prefix", VelocityMessages.PREFIX.get(String.class)));
+
+        boolean useTitle = VelocityMessages.USE_FALLBACK_TITLE.get(Boolean.class);
+
+        if (useTitle) {
+            scheduler.buildTask(fallbackServerVelocity, () ->
+                            TitleUtil.sendTitle(
+                                    VelocityMessages.FALLBACK_FADE_IN.get(Integer.class),
+                                    VelocityMessages.FALLBACK_STAY.get(Integer.class),
+                                    VelocityMessages.FALLBACK_FADE_OUT.get(Integer.class),
+                                    ChatUtil.color(VelocityMessages.FALLBACK_TITLE.get(String.class)),
+                                    ChatUtil.color(VelocityMessages.FALLBACK_SUB_TITLE.get(String.class)),
+                                    player
+                            )).delay(VelocityMessages.FALLBACK_DELAY.get(Integer.class), TimeUnit.SECONDS)
+                    .schedule();
+        }
+
     }
 
-    private boolean ping(RegisteredServer registeredServer, int timeout) {
-        PingOptions.Builder options = PingOptions.builder().timeout(Duration.ofMillis(timeout));
+    private void sendTitle(VelocityMessages title, VelocityMessages subTitle) {
+        int currentDots = DOTS.incrementAndGet() % 5;
+        TitleUtil.sendReconnectingTitle(0, 1 + 20, currentDots, title, subTitle, player);
+    }
 
-        try {
-            registeredServer.ping(options.build()).get();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    private void resetDots() {
+        DOTS.set(0);
+    }
+
+    private void killTasks() {
+        reconnectTask.cancel();
+        titleTask.cancel();
     }
 
     public void clear() {
@@ -181,18 +183,5 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         player.clearTitle();
         player.resetTitle();
     }
-
-    private String translateAddress(String address) {
-        String[] translateAddresses = {"translated1", "translated2", "translated3"};
-        String[] translatedAddresses = {"127.0.0.1", "0.0.0.0", "localhost"};
-
-        for (int i = 0; i < translateAddresses.length; i++) {
-            if (address.equals(translateAddresses[i])) {
-                return translatedAddresses[i];
-            }
-        }
-        return address;
-    }
-
 
 }

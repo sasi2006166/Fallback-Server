@@ -8,7 +8,6 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ServerUtils;
@@ -22,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public class HubCommand implements SimpleCommand {
-    private final FallbackServerVelocity fallbackServerVelocity;
+    private final FallbackServerVelocity plugin;
 
     @Override
     public void execute(Invocation invocation) {
@@ -35,12 +34,6 @@ public class HubCommand implements SimpleCommand {
 
         Player player = (Player) commandSource;
 
-        boolean isInReconnect = PlayerCacheManager.getInstance().get(player.getUniqueId()) != null;
-
-        if (isInReconnect) {
-            return;
-        }
-
         Optional<ServerConnection> serverConnectionOptional = player.getCurrentServer();
 
         if (serverConnectionOptional.isEmpty()) {
@@ -50,19 +43,19 @@ public class HubCommand implements SimpleCommand {
         ServerConnection serverConnection = serverConnectionOptional.get();
         String serverName = serverConnection.getServerInfo().getName();
 
-        if (fallbackServerVelocity.isHub(serverName)) {
+        if (plugin.isHub(serverName)) {
             VelocityMessages.ALREADY_IN_LOBBY.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
-        List<RegisteredServer> lobbies = Lists.newArrayList(fallbackServerVelocity.getFallingServerManager().getAll());
+        List<RegisteredServer> lobbies = Lists.newArrayList(plugin.getFallingServerManager().getAll());
 
         if (lobbies.isEmpty()) {
             VelocityMessages.NO_SERVER.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
-        boolean useMaintenance = fallbackServerVelocity.isUseMaintenance();
+        boolean useMaintenance = plugin.isMaintenance();
 
         if (useMaintenance) {
             lobbies.removeIf(ServerUtils::isMaintenance);
@@ -82,7 +75,7 @@ public class HubCommand implements SimpleCommand {
         );
 
         if (VelocityMessages.USE_HUB_TITLE.get(Boolean.class)) {
-            fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> TitleUtil.sendTitle(VelocityMessages.HUB_TITLE_FADE_IN.get(Integer.class),
+            plugin.getServer().getScheduler().buildTask(plugin, () -> TitleUtil.sendTitle(VelocityMessages.HUB_TITLE_FADE_IN.get(Integer.class),
                             VelocityMessages.HUB_TITLE_STAY.get(Integer.class),
                             VelocityMessages.HUB_TITLE_FADE_OUT.get(Integer.class),
                             ChatUtil.color(VelocityMessages.HUB_TITLE.get(String.class)),

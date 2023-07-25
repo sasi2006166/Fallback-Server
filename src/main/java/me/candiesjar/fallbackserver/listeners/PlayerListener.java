@@ -7,13 +7,11 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
-import me.candiesjar.fallbackserver.utils.VelocityUtils;
-import net.kyori.adventure.text.Component;
+import me.candiesjar.fallbackserver.utils.Utils;
 
 import java.util.UUID;
 
@@ -21,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerListener {
 
-    private final FallbackServerVelocity fallbackServerVelocity;
+    private final FallbackServerVelocity plugin;
 
     @Subscribe
     public void onPlayerJoin(ServerConnectedEvent event) {
@@ -33,11 +31,11 @@ public class PlayerListener {
             return;
         }
 
-        if (fallbackServerVelocity.isAlpha()) {
+        if (plugin.isAlpha()) {
             return;
         }
 
-        VelocityUtils.getUpdates().whenComplete((newUpdate, throwable) -> {
+        Utils.getUpdates().whenComplete((newUpdate, throwable) -> {
             if (throwable != null) {
                 return;
             }
@@ -45,7 +43,7 @@ public class PlayerListener {
             if (newUpdate != null && newUpdate) {
                 VelocityMessages.NEW_UPDATE.sendList(player,
                         new Placeholder("old_version", FallbackServerVelocity.VERSION),
-                        new Placeholder("new_version", VelocityUtils.getRemoteVersion()));
+                        new Placeholder("new_version", Utils.getRemoteVersion()));
             }
         });
     }
@@ -55,10 +53,10 @@ public class PlayerListener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        FallbackLimboHandler limboHandler = PlayerCacheManager.getInstance().get(uuid);
+        FallbackLimboHandler limboHandler = plugin.getPlayerCacheManager().get(uuid);
 
         if (limboHandler != null) {
-            fallbackServerVelocity.cancelReconnect(uuid);
+            plugin.cancelReconnect(uuid);
         }
 
     }

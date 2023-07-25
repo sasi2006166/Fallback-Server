@@ -50,32 +50,14 @@ settings:
   # Customize things like delays and title mode, everything in seconds.
   auto_reconnect:
 
-    # Determines if the plugin should use sockets for reconnecting.
-    # This will make pinging method more precise for reconnecting players.
-    # If you don't want to use this method for some incompatibility reasons
-    # Such as server panels (Pterodactyl, Multicraft, etc.) you can disable it.
-    # And leave normal pinging method still using the Fallback-Server-Spigot-Addon.
-    # That will auto-setup the spigot instance for you.
-    use_sockets: true
-
-    # DEBUG for now.
-    socket_port: 59699
-
     # Time for time-outing the server on ping.
-    # In Milliseconds, 5000 for example = 5 seconds.
-    ping_timeout: 5000
+    # In Milliseconds, 2000 for example = 2 seconds.
+    ping_timeout: 2000
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
     # In seconds.
     ping_delay: 7
-
-    # This task receives the ip:port information
-    # from spigot instances with FallbackServerAddon.
-    # Ideal delay is 5 seconds, don't put values under 1.
-    # Change it only if you're experiencing issues
-    # or if your spigot instances go offline very often.
-    socket_task: 15 # In Seconds
 
     # Tries before disconnecting or moving player to lobbies.
     max_tries: 5
@@ -99,6 +81,19 @@ settings:
       - "whitelist"
       - "spam"
       - "maintenance"
+
+    # Ignored servers for reconnecting.
+    # If players gets kicked from one of those servers
+    # they will not be reconnected, instead they will be
+    # moved to a fallback lobby.
+    # Add event servers, such as mini-games, here.
+    ignored_servers:
+      - lobby1
+      - lobby2
+      - lobby3
+      - bw1
+      - bw2
+      - bw3
 
     # Option to choose if making the player join a limbo server
     # while reconnecting.
@@ -183,7 +178,8 @@ settings:
   # Add here your pre-lobbies or any server you want to disable.
   # Kicking will be disabled on those and player will be disconnected.
   server_blacklist_list:
-    - testserver
+    - prelobby1
+    - prelobby2
 
 sub_commands:
 
@@ -195,6 +191,9 @@ sub_commands:
 
   reload:
     permission: "fallback.admin.reload"
+
+  debug:
+    permission: "fallback.admin.debug"
 
   add:
     enabled: true
