@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserveraddon;
 
-import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserveraddon.listeners.PingListener;
 import org.bukkit.plugin.Plugin;
@@ -12,18 +11,14 @@ public final class FallbackServerAddon extends JavaPlugin {
     @Setter
     private boolean allPluginsLoaded = true;
 
-    @Getter
-    private boolean isLocked = false;
-
-    @Getter
-    private int max = 0;
+    private boolean locked = false;
 
     private BukkitTask task;
 
     @Override
     public void onEnable() {
 
-        getLogger().info("\n" +
+        getServer().getConsoleSender().sendMessage("\n" +
                 "  ______ _____            _     _             \n" +
                 " |  ____/ ____|  /\\      | |   | |            \n" +
                 " | |__ | (___   /  \\   __| | __| | ___  _ __  \n" +
@@ -31,28 +26,24 @@ public final class FallbackServerAddon extends JavaPlugin {
                 " | |    ____) / ____ \\ (_| | (_| | (_) | | | |\n" +
                 " |_|   |_____/_/    \\_\\__,_|\\__,_|\\___/|_| |_|\n");
 
-        getLogger().info("§7[§b!§7] Warming up...");
-
-        max = getServer().getMaxPlayers();
+        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Warming up...");
 
         getServer().getPluginManager().registerEvents(new PingListener(this), this);
-
         schedule();
 
-        getLogger().info("§7[§a!§7] Loaded successfully");
+        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
     }
 
     @Override
     public void onDisable() {
-
-        getLogger().info("§7[§c!§7] Un-Loaded");
-
+        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Un-Loaded.");
+        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] That’s normal, don’t worry about this shutdown.");
     }
 
     private void schedule() {
         task = getServer().getScheduler().runTaskTimer(this, () -> {
 
-            if (isLocked) {
+            if (locked) {
                 task.cancel();
                 return;
             }
@@ -65,11 +56,14 @@ public final class FallbackServerAddon extends JavaPlugin {
             }
 
             if (allPluginsLoaded) {
-                isLocked = true;
+                locked = true;
                 task.cancel();
             }
 
         }, 20L, 40L);
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
 }
