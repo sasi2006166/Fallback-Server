@@ -9,6 +9,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 public class PingListener implements Listener {
 
     private final FallbackServerAddon plugin;
+    private boolean done = false;
 
     public PingListener(FallbackServerAddon plugin) {
         this.plugin = plugin;
@@ -18,14 +19,16 @@ public class PingListener implements Listener {
     public void onPing(ServerListPingEvent event) {
 
         if (!plugin.isLocked()) {
-            event.setMaxPlayers(plugin.getMax());
             return;
         }
 
         event.setMaxPlayers(-1);
 
+        if (done) {
+            return;
+        }
+
+        done = true;
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getServer().getPluginManager().disablePlugin(plugin), 30L * 20L);
-
     }
-
 }
