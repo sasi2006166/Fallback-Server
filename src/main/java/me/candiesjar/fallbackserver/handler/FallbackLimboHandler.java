@@ -104,9 +104,15 @@ public class FallbackLimboHandler implements LimboSessionHandler {
 
     private void handleConnection(LimboPlayer limboPlayer) {
         limboPlayer.disconnect(target);
-        clear();
         titleTask.cancel();
-        sendTitle(VelocityMessages.CONNECTED_TITLE, VelocityMessages.CONNECTED_SUB_TITLE);
+        clear();
+
+        int fadeIn = VelocityMessages.CONNECTED_FADE_IN.get(Integer.class);
+        int stay = VelocityMessages.CONNECTED_STAY.get(Integer.class);
+        int fadeOut = VelocityMessages.CONNECTED_FADE_OUT.get(Integer.class);
+        int delay = VelocityMessages.CONNECTED_DELAY.get(Integer.class);
+
+        scheduler.buildTask(fallbackServerVelocity, () -> TitleUtil.sendTitle(fadeIn, stay, fadeOut, VelocityMessages.CONNECTED_TITLE.get(String.class), VelocityMessages.CONNECTED_SUB_TITLE.get(String.class), player)).delay(delay, TimeUnit.SECONDS).schedule();
 
         boolean clearChat = VelocityConfig.CLEAR_CHAT_RECONNECT.get(Boolean.class);
 

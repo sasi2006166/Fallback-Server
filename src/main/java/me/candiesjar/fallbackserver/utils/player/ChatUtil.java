@@ -18,7 +18,7 @@ public class ChatUtil {
     private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
 
     public String getString(VelocityMessages velocityMessages) {
-        return instance.getMessages().getConfig().getString(velocityMessages.getPath());
+        return instance.getMessagesTextFile().getConfig().getString(velocityMessages.getPath());
     }
 
     public String getString(VelocityMessages velocityMessages, Placeholder... placeholders) {
@@ -30,7 +30,7 @@ public class ChatUtil {
     }
 
     public List<String> getStringList(VelocityMessages velocityMessages) {
-        return instance.getMessages().getConfig().getStringList(velocityMessages.getPath());
+        return instance.getMessagesTextFile().getConfig().getStringList(velocityMessages.getPath());
     }
 
     public List<String> getStringList(VelocityMessages velocityMessages, Placeholder... placeholders) {

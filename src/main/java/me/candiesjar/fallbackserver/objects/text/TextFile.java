@@ -35,6 +35,11 @@ public class TextFile {
     }
 
     @SneakyThrows
+    public void save() {
+        yamlFile.save();
+    }
+
+    @SneakyThrows
     public void reload() {
         yamlFile.load();
     }

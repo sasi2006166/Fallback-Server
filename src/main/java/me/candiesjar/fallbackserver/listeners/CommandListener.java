@@ -40,12 +40,12 @@ public class CommandListener {
             return;
         }
 
-        if (command.length() > 0) {
+        if (!command.isEmpty()) {
             String[] args = command.split(" ");
             command = args[0];
         }
 
-        List<String> blockedCommands = fallbackServerVelocity.getConfig().getConfig().getStringList("settings.command_blocker_list." + serverName);
+        List<String> blockedCommands = fallbackServerVelocity.getConfigTextFile().getConfig().getStringList("settings.command_blocker_list." + serverName);
         boolean isBlacklistedCommand = Utils.checkMessage(command, blockedCommands);
 
         if (isBlacklistedCommand) {

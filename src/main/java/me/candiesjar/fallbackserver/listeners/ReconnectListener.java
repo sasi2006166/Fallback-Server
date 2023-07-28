@@ -4,12 +4,10 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
-import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.WorldUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.elytrium.limboapi.api.event.LoginLimboRegisterEvent;
@@ -28,15 +26,12 @@ public class ReconnectListener {
     public void onPlayerKick(LoginLimboRegisterEvent event) {
 
         event.setOnKickCallback(kickEvent -> {
-            Utils.printDebug("ReconnectListener: onPlayerKick", true);
 
             RegisteredServer kickedFrom = kickEvent.getServer();
             String serverName = kickedFrom.getServerInfo().getName();
             Player player = event.getPlayer();
-            ConnectedPlayer connectedPlayer = (ConnectedPlayer) player;
 
             if (kickEvent.kickedDuringServerConnect()) {
-                Utils.printDebug("kickedDuringServerConnect", true);
                 return false;
             }
 
@@ -62,9 +57,6 @@ public class ReconnectListener {
                 player.disconnect(Component.text(kickReasonString));
                 return false;
             }
-
-            connectedPlayer.getTabList().clearAll();
-            connectedPlayer.clearTitle();
 
             FallbackLimboHandler fallbackLimboHandler = new FallbackLimboHandler(kickedFrom, player.getUniqueId(), player);
             plugin.getPlayerCacheManager().put(player.getUniqueId(), fallbackLimboHandler);

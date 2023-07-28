@@ -90,7 +90,7 @@ public class FallbackListener {
 
         RegisteredServer selectedServer = lobbies.get(0);
 
-        player.createConnectionRequest(selectedServer).fireAndForget();
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(selectedServer));
 
         incrementPendingConnections(selectedServer.getServerInfo().getName());
         fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> decrementPendingConnections(selectedServer.getServerInfo().getName()))

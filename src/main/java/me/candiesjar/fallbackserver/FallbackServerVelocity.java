@@ -55,7 +55,7 @@ public class FallbackServerVelocity {
     public static final String VERSION = "3.2.0-Beta1";
 
     @Getter
-    private TextFile config, messages;
+    private TextFile configTextFile, messagesTextFile, serversTextFile;
 
     @Getter
     @Setter
@@ -190,8 +190,9 @@ public class FallbackServerVelocity {
     }
 
     private void loadConfiguration() {
-        config = new TextFile(path, "config.yml");
-        messages = new TextFile(path, "messages.yml");
+        configTextFile = new TextFile(path, "config.yml");
+        messagesTextFile = new TextFile(path, "messages.yml");
+        serversTextFile = new TextFile(path, "servers.yml");
     }
 
     private void loadTask() {
@@ -294,6 +295,7 @@ public class FallbackServerVelocity {
                 break;
         }
 
+
         boolean updateChecker = VelocityConfig.UPDATER.get(Boolean.class);
         boolean disabledServers = VelocityConfig.USE_COMMAND_BLOCKER.get(Boolean.class);
 
@@ -330,9 +332,12 @@ public class FallbackServerVelocity {
         return list.contains(serverName.toLowerCase());
     }
 
-    public void reloadTasks() {
+    public void reloadAll() {
         task.cancel();
         loadTask();
+        configTextFile.reload();
+        messagesTextFile.reload();
+        serversTextFile.reload();
     }
 
 }

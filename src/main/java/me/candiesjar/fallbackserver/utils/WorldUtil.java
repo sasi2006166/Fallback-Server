@@ -14,10 +14,12 @@ import net.elytrium.limboapi.api.chunk.VirtualWorld;
 public class WorldUtil {
 
     private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
-    private final LimboFactory factory = (LimboFactory) instance.getServer().getPluginManager().getPlugin("limboapi").flatMap(PluginContainer::getInstance).orElseThrow();
 
     @Getter
     private Limbo fallbackWorld;
+
+    @Getter
+    private final LimboFactory factory = (LimboFactory) instance.getServer().getPluginManager().getPlugin("limboapi").flatMap(PluginContainer::getInstance).orElseThrow();
 
     public void createWorld() {
 

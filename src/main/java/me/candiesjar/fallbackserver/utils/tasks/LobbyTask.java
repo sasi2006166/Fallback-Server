@@ -7,6 +7,7 @@ import com.velocitypowered.api.proxy.server.ServerPing;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
+import me.candiesjar.fallbackserver.enums.VelocityServers;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 
 import java.util.List;
@@ -16,14 +17,12 @@ import java.util.Optional;
 public class LobbyTask implements Runnable {
 
     private final FallingServerManager fallingServerManager;
+    private final List<String> allowedServers = Lists.newArrayList();
 
     public List<String> getAllowedServers() {
-        List<String> allowedServers = Lists.newArrayList();
 
-        for (String serverName : VelocityConfig.LOBBIES_LIST.getStringList()) {
-            String toLowerCase = serverName.toLowerCase();
-            allowedServers.add(toLowerCase);
-        }
+        loadServerList(VelocityConfig.LOBBIES_LIST.getStringList());
+        loadServerList(VelocityServers.SERVERS.getStringList());
 
         return allowedServers;
     }
@@ -70,4 +69,18 @@ public class LobbyTask implements Runnable {
             fallingServerManager.add(server.getServerInfo().getName(), server);
         }));
     }
+
+    private void loadServerList(List<String> serverList) {
+        for (String serverName : serverList) {
+            ServerInfo serverInfo = getServerInfo(serverName);
+            if (serverInfo != null) {
+                allowedServers.add(serverName);
+            }
+        }
+    }
+
+    private ServerInfo getServerInfo(String serverName) {
+        return FallbackServerVelocity.getInstance().getServer().getServer(serverName).map(RegisteredServer::getServerInfo).orElse(null);
+    }
+
 }

@@ -1,11 +1,13 @@
 package me.candiesjar.fallbackserver.enums;
 
 import com.velocitypowered.api.command.CommandSource;
+import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
 
+@Getter
 public enum VelocityMessages {
 
     PREFIX("MESSAGES.prefix"),
@@ -23,6 +25,8 @@ public enum VelocityMessages {
 
     EMPTY_SERVER("MESSAGES.empty_server"),
     SERVER_CONTAINED("MESSAGES.server_is_added"),
+    SERVER_REMOVED("MESSAGES.server_removed"),
+    SERVER_NOT_CONTAINED("MESSAGES.server_not_added"),
     UNAVAILABLE_SERVER("MESSAGES.server_not_available"),
     SERVER_ADDED("MESSAGES.server_added"),
 
@@ -42,8 +46,12 @@ public enum VelocityMessages {
     RECONNECT_SUB_TITLE("TITLES.reconnect.reconnect_sub_title"),
     CONNECTING_TITLE("TITLES.reconnect.connecting_title"),
     CONNECTING_SUB_TITLE("TITLES.reconnect.connecting_sub_title"),
-    CONNECTED_TITLE("TITLES.reconnect.connected_title"),
-    CONNECTED_SUB_TITLE("TITLES.reconnect.connected_sub_title"),
+    CONNECTED_TITLE("TITLES.reconnect.connected.title"),
+    CONNECTED_SUB_TITLE("TITLES.reconnect.connected.sub_title"),
+    CONNECTED_DELAY("TITLES.reconnect.connected.delay"),
+    CONNECTED_FADE_IN("TITLES.reconnect.connected.fade_in"),
+    CONNECTED_FADE_OUT("TITLES.reconnect.connected.fade_out"),
+    CONNECTED_STAY("TITLES.reconnect.connected.stay"),
 
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),
@@ -54,23 +62,19 @@ public enum VelocityMessages {
     HUB_TITLE_DELAY("TITLES.lobby.delay");
 
     private final String path;
-    private static final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
+    private static final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
 
     VelocityMessages(String path) {
         this.path = path;
     }
 
-    public String getPath() {
-        return path;
-    }
-
     public <T> T get(Class<T> clazz) {
-        return clazz.cast(instance.getMessages().getConfig().get(path));
+        return clazz.cast(fallbackServerVelocity.getMessagesTextFile().getConfig().get(path));
     }
 
     public void send(CommandSource commandSource, Placeholder... placeholders) {
 
-        if (ChatUtil.getString(this).equals("")) {
+        if (ChatUtil.getString(this).isEmpty()) {
             return;
         }
 

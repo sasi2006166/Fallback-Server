@@ -53,18 +53,18 @@ public enum VelocityConfig {
     UPDATE_COMMAND("sub_commands.update.enabled"),
     UPDATE_COMMAND_PERMISSION("sub_commands.update.permission");
 
-    private static final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
-    private final String configurationPath;
+    private final String path;
+    private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
 
-    VelocityConfig(String configurationPath) {
-        this.configurationPath = configurationPath;
+    VelocityConfig(String path) {
+        this.path = path;
     }
 
     public <T> T get(Class<T> clazz) {
-        return clazz.cast(instance.getConfig().getConfig().get(configurationPath));
+        return clazz.cast(fallbackServerVelocity.getConfigTextFile().getConfig().get(path));
     }
 
     public List<String> getStringList() {
-        return instance.getConfig().getConfig().getStringList(configurationPath);
+        return fallbackServerVelocity.getConfigTextFile().getConfig().getStringList(path);
     }
 }

@@ -15,7 +15,6 @@ import me.candiesjar.fallbackserver.utils.Utils;
 
 import java.util.UUID;
 
-
 @RequiredArgsConstructor
 public class PlayerListener {
 

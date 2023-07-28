@@ -11,10 +11,6 @@ import java.util.Optional;
 public class FallingServerManager implements ObjectManager<String, RegisteredServer> {
     private final HashMap<String, RegisteredServer> cache = Maps.newHashMap();
 
-    public void clearCache() {
-        cache.clear();
-    }
-
     @Override
     public void add(String key, RegisteredServer value) {
         cache.put(key.toLowerCase(), value);
@@ -33,6 +29,10 @@ public class FallingServerManager implements ObjectManager<String, RegisteredSer
     @Override
     public Collection<RegisteredServer> getAll() {
         return cache.values();
+    }
+
+    public void clearCache() {
+        cache.clear();
     }
 
 }

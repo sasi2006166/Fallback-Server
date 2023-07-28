@@ -6,7 +6,9 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.AddSubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.RemoveSubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -25,6 +27,8 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
     public FallbackVelocityCommand(FallbackServerVelocity fallbackServerVelocity) {
         subCommands.put("reload", new ReloadSubCommand(fallbackServerVelocity));
+        subCommands.put("add", new AddSubCommand(fallbackServerVelocity));
+        subCommands.put("remove", new RemoveSubCommand(fallbackServerVelocity));
     }
 
     @Override

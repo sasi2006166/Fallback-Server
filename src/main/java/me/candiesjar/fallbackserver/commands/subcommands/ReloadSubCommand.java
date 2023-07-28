@@ -30,8 +30,7 @@ public class ReloadSubCommand implements SubCommand {
 
         boolean hubReload = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
-        fallbackServerVelocity.getConfig().reload();
-        fallbackServerVelocity.getMessages().reload();
+        fallbackServerVelocity.reloadAll();
 
         boolean reloadCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
@@ -52,7 +51,7 @@ public class ReloadSubCommand implements SubCommand {
 
         }
 
-        fallbackServerVelocity.reloadTasks();
+        fallbackServerVelocity.reloadAll();
 
         VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
     }

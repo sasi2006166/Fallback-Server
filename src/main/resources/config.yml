@@ -179,7 +179,6 @@ settings:
   # Kicking will be disabled on those and player will be disconnected.
   server_blacklist_list:
     - prelobby1
-    - prelobby2
 
 sub_commands:
 

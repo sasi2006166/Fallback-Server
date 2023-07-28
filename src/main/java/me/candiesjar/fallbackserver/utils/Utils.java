@@ -75,6 +75,12 @@ public class Utils {
         }
     }
 
+    public void saveServers(List<String> servers) {
+        fallbackServerVelocity.getServersTextFile().getConfig().set("servers", servers);
+        fallbackServerVelocity.getServersTextFile().save();
+        fallbackServerVelocity.getServersTextFile().reload();
+    }
+
     public boolean checkMessage(String message, List<String> stringList) {
         List<String> list = Lists.newArrayList();
 
