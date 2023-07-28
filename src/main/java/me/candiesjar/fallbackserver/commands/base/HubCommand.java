@@ -28,7 +28,7 @@ public class HubCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
 
         if (!(sender instanceof ProxiedPlayer)) {
-            BungeeMessages.PLAYER_ONLY.send(sender);
+            BungeeMessages.ONLY_PLAYER.send(sender);
             return;
         }
 

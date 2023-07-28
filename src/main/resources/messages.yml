@@ -23,6 +23,8 @@ MESSAGES:
   no_server: "%prefix% &cNo lobby available as fallback."
   empty_server: "%prefix% &7Please, &cspecify &7a server."
   server_is_added: "%prefix% &b%server% &7is already into Fallback Server's list."
+  server_removed: "%prefix% &b%server% &7has been removed from configuration."
+  server_not_added: "%prefix% &b%server% &7doesn't exist in configuration."
   server_not_available: "%prefix% &b%server% &7isn't contained in BungeeCord configuration."
   server_added: "%prefix% &b%server% &7has been added to configuration."
   connection_failed: "%prefix% &7Re-connection &c&lfailed&7! Moving to fallback."

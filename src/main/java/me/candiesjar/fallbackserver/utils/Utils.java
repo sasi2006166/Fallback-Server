@@ -1,8 +1,8 @@
 package me.candiesjar.fallbackserver.utils;
 
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.netty.ChannelWrapper;
@@ -13,11 +13,15 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
+@Getter
 @UtilityClass
 public class Utils {
 
+    @Getter
     private String remoteVersion = "Loading";
+    @Getter
     private boolean updateAvailable = false;
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
@@ -75,9 +79,10 @@ public class Utils {
         }
     }
 
-    public void writeToServerList(String section, String arguments) {
-        BungeeConfig.LOBBIES_LIST.getStringList().add(arguments);
-        fallbackServerBungee.getConfig().set(section, BungeeConfig.LOBBIES_LIST.getStringList());
+    public void saveServers(List<String> servers) {
+        fallbackServerBungee.getServersTextFile().getConfig().set("servers", servers);
+        fallbackServerBungee.getServersTextFile().save();
+        fallbackServerBungee.getServersTextFile().reload();
     }
 
     public ChannelWrapper getUserChannelWrapper(UserConnection user) {
@@ -99,13 +104,5 @@ public class Utils {
                 break;
             }
         }
-    }
-
-    public boolean isUpdateAvailable() {
-        return updateAvailable;
-    }
-
-    public String getRemoteVersion() {
-        return remoteVersion;
     }
 }

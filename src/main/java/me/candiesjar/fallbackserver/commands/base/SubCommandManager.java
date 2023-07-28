@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.AddSubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.RemoveSubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.Placeholder;
@@ -27,6 +29,8 @@ public class SubCommandManager extends Command implements TabExecutor {
         this.plugin = plugin;
 
         subCommands.put("reload", new ReloadSubCommand(plugin));
+        subCommands.put("add", new AddSubCommand(plugin));
+        subCommands.put("remove", new RemoveSubCommand(plugin));
     }
 
     @Override
@@ -74,7 +78,7 @@ public class SubCommandManager extends Command implements TabExecutor {
             return Collections.emptyList();
         }
 
-        if (!BungeeConfig.TAB_COMPLETION.getBoolean()) {
+        if (!BungeeConfig.TAB_COMPLETE.getBoolean()) {
             return Collections.emptyList();
         }
 

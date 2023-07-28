@@ -1,21 +1,18 @@
 package me.candiesjar.fallbackserver.commands.subcommands;
 
+import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.TextFile;
-import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 import net.md_5.bungee.api.CommandSender;
 
+@RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
 
-    private final FallbackServerBungee fallbackServerBungee;
-
-    public ReloadSubCommand(FallbackServerBungee fallbackServerBungee) {
-        this.fallbackServerBungee = fallbackServerBungee;
-    }
+    private final FallbackServerBungee plugin;
 
     @Override
     public String getPermission() {
@@ -39,15 +36,14 @@ public class ReloadSubCommand implements SubCommand {
         if (hubReload != reloadCommand) {
 
             if (reloadCommand) {
-                fallbackServerBungee.getProxy().getPluginManager().registerCommand(fallbackServerBungee, new HubCommand(fallbackServerBungee));
+                plugin.getProxy().getPluginManager().registerCommand(plugin, new HubCommand(plugin));
             } else {
-                fallbackServerBungee.getProxy().getPluginManager().unregisterCommand(new HubCommand(fallbackServerBungee));
+                plugin.getProxy().getPluginManager().unregisterCommand(new HubCommand(plugin));
             }
 
         }
 
-        PingTask.getTask().cancel();
-        PingTask.start();
+        plugin.reloadTask();
 
         BungeeMessages.RELOAD.send(sender);
     }

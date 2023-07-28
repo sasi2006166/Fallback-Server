@@ -17,17 +17,18 @@ public class ChatListener implements Listener {
             return;
         }
 
-        if (!event.isProxyCommand()) {
+        if (!event.isProxyCommand() || !event.isCommand()) {
             return;
         }
 
         ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-        String playerServer = player.getServer().getInfo().getName();
-        String message = event.getMessage();
 
         if (player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
             return;
         }
+
+        String playerServer = player.getServer().getInfo().getName();
+        String message = event.getMessage();
 
         if (message.length() > 1) {
             String[] args = message.split(" ");

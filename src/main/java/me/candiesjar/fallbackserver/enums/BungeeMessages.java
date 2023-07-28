@@ -6,12 +6,13 @@ import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 
+@Getter
 public enum BungeeMessages {
 
     PREFIX("MESSAGES.prefix"),
     CORRECT_SYNTAX("MESSAGES.syntax"),
     RELOAD("MESSAGES.reloaded"),
-    PLAYER_ONLY("MESSAGES.only_player"),
+    ONLY_PLAYER("MESSAGES.only_player"),
     ALREADY_IN_LOBBY("MESSAGES.already_in_hub"),
     MOVED_TO_HUB("MESSAGES.moved"),
     KICKED_TO_LOBBY("MESSAGES.moved_to_lobby"),
@@ -24,6 +25,8 @@ public enum BungeeMessages {
 
     EMPTY_SERVER("MESSAGES.empty_server"),
     SERVER_CONTAINED("MESSAGES.server_is_added"),
+    SERVER_REMOVED("MESSAGES.server_removed"),
+    SERVER_NOT_CONTAINED("MESSAGES.server_not_added"),
     UNAVAILABLE_SERVER("MESSAGES.server_not_available"),
     SERVER_ADDED("MESSAGES.server_added"),
 
@@ -57,7 +60,6 @@ public enum BungeeMessages {
     HUB_TITLE("TITLES.lobby.lobby_title"),
     HUB_SUB_TITLE("TITLES.lobby.lobby_sub_title");
 
-    @Getter
     private final String path;
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
@@ -68,7 +70,7 @@ public enum BungeeMessages {
 
     public void send(CommandSender commandSender, Placeholder... placeholders) {
 
-        if (ChatUtil.getString(this).equals("")) {
+        if (ChatUtil.getString(this).isEmpty()) {
             return;
         }
 

@@ -27,10 +27,7 @@ public final class FallbackServerBungee extends Plugin {
     private static FallbackServerBungee instance;
 
     @Getter
-    private TextFile configTextFile;
-
-    @Getter
-    private TextFile messagesTextFile;
+    private TextFile configTextFile, messagesTextFile, serversTextFile;
 
     @Getter
     private String version;
@@ -117,7 +114,7 @@ public final class FallbackServerBungee extends Plugin {
 
     private void checkDebug() {
 
-        boolean useDebug = BungeeConfig.DEBUG_MODE.getBoolean();
+        boolean useDebug = BungeeConfig.USE_DEBUG.getBoolean();
 
         if (useDebug) {
             setDebug(true);
@@ -165,6 +162,7 @@ public final class FallbackServerBungee extends Plugin {
 
         configTextFile = new TextFile(this, "config.yml");
         messagesTextFile = new TextFile(this, "messages.yml");
+        serversTextFile = new TextFile(this, "servers.yml");
     }
 
     private void loadCommands() {
@@ -182,7 +180,6 @@ public final class FallbackServerBungee extends Plugin {
     private void loadListeners() {
         getLogger().info("§7[§b!§7] Starting all listeners.. §7[§b!§7]");
 
-        getProxy().getPluginManager().registerListener(this, new ServerConnectListener(this));
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
         String mode = BungeeConfig.FALLBACK_MODE.getString();
 
@@ -225,6 +222,11 @@ public final class FallbackServerBungee extends Plugin {
         }
     }
 
+    public void reloadTask() {
+        PingTask.getTask().cancel();
+        PingTask.start();
+    }
+
     public void cancelReconnect(UUID uuid) {
         ReconnectHandler task = PlayerCacheManager.getInstance().remove(uuid);
         if (task != null) {
@@ -238,7 +240,7 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     public boolean isHub(ServerInfo server) {
-        return BungeeConfig.LOBBIES_LIST.getStringList().contains(server.getName());
+        return BungeeConfig.FALLBACK_LIST.getStringList().contains(server.getName());
     }
 
     public void setReconnectError(boolean b) {

@@ -9,7 +9,6 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -48,12 +47,14 @@ public class TextFile {
         return ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
     }
 
+    @SneakyThrows
     public void reload() {
-        try {
-            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+    }
+
+    @SneakyThrows
+    public void save() {
+        ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, file);
     }
 
     public static void reloadAll() {

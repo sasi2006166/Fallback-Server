@@ -1,7 +1,6 @@
 package me.candiesjar.fallbackserver.cache;
 
 import com.google.common.collect.Maps;
-import lombok.Getter;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.HashMap;
@@ -21,7 +20,6 @@ public class ServerCacheManager {
 
     }
 
-    @Getter
     private final HashMap<String, ServerInfo> serversMap = Maps.newHashMap();
 
     public ServerInfo get(String key) {

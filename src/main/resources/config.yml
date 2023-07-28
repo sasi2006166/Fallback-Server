@@ -23,7 +23,7 @@ settings:
   debug: false
 
   # Player with admin permission only will be able to use /fs tab complete.
-  command_tab_complete: tru,
+  command_tab_complete: true
 
   # RECONNECT: Player will not be disconnected from the server, instead gets a title
   # that says "Reconnecting" with animated dots, if crashed server doesn't go again
@@ -132,7 +132,7 @@ settings:
   # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
   # By default this setting is set on "true" to help me improve the plugin.
   # Obviously you can disable it if you want, feel free to do so.
-  stats: true
+  telemetry: true
 
   # True: the plugin will automatically choose best lobby when connecting and balance all players.
   # Warning: If the list contains one lobby the balancing will not work.
@@ -148,6 +148,11 @@ settings:
 
   # WARNING: will only work if "use_command_blocker" is set on true.
   # Add here the servers with the command(s) you want to block.
+  # TEMPLATE:
+  # command_blocker_list:
+  #   server_name:
+  #     - command1
+  #     - command2
   command_blocker_list:
     hack_control:
       - lobby
@@ -197,11 +202,11 @@ sub_commands:
   debug:
     permission: "fallback.admin.debug"
 
-  add: # DISABLED
+  add:
     enabled: true
     permission: "fallback.admin.add"
 
-  remove: # DISABLED
+  remove:
     enabled: true
     permission: "fallback.admin.remove"
 
