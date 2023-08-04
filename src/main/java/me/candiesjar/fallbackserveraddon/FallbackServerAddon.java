@@ -1,7 +1,9 @@
 package me.candiesjar.fallbackserveraddon;
 
 import lombok.Setter;
+import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.listeners.PingListener;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -10,7 +12,6 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     @Setter
     private boolean allPluginsLoaded = true;
-
     private boolean locked = false;
 
     private BukkitTask task;
@@ -28,6 +29,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Warming up...");
 
+        saveDefaultConfig();
         getServer().getPluginManager().registerEvents(new PingListener(this), this);
         schedule();
 
@@ -37,7 +39,6 @@ public final class FallbackServerAddon extends JavaPlugin {
     @Override
     public void onDisable() {
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Un-Loaded.");
-        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] That’s normal, don’t worry about this shutdown.");
     }
 
     private void schedule() {
