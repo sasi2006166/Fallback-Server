@@ -9,7 +9,9 @@ import org.bukkit.event.server.ServerListPingEvent;
 public class PingListener implements Listener {
 
     private final FallbackServerAddon plugin;
-    private boolean done = false;
+
+    private boolean received = false;
+    private boolean finished = false;
 
     public PingListener(FallbackServerAddon plugin) {
         this.plugin = plugin;
@@ -18,17 +20,27 @@ public class PingListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPing(ServerListPingEvent event) {
 
+        if (finished) {
+            return;
+        }
+
         if (!plugin.isLocked()) {
             return;
         }
 
-        event.setMaxPlayers(-1);
+        event.setMaxPlayers(plugin.getConfig().getInt("settings.override_player_count_number", -1));
 
-        if (done) {
+        if (received) {
             return;
         }
 
-        done = true;
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getServer().getPluginManager().disablePlugin(plugin), 30L * 20L);
+        received = true;
+
+        if (plugin.getConfig().getBoolean("settings.auto_remove", true)) {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getServer().getPluginManager().disablePlugin(plugin), plugin.getConfig().getInt("settings.disable_after", 30) * 20L);
+            return;
+        }
+
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> finished = true, plugin.getConfig().getInt("settings.disable_after", 30) * 20L);
     }
 }
