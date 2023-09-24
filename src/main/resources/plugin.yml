@@ -11,4 +11,5 @@
 name: FallbackServerAddon
 author: CandiesJar
 version: '${project.version}'
+folia-supported: true
 main: me.candiesjar.fallbackserveraddon.FallbackServerAddon
