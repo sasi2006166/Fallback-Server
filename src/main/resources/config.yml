@@ -56,8 +56,7 @@ settings:
       command: true
       weather_cycle: true
 
-    # NOTE: If you want to disable the join/quit messages, you need to set the 'join_message' and 'quit_message' to null.
-    # EXAMPLE: join_message: null
+    # NOTE: If you want to disable the join/quit messages, completely remove the 'join_message' and 'quit_message' lines.
     join_message: "&7[&a+&7] %player_name%"
     quit_message: "&7[&c-&7] %player_name%"
 
