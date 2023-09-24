@@ -54,6 +54,15 @@ public class ActionBarUtil {
     }
 
     private void sendActionBar(Player player, String message) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Utils.color(message)));
+        try {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Utils.color(message)));
+
+        } catch (NoSuchMethodError ignored) {
+            if (Utils.isFolia()) {
+                stopActionBarFolia(player);
+                return;
+            }
+            stopActionBar(player);
+        }
     }
 }
