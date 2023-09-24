@@ -12,8 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
-import java.util.Objects;
-
 public class PlayerListener implements Listener {
 
     private final FallbackServerAddon plugin;
@@ -43,8 +41,13 @@ public class PlayerListener implements Listener {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message", "&f"));
         }
 
-        event.setJoinMessage(Utils.color(Objects.requireNonNull(plugin.getConfig().getString("settings.standalone.join_message", null))
-                .replace("%player_name%", player.getName())));
+        if (plugin.getConfig().getString("settings.standalone.join_message").equals("none")) {
+            event.setJoinMessage(null);
+            return;
+        }
+
+        event.setJoinMessage(Utils.color(plugin.getConfig().getString("settings.standalone.join_message", null))
+                .replace("%player_name%", player.getName()));
     }
 
     @EventHandler
@@ -53,8 +56,13 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         ActionBarUtil.stopActionBar(player);
 
-        event.setQuitMessage(Utils.color(Objects.requireNonNull(plugin.getConfig().getString("settings.standalone.quit_message", null))
-                .replace("%player_name%", player.getName())));
+        if (plugin.getConfig().getString("settings.standalone.quit_message").equals("none")) {
+            event.setQuitMessage(null);
+            return;
+        }
+
+        event.setQuitMessage(Utils.color(plugin.getConfig().getString("settings.standalone.quit_message", null))
+                .replace("%player_name%", player.getName()));
     }
 
     @EventHandler
