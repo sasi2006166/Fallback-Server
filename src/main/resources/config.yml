@@ -13,17 +13,52 @@
 
 settings:
 
-  # If you enable this, the plugin will automatically shutdown itself when the work is done.
-  # Leave it enabled for better performance.
-  # It's normal if you see the plugin shutting down itself and is showing red in plugin's list.
-  auto_remove: true
+  # Here you can set up FallbackServer's addon.
+  # If you want to use this addon normally, you need to set the mode to 'ADDON'.
+  # If you want to use this addon as Reconnect Server, you need to set the mode to 'STANDALONE'.
+  mode: 'NONE'
 
-  # NOTE: This shouldn't be changed unless you know what you're doing.
-  # This changes the number that the main fallbackserver plugin uses to check if the server is fully started.
-  # If you change this, you will need to change the fallbackserver plugin's config as well.
-  override_player_count_number: -1
 
-  # NOTE: This shouldn't be changed unless you know what you're doing.
-  # This changes the time (in seconds) to disable the addon after the server is started.
-  # If you are having problems with fallbackserver (in reconnect), you could increase this value.
-  disable_after: 30
+  # NOTE: This will work only if you set up the mode to 'ADDON'.
+  addon:
+
+    # If you enable this, the plugin will automatically shutdown itself when the work is done.
+    # Leave it enabled for better performance.
+    # It's normal if you see the plugin shutting down itself and is showing red in plugin's list.
+    auto_remove: false
+
+    # NOTE: This shouldn't be changed unless you know what you're doing.
+    # This changes the number that the main fallbackserver plugin uses to check if the server is fully started.
+    # If you change this, you will need to change the fallbackserver plugin's config as well.
+    override_player_count_number: -1
+
+    # NOTE: This shouldn't be changed unless you know what you're doing.
+    # This changes the time (in seconds) to disable the addon after the server is started.
+    # If you are having problems with fallbackserver (in reconnect), you could increase this value.
+    disable_after: 30
+
+
+  # NOTE: This will work only if you set up the mode to 'STANDALONE'.
+  standalone:
+
+    # You can block some events here, to prevent players from doing something during the reconnect.
+    event_blocker:
+
+      damage: true
+      block_break: true
+      block_place: true
+      item_drop: true
+      item_pickup: true
+      interact: true
+      pvp: true
+      chat: false
+      move: false
+      command: true
+      weather_cycle: true
+
+    join_message: "&7[&a+&7] %player_name%"
+    quit_message: "&7[&c-&7] %player_name%"
+
+    actionbar:
+      enabled: true
+      message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."
