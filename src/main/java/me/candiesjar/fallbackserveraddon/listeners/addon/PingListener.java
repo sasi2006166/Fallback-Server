@@ -1,6 +1,7 @@
-package me.candiesjar.fallbackserveraddon.listeners;
+package me.candiesjar.fallbackserveraddon.listeners.addon;
 
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
+import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,6 +42,9 @@ public class PingListener implements Listener {
             return;
         }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> finished = true, plugin.getConfig().getInt("settings.disable_after", 30) * 20L);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            finished = true;
+            Utils.unregisterEvent(this);
+        }, plugin.getConfig().getInt("settings.disable_after", 30) * 20L);
     }
 }
