@@ -63,7 +63,7 @@ public final class FallbackServerAddon extends JavaPlugin {
     public void loadDependencies() {
         BukkitLibraryManager bukkitLibraryManager = new BukkitLibraryManager(this);
 
-        final Relocation foliaRelocation = new Relocation("folialib", "it{}frafol{}libs{}folialib");
+        final Relocation foliaRelocation = new Relocation("folialib", "me{}candiesjar{}libs{}folialib");
         Library folia = Library.builder()
                 .groupId("com{}tcoded{}folialib")
                 .artifactId("folialib")
