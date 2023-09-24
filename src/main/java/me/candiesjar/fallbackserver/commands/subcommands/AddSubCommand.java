@@ -30,7 +30,6 @@ public class AddSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
-
         if (arguments.length < 2) {
             BungeeMessages.EMPTY_SERVER.send(sender);
             return;
@@ -43,7 +42,7 @@ public class AddSubCommand implements SubCommand {
             return;
         }
 
-        if (!ProxyServer.getInstance().getConfig().getServersCopy().containsKey(server)) {
+        if (!ProxyServer.getInstance().getConfig().getServers().containsKey(server)) {
             BungeeMessages.UNAVAILABLE_SERVER.send(sender, new Placeholder("server", server));
             return;
         }
@@ -53,7 +52,6 @@ public class AddSubCommand implements SubCommand {
     }
 
     private void save(String serverName) {
-
         List<String> servers = BungeeServers.SERVERS.getStringList();
 
         servers.add(serverName);
@@ -62,6 +60,5 @@ public class AddSubCommand implements SubCommand {
         plugin.reloadTask();
 
         servers.clear();
-
     }
 }

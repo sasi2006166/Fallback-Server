@@ -6,7 +6,7 @@ import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.ServerUtils;
+import me.candiesjar.fallbackserver.utils.server.ServerUtils;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;

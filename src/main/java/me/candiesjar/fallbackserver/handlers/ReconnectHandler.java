@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserver.handlers;
 
-import com.google.common.collect.Lists;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -12,8 +11,7 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.FallingServer;
-import me.candiesjar.fallbackserver.utils.ServerUtils;
+import me.candiesjar.fallbackserver.events.FallbackEvent;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
@@ -23,15 +21,12 @@ import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import net.md_5.bungee.netty.PipelineUtils;
 
 import java.net.InetSocketAddress;
-import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,7 +72,6 @@ public class ReconnectHandler {
     }
 
     private void reconnect() {
-
         boolean maxTries = TRIES.incrementAndGet() == BungeeConfig.RECONNECT_TRIES.getInt();
 
         if (maxTries) {
@@ -100,8 +94,9 @@ public class ReconnectHandler {
             }
 
             int maxPlayers = result.getPlayers().getMax();
+            int check = BungeeConfig.RECONNECT_PLAYER_COUNT_CHECK.getInt();
 
-            if (maxPlayers == -1) {
+            if (maxPlayers == check) {
                 titleTask.cancel();
                 resetDots();
                 reconnectTask.cancel();
@@ -154,11 +149,6 @@ public class ReconnectHandler {
 
                 fallbackServerBungee.setReconnectError(true);
 
-                if (!player.isConnected()) {
-                    fallbackServerBungee.cancelReconnect(uuid);
-                    return;
-                }
-
                 handleFallback();
             }
 
@@ -168,47 +158,11 @@ public class ReconnectHandler {
     }
 
     private void handleFallback() {
+        fallbackServerBungee.cancelReconnect(uuid);
         clear();
 
-        FallingServer.removeServer(targetServerInfo);
-        List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
-
-        boolean hasMaintenance = fallbackServerBungee.isMaintenance();
-
-        if (hasMaintenance) {
-            lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
-        }
-
-        if (lobbies.isEmpty()) {
-            player.disconnect(new TextComponent(LOST_CONNECTION));
-            fallbackServerBungee.cancelReconnect(uuid);
-            return;
-        }
-
-        lobbies.sort(Comparator.comparingInt(server -> server.getServerInfo().getPlayers().size()));
-
-        ServerInfo serverInfo = lobbies.get(0).getServerInfo();
-
-        player.connect(serverInfo);
-
-        boolean clearChat = BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean();
-
-        if (clearChat) {
-            ChatUtil.clearChat(player);
-        }
-
-        BungeeMessages.CONNECTION_FAILED.send(player);
-
-        proxyServer.getScheduler().schedule(fallbackServerBungee, () -> TitleUtil.sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
-                        BungeeMessages.FALLBACK_STAY.getInt(),
-                        BungeeMessages.FALLBACK_FADE_OUT.getInt(),
-                        BungeeMessages.FALLBACK_TITLE,
-                        BungeeMessages.FALLBACK_SUB_TITLE,
-                        serverInfo,
-                        player),
-                BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
-
-        fallbackServerBungee.cancelReconnect(uuid);
+        FallbackEvent fallbackEvent = new FallbackEvent(player, targetServerInfo, "ReconnectHandler");
+        proxyServer.getPluginManager().callEvent(fallbackEvent);
     }
 
     private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {

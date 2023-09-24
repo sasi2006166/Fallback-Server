@@ -11,16 +11,19 @@ public enum BungeeConfig {
     FALLBACK_MODE("settings.fallback_mode"),
     CLEAR_CHAT_RECONNECT("settings.clear_chat.reconnect"),
     CLEAR_CHAT_FALLBACK("settings.clear_chat.fallback"),
+    CLEAR_CHAT_RECONNECT_JOIN("settings.clear_chat.reconnect_join"),
     USE_DEBUG("settings.debug"),
 
     RECONNECT_TRIES("settings.auto_reconnect.max_tries"),
     RECONNECT_IGNORED_REASONS("settings.auto_reconnect.ignored_reasons"),
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
+    RECONNECT_PLAYER_COUNT_CHECK("settings.auto_reconnect.player_count_check"),
     RECONNECT_PING_THRESHOLD("settings.auto_reconnect.ping_threshold"),
     RECONNECT_CONNECTION_DELAY("settings.auto_reconnect.connection_delay"),
     RECONNECT_SORT("settings.auto_reconnect.player_sort"),
     RECONNECT_TASK_DELAY("settings.auto_reconnect.task_delay"),
     RECONNECT_IGNORED_SERVERS("settings.auto_reconnect.ignored_servers"),
+    RECONNECT_CLEAR_TABLIST("settings.auto_reconnect.clear_tab-list"),
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
 
@@ -32,7 +35,7 @@ public enum BungeeConfig {
     IGNORED_REASONS("settings.ignored_reasons"),
     ADMIN_NOTIFICATION("settings.admin_notification"),
     USE_IGNORED_SERVERS("settings.use_ignored_servers"),
-    BLACKLISTED_SERVERS_LIST("settings.ignored_servers_list"),
+    IGNORED_SERVER_LIST("settings.ignored_servers_list"),
     JOIN_BALANCING("settings.join_balancing"),
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
@@ -49,33 +52,33 @@ public enum BungeeConfig {
     STATUS_COMMAND("sub_commands.status.enabled"),
     STATUS_COMMAND_PERMISSION("sub_commands.status.permission"),
 
-    LOBBY_COMMAND("settings.lobby_command"),
-    LOBBY_ALIASES("settings.lobby_command_aliases"),
+    SERVERS_COMMAND("sub_commands.servers.enabled"),
+    SERVERS_COMMAND_PERMISSION("sub_commands.servers.permission"),
 
-    UPDATE_COMMAND("sub_commands.update.enabled"),
-    UPDATE_COMMAND_PERMISSION("sub_commands.update.permission");
+    LOBBY_COMMAND("settings.lobby_command"),
+    LOBBY_ALIASES("settings.lobby_command_aliases");
 
     private final String path;
-    private static final FallbackServerBungee instance = FallbackServerBungee.getInstance();
+    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
 
     BungeeConfig(String path) {
         this.path = path;
     }
 
     public int getInt() {
-        return instance.getConfig().getInt(path);
+        return fallbackServerBungee.getConfig().getInt(path);
     }
 
     public boolean getBoolean() {
-        return instance.getConfig().getBoolean(path);
+        return fallbackServerBungee.getConfig().getBoolean(path);
     }
 
     public String getString() {
-        return instance.getConfig().getString(path);
+        return fallbackServerBungee.getConfig().getString(path);
     }
 
     public List<String> getStringList() {
-        return instance.getConfig().getStringList(path);
+        return fallbackServerBungee.getConfig().getStringList(path);
     }
 
 }

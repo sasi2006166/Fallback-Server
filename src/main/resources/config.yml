@@ -48,6 +48,7 @@ settings:
   clear_chat:
     fallback: true
     reconnect: false
+    reconnect_join: true
 
   # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
   # Customize things like delays and title mode, everything in seconds.
@@ -58,6 +59,11 @@ settings:
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
     ping_delay: 10
+
+    # This option is used by the addon ping system
+    # for checking if the spigot instance is fully started up.
+    # WARNING: Recommended to not touch.
+    player_count_check: -1
 
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.
@@ -78,6 +84,11 @@ settings:
     # backend replying to my plugin ping request on
     # server stop (like /restart).
     task_delay: 10
+
+    # Choose if you want to clear the tab-list when
+    # a player enters the "limbo" while reconnecting.
+    # Useful for preventing visual bugs with names.
+    clear_tab-list: true
 
     # Ignored reasons for reconnecting.
     # If players gets kicked for one of those reasons
@@ -168,8 +179,9 @@ settings:
     - "ban"
     - "whitelist"
     - "full"
+    - "afk"
+    - "maintenance"
 
-  # WARNING: Requires proxy reboot.
   # If you want to use the /lobby command.
   lobby_command: true
 
@@ -210,10 +222,10 @@ sub_commands:
     enabled: true
     permission: "fallback.admin.remove"
 
-  status: # DISABLED
+  status:
     enabled: true
     permission: "fallback.admin.status"
 
-  update: # DISABLED
+  servers:
     enabled: true
-    permission: "fallback.admin.update"
+    permission: "fallback.admin.servers"

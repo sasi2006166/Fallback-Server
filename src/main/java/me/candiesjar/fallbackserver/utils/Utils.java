@@ -15,7 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-@Getter
 @UtilityClass
 public class Utils {
 
@@ -28,6 +27,16 @@ public class Utils {
     private final ProxyServer proxyServer = ProxyServer.getInstance();
     private Field userChannelWrapperField = null;
 
+    static {
+        for (Field f : UserConnection.class.getDeclaredFields()) {
+            if (ChannelWrapper.class.isAssignableFrom(f.getType())) {
+                userChannelWrapperField = f;
+                userChannelWrapperField.setAccessible(true);
+                break;
+            }
+        }
+    }
+
     public void checkUpdates() {
         proxyServer.getScheduler().runAsync(fallbackServerBungee, () -> {
             try {
@@ -37,32 +46,27 @@ public class Utils {
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
-                    fallbackServerBungee.getLogger().severe("Cannot fetch updates. HTTP response code: " + responseCode);
+                    printDebug("Cannot fetch updates. HTTP response code: " + responseCode, true);
                     return;
                 }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                remoteVersion = reader.readLine();
-                reader.close();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    remoteVersion = reader.readLine();
+                }
 
-                updateAvailable = fallbackServerBungee.getDescription().getVersion().equals(remoteVersion);
-
-                connection.disconnect();
+                updateAvailable = !fallbackServerBungee.getDescription().getVersion().equals(remoteVersion);
             } catch (IOException e) {
-                fallbackServerBungee.getLogger().severe("Cannot fetch updates. Exception: " + e.getMessage());
+                printDebug("Cannot fetch updates", true);
             }
         });
     }
 
     public void printDebug(String s, boolean exception) {
-
         if (!exception) {
             fallbackServerBungee.getLogger().warning("[DEBUG] " + s);
-            return;
+        } else {
+            fallbackServerBungee.getLogger().severe("[ERROR] " + s);
         }
-
-        fallbackServerBungee.getLogger().severe("[ERROR] " + s);
-
     }
 
     public String getDots(int s) {
@@ -96,13 +100,4 @@ public class Utils {
         return null;
     }
 
-    static {
-        for (Field f : UserConnection.class.getDeclaredFields()) {
-            if (ChannelWrapper.class.isAssignableFrom(f.getType())) {
-                userChannelWrapperField = f;
-                userChannelWrapperField.setAccessible(true);
-                break;
-            }
-        }
-    }
 }

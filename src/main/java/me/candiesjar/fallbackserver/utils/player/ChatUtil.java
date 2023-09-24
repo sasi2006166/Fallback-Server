@@ -11,6 +11,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -53,12 +55,11 @@ public class ChatUtil {
         for (Placeholder placeHolder : placeholders) {
             s = s.replace(placeHolder.getKey(), placeHolder.getValue());
         }
-
         return s;
     }
 
     public String color(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
+        return convertHexColors(s);
     }
 
     public List<String> color(List<String> list) {
@@ -90,6 +91,24 @@ public class ChatUtil {
         for (int i = 0; i < 100; i++) {
             player.sendMessage(new TextComponent(""));
         }
+    }
+
+    public String convertHexColors(String s) {
+        Pattern unicode = Pattern.compile("\\\\u\\+[a-fA-F0-9]{4}");
+        Matcher match = unicode.matcher(s);
+        while (match.find()) {
+            String code = s.substring(match.start(), match.end());
+            s = s.replace(code, Character.toString((char) Integer.parseInt(code.replace("\\u+", ""), 16)));
+            match = unicode.matcher(s);
+        }
+        Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
+        match = pattern.matcher(s);
+        while (match.find()) {
+            String color = s.substring(match.start(), match.end());
+            s = s.replace(color, ChatColor.of(color.replace("&", "")) + "");
+            match = pattern.matcher(s);
+        }
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 
     public boolean checkMessage(String message, String name) {

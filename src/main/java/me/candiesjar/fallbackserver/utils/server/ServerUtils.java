@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.utils;
+package me.candiesjar.fallbackserver.utils.server;
 
 import eu.kennytv.maintenance.api.MaintenanceProvider;
 import eu.kennytv.maintenance.api.proxy.MaintenanceProxy;

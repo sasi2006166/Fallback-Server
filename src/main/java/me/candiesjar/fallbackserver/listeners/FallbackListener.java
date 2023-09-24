@@ -7,9 +7,10 @@ import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.ServerUtils;
+import me.candiesjar.fallbackserver.utils.CheckUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
+import me.candiesjar.fallbackserver.utils.server.ServerUtils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -42,33 +43,16 @@ public class FallbackListener implements Listener {
         ServerInfo kickedFrom = event.getKickedFrom();
         ServerKickEvent.State state = event.getState();
 
-        if (!player.isConnected()) {
-            return;
-        }
-
-        if (state != ServerKickEvent.State.CONNECTED) {
-            return;
-        }
-
         boolean isEmpty = event.getKickReasonComponent() == null;
         String reason = isEmpty ? "" : BaseComponent.toLegacyText(event.getKickReasonComponent());
-        List<String> ignoredReasons = BungeeConfig.IGNORED_REASONS.getStringList();
 
-        for (String word : ignoredReasons) {
+        boolean canContinue = CheckUtil.preChecks(player, state, reason, false);
 
-            if (isEmpty) {
-                break;
-            }
-
-            if (reason.contains(word)) {
-                return;
-            }
-
+        if (canContinue) {
+            return;
         }
 
-        boolean useBlacklist = BungeeConfig.USE_IGNORED_SERVERS.getBoolean();
-
-        if (useBlacklist && BungeeConfig.BLACKLISTED_SERVERS_LIST.getStringList().contains(kickedFrom.getName())) {
+        if (checkIgnoredServers(kickedFrom.getName())) {
             return;
         }
 
@@ -99,7 +83,7 @@ public class FallbackListener implements Listener {
         player.connect(serverInfo);
 
         incrementPendingConnections(serverInfo.getName());
-        fallbackServerBungee.getProxy().getScheduler().schedule(fallbackServerBungee, () -> decrementPendingConnections(serverInfo.getName()), 1, TimeUnit.SECONDS);
+        fallbackServerBungee.getProxy().getScheduler().schedule(fallbackServerBungee, () -> decrementPendingConnections(serverInfo.getName()), 2, TimeUnit.SECONDS);
 
         boolean clearChat = BungeeConfig.CLEAR_CHAT_FALLBACK.getBoolean();
 
@@ -125,6 +109,10 @@ public class FallbackListener implements Listener {
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
 
+    }
+
+    private boolean checkIgnoredServers(String serverName) {
+        return BungeeConfig.USE_IGNORED_SERVERS.getBoolean() && BungeeConfig.IGNORED_SERVER_LIST.getStringList().contains(serverName);
     }
 
     private int getPendingConnections(String serverName) {

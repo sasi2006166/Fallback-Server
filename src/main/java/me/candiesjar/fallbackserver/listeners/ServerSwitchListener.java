@@ -12,7 +12,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
@@ -35,7 +34,6 @@ public class ServerSwitchListener implements Listener {
     @SneakyThrows
     @EventHandler
     public void onServerSwitch(ServerSwitchEvent event) {
-
         UserConnection user = (UserConnection) event.getPlayer();
         ProxiedPlayer player = event.getPlayer();
 
@@ -49,7 +47,6 @@ public class ServerSwitchListener implements Listener {
 
         Field handlerField = HandlerBoss.class.getDeclaredField("handler");
         handlerField.setAccessible(true);
-        DownstreamBridge previousBridge = (DownstreamBridge) handlerField.get(channelWrapper.getHandle().pipeline().get(HandlerBoss.class));
 
         if (playerCacheManager.containsKey(uuid)) {
             BungeeMessages.EXITING_RECONNECT.send(player);
@@ -57,12 +54,12 @@ public class ServerSwitchListener implements Listener {
         }
 
         if (plugin.isReconnect()) {
-            ReconnectBridge reconnectBridge = new ReconnectBridge(proxyServer, user, server, previousBridge);
+            ReconnectBridge reconnectBridge = new ReconnectBridge(proxyServer, user, server);
             channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(reconnectBridge);
             return;
         }
 
-        FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server, previousBridge);
+        FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);
         channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(fallbackBridge);
 
     }

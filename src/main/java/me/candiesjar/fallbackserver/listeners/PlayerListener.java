@@ -18,9 +18,11 @@ import java.util.UUID;
 public class PlayerListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final PlayerCacheManager playerCacheManager;
 
     public PlayerListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.playerCacheManager = plugin.getPlayerCacheManager();
     }
 
     @EventHandler
@@ -38,7 +40,7 @@ public class PlayerListener implements Listener {
 
         if (Utils.isUpdateAvailable()) {
             BungeeMessages.NEW_UPDATE.sendList(player,
-                    new Placeholder("old_version", FallbackServerBungee.getInstance().getVersion()),
+                    new Placeholder("old_version", plugin.getVersion()),
                     new Placeholder("new_version", Utils.getRemoteVersion()));
         }
 
@@ -49,7 +51,7 @@ public class PlayerListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        ReconnectHandler reconnectHandler = PlayerCacheManager.getInstance().get(uuid);
+        ReconnectHandler reconnectHandler = playerCacheManager.get(uuid);
 
         if (reconnectHandler != null) {
             plugin.cancelReconnect(uuid);

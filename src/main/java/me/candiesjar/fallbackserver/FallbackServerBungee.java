@@ -7,17 +7,23 @@ import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.enums.BungeeVersion;
 import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.TextFile;
-import me.candiesjar.fallbackserver.utils.FileUtils;
+import me.candiesjar.fallbackserver.utils.FilesUtils;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
+import net.byteflux.libby.BungeeLibraryManager;
+import net.byteflux.libby.Library;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
+import ru.vyarus.yaml.updater.YamlUpdater;
+import ru.vyarus.yaml.updater.util.FileUtils;
 
+import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +33,7 @@ public final class FallbackServerBungee extends Plugin {
     private static FallbackServerBungee instance;
 
     @Getter
-    private TextFile configTextFile, messagesTextFile, serversTextFile;
+    private TextFile configTextFile, messagesTextFile, serversTextFile, versionTextFile;
 
     @Getter
     private String version;
@@ -78,7 +84,9 @@ public final class FallbackServerBungee extends Plugin {
                 " |_|  \\__,_|_|_|_.__/ \\__,_|\\___|_|\\_\\|____/ \\___|_|    \\_/ \\___|_|   \n" +
                 "                                                                      ");
 
+        loadDependencies();
         loadConfiguration();
+        updateConfiguration();
 
         playerCacheManager = PlayerCacheManager.getInstance();
         serverCacheManager = ServerCacheManager.getInstance();
@@ -93,7 +101,7 @@ public final class FallbackServerBungee extends Plugin {
 
         startMetrics();
 
-        getLogger().info("§7[§b!§7] Plugin loaded successfully §7[§b!§7]");
+        getLogger().info("§7[§b!§7] Plugin loaded successfully");
         PingTask.start();
 
         checkAlpha();
@@ -105,11 +113,11 @@ public final class FallbackServerBungee extends Plugin {
     public void onDisable() {
 
         if (needsUpdate) {
-            getLogger().info("§7[§b!§7] §7Installing new update.. §7[§b!§7]");
-            FileUtils.deleteFile(getFile().getName(), getDataFolder());
+            getLogger().info("§7[§b!§7] §7Installing new update..");
+            FilesUtils.deleteFile(getFile().getName(), getDataFolder());
         }
 
-        getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling.. §7[§c!§7]");
+        getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling..");
     }
 
     private void checkDebug() {
@@ -133,12 +141,12 @@ public final class FallbackServerBungee extends Plugin {
     private void checkPlugins() {
 
         if (getProxy().getPluginManager().getPlugin("ajQueue") != null) {
-            getLogger().info("§7[§b!§7] Enabling ajQueue API §7[§b!§7]");
+            getLogger().info("§7[§b!§7] Enabling ajQueue API");
             setAjQueue(true);
         }
 
         if (getProxy().getPluginManager().getPlugin("Maintenance") != null) {
-            getLogger().info("§7[§b!§7] Enabling Maintenance API §7[§b!§7]");
+            getLogger().info("§7[§b!§7] Enabling Maintenance API");
             setMaintenance(true);
         }
 
@@ -158,15 +166,14 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void loadConfiguration() {
-        getLogger().info("§7[§b!§7] Creating configuration files.. §7[§b!§7]");
-
         configTextFile = new TextFile(this, "config.yml");
         messagesTextFile = new TextFile(this, "messages.yml");
         serversTextFile = new TextFile(this, "servers.yml");
+        versionTextFile = new TextFile(this, "version.yml");
     }
 
     private void loadCommands() {
-        getLogger().info("§7[§b!§7] Preparing commands.. §7[§b!§7]");
+        getLogger().info("§7[§b!§7] Preparing commands..");
 
         getProxy().getPluginManager().registerCommand(this, new SubCommandManager(this));
 
@@ -178,7 +185,7 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void loadListeners() {
-        getLogger().info("§7[§b!§7] Starting all listeners.. §7[§b!§7]");
+        getLogger().info("§7[§b!§7] Starting all listeners..");
 
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
         String mode = BungeeConfig.FALLBACK_MODE.getString();
@@ -186,12 +193,12 @@ public final class FallbackServerBungee extends Plugin {
         switch (mode) {
             case "DEFAULT":
                 getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
-                getLogger().info("§7[§b!§7] Using default method §7[§b!§7]");
+                getLogger().info("§7[§b!§7] Using default method");
                 break;
             case "RECONNECT":
                 setReconnect(true);
                 getProxy().getPluginManager().registerListener(this, new ReconnectListener(this));
-                getLogger().info("§7[§b!§7] Using reconnect method §7[§b!§7]");
+                getLogger().info("§7[§b!§7] Using reconnect method");
                 break;
             default:
                 getLogger().severe("Configuration error under fallback_mode: " + BungeeConfig.FALLBACK_MODE.getString());
@@ -217,9 +224,49 @@ public final class FallbackServerBungee extends Plugin {
         boolean telemetry = BungeeConfig.TELEMETRY.getBoolean();
 
         if (telemetry) {
-            getLogger().info("§7[§b!§7] Starting stats service... §7[§b!§7]");
+            getLogger().info("§7[§b!§7] Starting telemetry service...");
             new BungeeMetrics(this, 11817);
         }
+    }
+
+    private void updateConfiguration() {
+        if (getDescription().getVersion().equals(BungeeVersion.VERSION.getString())) {
+            return;
+        }
+
+        getLogger().info("§7[§b!§7] Updating configuration...");
+        YamlUpdater.create(new File(getDataFolder().toPath() + "/config.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/main/src/main/resources/config.yml"))
+                .backup(true)
+                .update();
+        YamlUpdater.create(new File(getDataFolder().toPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/main/src/main/resources/messages.yml"))
+                .backup(true)
+                .update();
+        versionTextFile.getConfig().set("version", getDescription().getVersion());
+        versionTextFile.save();
+        loadConfiguration();
+
+    }
+
+    private void loadDependencies() {
+
+        BungeeLibraryManager bungeeLibraryManager = new BungeeLibraryManager(this);
+
+        Library library = Library.builder()
+                .groupId("me{}carleslc{}Simple-YAML")
+                .artifactId("Simple-Yaml")
+                .version("1.8.4")
+                .build();
+
+        Library updater = Library.builder()
+                .groupId("ru{}vyarus")
+                .artifactId("yaml-config-updater")
+                .version("1.4.2")
+                .build();
+
+        bungeeLibraryManager.addJitPack();
+        bungeeLibraryManager.addMavenCentral();
+        bungeeLibraryManager.loadLibrary(library);
+        bungeeLibraryManager.loadLibrary(updater);
     }
 
     public void reloadTask() {
@@ -248,11 +295,43 @@ public final class FallbackServerBungee extends Plugin {
         getProxy().getScheduler().schedule(this, () -> setReconnectError(false), 10, TimeUnit.SECONDS);
     }
 
+    public void reloadListeners() {
+
+        getProxy().getPluginManager().unregisterListener(new FallbackListener(this));
+        getProxy().getPluginManager().unregisterListener(new ReconnectListener(this));
+
+        String mode = BungeeConfig.FALLBACK_MODE.getString();
+
+        switch (mode) {
+            case "DEFAULT":
+                getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
+                break;
+            case "RECONNECT":
+                setReconnect(true);
+                getProxy().getPluginManager().registerListener(this, new ReconnectListener(this));
+                break;
+            default:
+                getLogger().severe("Configuration error under fallback_mode: " + BungeeConfig.FALLBACK_MODE.getString());
+                getLogger().severe("Using default mode..");
+                getProxy().getPluginManager().registerListener(this, new FallbackListener(this));
+                break;
+        }
+
+    }
+
     public Configuration getConfig() {
         return configTextFile.getConfig();
     }
 
     public Configuration getMessagesConfig() {
         return messagesTextFile.getConfig();
+    }
+
+    public Configuration getServersConfig() {
+        return serversTextFile.getConfig();
+    }
+
+    public Configuration getVersionConfig() {
+        return versionTextFile.getConfig();
     }
 }
