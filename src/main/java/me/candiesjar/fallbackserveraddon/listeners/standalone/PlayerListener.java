@@ -41,6 +41,11 @@ public class PlayerListener implements Listener {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message", "&f"));
         }
 
+        if (plugin.getConfig().getString("settings.standalone.join_message").equals("none")) {
+            event.setJoinMessage(null);
+            return;
+        }
+
         event.setJoinMessage(Utils.color(plugin.getConfig().getString("settings.standalone.join_message", null))
                 .replace("%player_name%", player.getName()));
     }
@@ -50,6 +55,11 @@ public class PlayerListener implements Listener {
 
         Player player = event.getPlayer();
         ActionBarUtil.stopActionBar(player);
+
+        if (plugin.getConfig().getString("settings.standalone.quit_message").equals("none")) {
+            event.setQuitMessage(null);
+            return;
+        }
 
         event.setQuitMessage(Utils.color(plugin.getConfig().getString("settings.standalone.quit_message", null))
                 .replace("%player_name%", player.getName()));
