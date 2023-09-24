@@ -41,7 +41,7 @@ public class PlayerListener {
 
             if (newUpdate != null && newUpdate) {
                 VelocityMessages.NEW_UPDATE.sendList(player,
-                        new Placeholder("old_version", FallbackServerVelocity.VERSION),
+                        new Placeholder("old_version", plugin.getVERSION()),
                         new Placeholder("new_version", Utils.getRemoteVersion()));
             }
         });

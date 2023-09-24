@@ -58,6 +58,18 @@ public class ReconnectListener {
                 return false;
             }
 
+            boolean clearTab = VelocityConfig.RECONNECT_CLEAR_TABLIST.get(Boolean.class);
+
+            if (clearTab) {
+                player.getTabList().clearAll();
+            }
+
+            boolean clearChat = VelocityConfig.CLEAR_CHAT_RECONNECT_JOIN.get(Boolean.class);
+
+            if (clearTab) {
+                ChatUtil.clearChat(player);
+            }
+
             FallbackLimboHandler fallbackLimboHandler = new FallbackLimboHandler(kickedFrom, player.getUniqueId(), player);
             plugin.getPlayerCacheManager().put(player.getUniqueId(), fallbackLimboHandler);
             WorldUtil.getFallbackWorld().spawnPlayer(player, fallbackLimboHandler);

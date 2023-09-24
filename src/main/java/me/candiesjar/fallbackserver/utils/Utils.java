@@ -16,10 +16,10 @@ import java.util.concurrent.CompletableFuture;
 
 @UtilityClass
 public class Utils {
-    @Getter
-    private static String remoteVersion = "Loading";
 
     private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
+    @Getter
+    private static String remoteVersion = "Loading";
 
     @SneakyThrows(Exception.class)
     public CompletableFuture<Boolean> getUpdates() {
@@ -40,7 +40,7 @@ public class Utils {
                 try (InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())) {
                     try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
                         remoteVersion = bufferedReader.readLine();
-                        isUpdateAvailable = !FallbackServerVelocity.VERSION.equalsIgnoreCase(remoteVersion);
+                        isUpdateAvailable = !fallbackServerVelocity.getVERSION().equalsIgnoreCase(remoteVersion);
                     }
                 }
             } catch (IOException e) {
@@ -52,7 +52,6 @@ public class Utils {
     }
 
     public void printDebug(String s, boolean exception) {
-
         if (exception) {
             fallbackServerVelocity.getLogger().error("[ERROR] " + s);
             return;
@@ -79,17 +78,6 @@ public class Utils {
         fallbackServerVelocity.getServersTextFile().getConfig().set("servers", servers);
         fallbackServerVelocity.getServersTextFile().save();
         fallbackServerVelocity.getServersTextFile().reload();
-    }
-
-    public boolean checkMessage(String message, List<String> stringList) {
-        List<String> list = Lists.newArrayList();
-
-        for (String s : stringList) {
-            String toLowerCase = s.toLowerCase();
-            list.add(toLowerCase);
-        }
-
-        return list.contains(message.toLowerCase());
     }
 
 }

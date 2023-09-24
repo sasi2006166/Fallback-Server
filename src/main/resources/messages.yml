@@ -13,7 +13,7 @@
 
 MESSAGES:
   prefix: "&7&lF&b&lS &8&l» "
-  syntax: "%prefix% &cCorrect syntax: /fs <reload:set:add>"
+  syntax: "%prefix% &cCorrect syntax: /fs <reload:add:remove:status:servers>"
   no_permission: "%prefix% &7I'm sorry, you're lacking permission &c%permission%"
   reloaded: "%prefix% &7Configuration reloaded &bsuccessfully&7!"
   only_player: "%prefix% &cOnly players must execute this command."
@@ -50,13 +50,36 @@ MESSAGES:
     - ""
     - "&b/fs reload &7| Command for reload configuration."
     - "&b/fs add <server> &7| Adds a fallback server to configuration."
+    - "&b/fs remove <server> &7| Removes a fallback server from configuration."
+    - "&b/fs status &7| Shows the status of the proxy instance."
     - ""
     - "&7Running version &b%version%"
     - "&8&m---------------------------"
 
   stats_command:
+    - "&8&m-----&8[&bSTATUS&8]&m-----"
     - ""
+    - "&7Running version: &b%version%"
+    - "&7Proxy's version: &b%proxy_version%"
+    - "&7CPU Cores: &b%cores%"
+    - "&7Used memory: &b%used_memory% MB"
+    - "&7Total players: &b%total_players%"
+    - ""
+    - "&7Run &b/fs servers &7to get the"
+    - "&7status of your lobbies."
+    - ""
+    - "&8&m---------------------------"
 
+  servers_command:
+    online: "&aONLINE"
+    offline: "&cOFFLINE"
+    servers: "&7%server% &8| &b%status%"
+    header:
+      - "&8&m-----&8[&bSERVERS&8]&m-----"
+      - ""
+    footer:
+      - ""
+      - "&8&m------------------"
 TITLES: # Everything in seconds.
   fallback:
     enabled: true

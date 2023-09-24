@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.utils.player;
 
+import com.google.common.collect.Lists;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import lombok.experimental.UtilityClass;
@@ -11,6 +12,8 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -53,9 +56,8 @@ public class ChatUtil {
     }
 
     public String color(String s) {
-
-        return s.replace("&", "§");
-
+        String hex = convertHexColors(s);
+        return hex.replace("&", "§");
     }
 
     public List<String> color(List<String> list) {
@@ -74,6 +76,46 @@ public class ChatUtil {
 
     public String componentToString(Component component) {
         return PlainTextComponentSerializer.plainText().serialize(component);
+    }
+
+    public String convertHexColors(String message) {
+
+        if (!containsHexColor(message)) {
+            return message;
+        }
+
+        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder();
+            for (char c : ch) {
+                builder.append("&").append(c);
+            }
+
+            message = message.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(message);
+        }
+        return message;
+    }
+
+    public boolean containsHexColor(String message) {
+        String hexColorPattern = "(?i)&#[a-f0-9]{6}";
+        return message.matches(".*" + hexColorPattern + ".*");
+    }
+
+    public boolean checkMessage(String message, List<String> stringList) {
+        List<String> list = Lists.newArrayList();
+
+        for (String s : stringList) {
+            String toLowerCase = s.toLowerCase();
+            list.add(toLowerCase);
+        }
+
+        return list.contains(message.toLowerCase());
     }
 
     public void clearChat(Player player) {

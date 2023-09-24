@@ -6,9 +6,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.AddSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.RemoveSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.*;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -23,12 +21,17 @@ import java.util.concurrent.CompletableFuture;
 
 public class FallbackVelocityCommand implements SimpleCommand {
 
+    private final FallbackServerVelocity plugin;
     private final HashMap<String, SubCommand> subCommands = Maps.newHashMap();
 
-    public FallbackVelocityCommand(FallbackServerVelocity fallbackServerVelocity) {
+    public FallbackVelocityCommand(FallbackServerVelocity fallbackServerVelocity, FallbackServerVelocity plugin) {
+        this.plugin = plugin;
+
         subCommands.put("reload", new ReloadSubCommand(fallbackServerVelocity));
         subCommands.put("add", new AddSubCommand(fallbackServerVelocity));
         subCommands.put("remove", new RemoveSubCommand(fallbackServerVelocity));
+        subCommands.put("status", new StatusSubCommand(fallbackServerVelocity));
+        subCommands.put("servers", new ServersSubCommand(fallbackServerVelocity));
     }
 
     @Override
@@ -45,12 +48,12 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
         if (!commandSource.hasPermission(adminPermission)) {
             commandSource.sendMessage(Component.text(ChatUtil.color("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
-                    .replace("version", FallbackServerVelocity.getVERSION()))));
+                    .replace("version", plugin.getVERSION()))));
             return;
         }
 
         if (args.length == 0) {
-            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new Placeholder("version", FallbackServerVelocity.getVERSION()));
+            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new Placeholder("version", plugin.getVERSION()));
             return;
         }
 

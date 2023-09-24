@@ -13,7 +13,7 @@ import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 
 @RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
-    private final FallbackServerVelocity fallbackServerVelocity;
+    private final FallbackServerVelocity plugin;
 
     @Override
     public String getPermission() {
@@ -28,30 +28,34 @@ public class ReloadSubCommand implements SubCommand {
     @Override
     public void perform(CommandSource commandSource, String[] args) {
 
-        boolean hubReload = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
+        boolean oldCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
+        String oldMode = VelocityConfig.FALLBACK_MODE.get(String.class);
 
-        fallbackServerVelocity.reloadAll();
+        plugin.reloadAll();
 
-        boolean reloadCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
+        boolean newCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
+        String newMode = VelocityConfig.FALLBACK_MODE.get(String.class);
 
-        if (hubReload != reloadCommand) {
+        if (oldCommand != newCommand) {
 
             String[] aliases = VelocityConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]);
 
-            CommandMeta commandMeta = fallbackServerVelocity.getServer().getCommandManager()
+            CommandMeta commandMeta = plugin.getServer().getCommandManager()
                     .metaBuilder(VelocityConfig.LOBBY_ALIASES.getStringList().get(0))
                     .aliases(aliases)
                     .build();
 
-            if (reloadCommand) {
-                fallbackServerVelocity.getServer().getCommandManager().register(commandMeta, new HubCommand(fallbackServerVelocity));
+            if (newCommand) {
+                plugin.getServer().getCommandManager().register(commandMeta, new HubCommand(plugin));
             } else {
-                fallbackServerVelocity.getServer().getCommandManager().unregister(commandMeta);
+                plugin.getServer().getCommandManager().unregister(commandMeta);
             }
 
         }
 
-        fallbackServerVelocity.reloadAll();
+        if (!oldMode.equals(newMode)) {
+            plugin.reloadListeners();
+        }
 
         VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
     }

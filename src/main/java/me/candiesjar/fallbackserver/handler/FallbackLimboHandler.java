@@ -88,8 +88,9 @@ public class FallbackLimboHandler implements LimboSessionHandler {
             }
 
             int maxPlayers = ping.asBuilder().getMaximumPlayers();
+            int check = VelocityConfig.RECONNECT_PLAYER_COUNT_CHECK.get(Integer.class);
 
-            if (maxPlayers == -1) {
+            if (maxPlayers == check) {
                 killTasks();
                 clear();
                 resetDots();

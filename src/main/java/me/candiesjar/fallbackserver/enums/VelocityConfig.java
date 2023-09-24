@@ -11,15 +11,17 @@ public enum VelocityConfig {
     FALLBACK_MODE("settings.fallback_mode"),
     CLEAR_CHAT_RECONNECT("settings.clear_chat.reconnect"),
     CLEAR_CHAT_FALLBACK("settings.clear_chat.fallback"),
+    CLEAR_CHAT_RECONNECT_JOIN("settings.clear_chat.reconnect_join"),
 
     RECONNECT_MAX_TRIES("settings.auto_reconnect.max_tries"),
     RECONNECT_TASK_DELAY("settings.auto_reconnect.ping_delay"),
+    RECONNECT_PLAYER_COUNT_CHECK("settings.auto_reconnect.player_count_check"),
     RECONNECT_IGNORED_SERVERS("settings.auto_reconnect.ignored_servers"),
     RECONNECT_USE_FALLBACK("settings.auto_reconnect.player_sort"),
     RECONNECT_IGNORED_REASONS("settings.auto_reconnect.ignored_reasons"),
     RECONNECT_JOIN_LIMBO("settings.auto_reconnect.join_limbo"),
     RECONNECT_PING_TIMEOUT("settings.auto_reconnect.ping_timeout"),
-
+    RECONNECT_CLEAR_TABLIST("settings.auto_reconnect.clear_tab-list"),
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
 
@@ -50,8 +52,8 @@ public enum VelocityConfig {
     STATUS_COMMAND("sub_commands.status.enabled"),
     STATUS_COMMAND_PERMISSION("sub_commands.status.permission"),
 
-    UPDATE_COMMAND("sub_commands.update.enabled"),
-    UPDATE_COMMAND_PERMISSION("sub_commands.update.permission");
+    SERVERS_COMMAND("sub_commands.servers.enabled"),
+    SERVERS_COMMAND_PERMISSION("sub_commands.servers.permission");
 
     private final String path;
     private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();

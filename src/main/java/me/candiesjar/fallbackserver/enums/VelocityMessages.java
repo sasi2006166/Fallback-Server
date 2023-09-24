@@ -29,10 +29,15 @@ public enum VelocityMessages {
     SERVER_NOT_CONTAINED("MESSAGES.server_not_added"),
     UNAVAILABLE_SERVER("MESSAGES.server_not_available"),
     SERVER_ADDED("MESSAGES.server_added"),
-
     CONNECTION_FAILED("MESSAGES.connection_failed"),
 
     STATS_COMMAND("MESSAGES.stats_command"),
+
+    SERVERS_COMMAND_ONLINE("MESSAGES.servers_command.online"),
+    SERVERS_COMMAND_OFFLINE("MESSAGES.servers_command.offline"),
+    SERVERS_COMMAND_LIST("MESSAGES.servers_command.servers"),
+    SERVERS_COMMAND_HEADER("MESSAGES.servers_command.header"),
+    SERVERS_COMMAND_FOOTER("MESSAGES.servers_command.footer"),
 
     USE_FALLBACK_TITLE("TITLES.fallback.enabled"),
     FALLBACK_DELAY("TITLES.fallback.delay"),

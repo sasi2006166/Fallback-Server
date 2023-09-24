@@ -39,6 +39,7 @@ settings:
   clear_chat:
     fallback: true
     reconnect: false
+    reconnect_join: true
 
   # Add here fallback lobbies, also used for /hub command.
   fallback_list:
@@ -53,6 +54,11 @@ settings:
     # Time for time-outing the server on ping.
     # In Milliseconds, 2000 for example = 2 seconds.
     ping_timeout: 2000
+
+    # This option is used by the addon ping system
+    # for checking if the spigot instance is fully started up.
+    # WARNING: Recommended to not touch.
+    player_count_check: -1
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
@@ -70,6 +76,11 @@ settings:
     # Don't put values under 1, they will NOT work.
     # In seconds.
     first_delay: 3
+
+    # Choose if you want to clear the tab-list when
+    # a player enters the "limbo" while reconnecting.
+    # Useful for preventing visual bugs with names.
+    clear_tab-list: true
 
     # Ignored reasons for reconnecting.
     # If players gets kicked for one of those reasons
@@ -206,6 +217,6 @@ sub_commands:
     enabled: true
     permission: "fallback.admin.status"
 
-  update:
+  servers:
     enabled: true
-    permission: "fallback.admin.update"
+    permission: "fallback.admin.servers"
