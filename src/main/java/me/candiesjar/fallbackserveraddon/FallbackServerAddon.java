@@ -1,11 +1,10 @@
 package me.candiesjar.fallbackserveraddon;
 
-import com.tcoded.folialib.FoliaLib;
-import com.tcoded.folialib.wrapper.task.WrappedTask;
 import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
+import me.candiesjar.fallbackserveraddon.utils.FoliaUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
@@ -22,16 +21,14 @@ public final class FallbackServerAddon extends JavaPlugin {
     public static FallbackServerAddon instance;
 
     @Setter
+    @Getter
     private boolean allPluginsLoaded = true;
 
+    @Setter
     @Getter
     private boolean locked = false;
 
-    @Getter
-    private FoliaLib foliaLib = new FoliaLib(this);
-
     private BukkitTask task;
-    private WrappedTask foliaTask;
 
     @Override
     public void onEnable() {
@@ -78,7 +75,7 @@ public final class FallbackServerAddon extends JavaPlugin {
     private void schedule() {
 
         if (Utils.isFolia()) {
-            scheduleFolia();
+            FoliaUtil.schedule();
             return;
         }
 
@@ -105,32 +102,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         }, 20L, 40L);
     }
 
-    private void scheduleFolia() {
-
-        foliaTask = foliaLib.getImpl().runTimer(() -> {
-
-            if (locked) {
-                foliaTask.cancel();
-                return;
-            }
-
-            for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
-                if (!plugin.isEnabled()) {
-                    allPluginsLoaded = false;
-                    break;
-                }
-            }
-
-            if (allPluginsLoaded) {
-                locked = true;
-                executeStart();
-                foliaTask.cancel();
-            }
-
-        }, 20L, 40L);
-    }
-
-    private void executeStart() {
+    public void executeStart() {
         switch (Objects.requireNonNull(getConfig().getString("settings.mode"))) {
 
             case "STANDALONE":
