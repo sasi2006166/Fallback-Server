@@ -34,7 +34,7 @@
                     <relocations>
                         <relocation>
                             <pattern>net.byteflux.libby</pattern>
-                            <shadedPattern>yourPackage.libs.net.byteflux.libby</shadedPattern>
+                            <shadedPattern>me.candiesjar.libs.net.byteflux.libby</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
