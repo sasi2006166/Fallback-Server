@@ -18,6 +18,8 @@ settings:
   # If you want to use this addon as Reconnect Server, you need to set the mode to 'STANDALONE'.
   mode: 'NONE'
 
+  # Here you can set up the plugin reload's permission.
+  reload_permission: 'fallbackserver.reload'
 
   # NOTE: This will work only if you set up the mode to 'ADDON'.
   addon:
