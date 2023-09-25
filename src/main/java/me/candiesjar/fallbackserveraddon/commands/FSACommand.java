@@ -5,17 +5,14 @@ import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class FSACommand implements CommandExecutor, TabCompleter {
+public class FSACommand implements CommandExecutor {
 
     private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] strings) {
 
         if (strings.length != 1 || !strings[0].equalsIgnoreCase("reload")) {
             sender.sendMessage(Utils.color("&8&l» &7Running &b&nFallback Server Addon version &7by &b&nCandiesJar")
@@ -33,12 +30,5 @@ public class FSACommand implements CommandExecutor, TabCompleter {
         Utils.reloadConfig(sender);
         plugin.executeReload(oldValue);
         return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        final List<String> completions = new ArrayList<>();
-        completions.add("reload");
-        return completions;
     }
 }
