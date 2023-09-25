@@ -1,6 +1,8 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
 import lombok.experimental.UtilityClass;
+import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
@@ -9,6 +11,8 @@ import java.util.regex.Pattern;
 
 @UtilityClass
 public class Utils {
+
+    private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
 
     public void unregisterEvent(Listener listener) {
         HandlerList.unregisterAll(listener);
@@ -54,5 +58,12 @@ public class Utils {
     private boolean containsHexColor(String message) {
         String hexColorPattern = "(?i)&#[a-f0-9]{6}";
         return message.matches(".*" + hexColorPattern + ".*");
+    }
+
+    public void reloadConfig(CommandSender sender) {
+        sender.sendMessage(Utils.color("&8&l» &7Reloading configuration..."));
+        plugin.reloadConfig();
+        plugin.saveDefaultConfig();
+        sender.sendMessage(Utils.color("&8&l» &7Reloaded configuration."));
     }
 }

@@ -29,7 +29,7 @@ public class PingListener implements Listener {
             return;
         }
 
-        event.setMaxPlayers(plugin.getConfig().getInt("settings.override_player_count_number", -1));
+        event.setMaxPlayers(plugin.getConfig().getInt("settings.addon.override_player_count_number", -1));
 
         if (received) {
             return;
@@ -37,7 +37,7 @@ public class PingListener implements Listener {
 
         received = true;
 
-        if (plugin.getConfig().getBoolean("settings.auto_remove", true)) {
+        if (plugin.getConfig().getBoolean("settings.addon.auto_remove", true)) {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getServer().getPluginManager().disablePlugin(plugin), plugin.getConfig().getInt("settings.disable_after", 30) * 20L);
             return;
         }
@@ -45,6 +45,6 @@ public class PingListener implements Listener {
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             finished = true;
             Utils.unregisterEvent(this);
-        }, plugin.getConfig().getInt("settings.disable_after", 30) * 20L);
+        }, plugin.getConfig().getInt("settings.addon.disable_after", 30) * 20L);
     }
 }
