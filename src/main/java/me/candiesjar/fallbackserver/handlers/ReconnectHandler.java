@@ -72,7 +72,9 @@ public class ReconnectHandler {
     }
 
     private void reconnect() {
+
         boolean maxTries = TRIES.incrementAndGet() == BungeeConfig.RECONNECT_TRIES.getInt();
+        Utils.printDebug("Reconnect tries: " + TRIES.get(), true);
 
         if (maxTries) {
             boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();

@@ -5,10 +5,12 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.connection.ReconnectBridge;
+import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -36,6 +38,7 @@ public class ServerSwitchListener implements Listener {
     public void onServerSwitch(ServerSwitchEvent event) {
         UserConnection user = (UserConnection) event.getPlayer();
         ProxiedPlayer player = event.getPlayer();
+        ServerInfo playerServer = user.getServer().getInfo();
 
         if (event.getFrom() == null) {
             return;
@@ -49,12 +52,16 @@ public class ServerSwitchListener implements Listener {
         handlerField.setAccessible(true);
 
         if (playerCacheManager.containsKey(uuid)) {
-            BungeeMessages.EXITING_RECONNECT.send(player);
-            plugin.cancelReconnect(uuid);
+            String serverName = BungeeConfig.RECONNECT_SERVER.getString();
+            ServerInfo reconnectServer = proxyServer.getServerInfo(serverName);
+
+            if (reconnectServer != playerServer) {
+                removeFromReconnect(player);
+            }
         }
 
         if (plugin.isReconnect()) {
-            ReconnectBridge reconnectBridge = new ReconnectBridge(proxyServer, user, server);
+            ReconnectBridge reconnectBridge = new ReconnectBridge(proxyServer, user, server, plugin);
             channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(reconnectBridge);
             return;
         }
@@ -62,6 +69,11 @@ public class ServerSwitchListener implements Listener {
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);
         channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(fallbackBridge);
 
+    }
+
+    private void removeFromReconnect(ProxiedPlayer player) {
+        BungeeMessages.EXITING_RECONNECT.send(player);
+        plugin.cancelReconnect(player.getUniqueId());
     }
 
 }

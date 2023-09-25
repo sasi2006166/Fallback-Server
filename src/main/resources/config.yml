@@ -12,7 +12,7 @@
 # BungeeCord configuration file
 
 # IMPORTANT WARNING: Before reporting any issue on discord, READ carefully the comments!
-# Some features are DISABLED since they're under developing, don't report any bugs on them.
+# Some features are DISABLED since they're under development, don't report any bugs on them.
 # Thanks for understanding.
 
 settings:
@@ -64,6 +64,14 @@ settings:
     # for checking if the spigot instance is fully started up.
     # WARNING: Recommended to not touch.
     player_count_check: -1
+
+    # Connect a player to a physical server instead
+    # of being kicked to the limbo server.
+    # Useful if you want to entertain your players.
+    # Requires configuration from the spigot addon.
+    physical_reconnect:
+      enabled: false
+      server: "reconnectsv"
 
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.

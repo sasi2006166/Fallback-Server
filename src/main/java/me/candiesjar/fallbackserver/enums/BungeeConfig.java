@@ -24,6 +24,8 @@ public enum BungeeConfig {
     RECONNECT_TASK_DELAY("settings.auto_reconnect.task_delay"),
     RECONNECT_IGNORED_SERVERS("settings.auto_reconnect.ignored_servers"),
     RECONNECT_CLEAR_TABLIST("settings.auto_reconnect.clear_tab-list"),
+    RECONNECT_USE_SERVER("settings.auto_reconnect.physical_reconnect.enabled"),
+    RECONNECT_SERVER("settings.auto_reconnect.physical_reconnect.server"),
     RECONNECT_TITLE("settings.auto_reconnect.title.enable"),
     RECONNECT_TITLE_MODE("settings.auto_reconnect.title.mode"),
 

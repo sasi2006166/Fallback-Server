@@ -68,6 +68,12 @@ public class ReconnectListener implements Listener {
 
         task.start();
 
+        boolean usePhysicalServer = BungeeConfig.RECONNECT_USE_SERVER.getBoolean();
+
+        if (usePhysicalServer) {
+            event.setCancelled(true);
+        }
+
     }
 
     private boolean checkIgnoredServers(String serverName) {
