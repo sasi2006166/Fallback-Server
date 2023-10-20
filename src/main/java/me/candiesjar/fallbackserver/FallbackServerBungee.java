@@ -10,7 +10,6 @@ import me.candiesjar.fallbackserver.enums.BungeeVersion;
 import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
-import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.TextFile;
 import me.candiesjar.fallbackserver.utils.FilesUtils;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
@@ -105,7 +104,6 @@ public final class FallbackServerBungee extends Plugin {
         checkForBeta();
 
         UpdateUtil.checkUpdates();
-        new FallingServer(null);
     }
 
     public void onDisable() {
