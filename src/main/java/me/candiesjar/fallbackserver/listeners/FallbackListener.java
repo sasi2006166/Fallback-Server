@@ -60,7 +60,13 @@ public class FallbackListener implements Listener {
         event.setCancelled(true);
 
         FallingServer.removeServer(kickedFrom);
-        List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
+
+        List<FallingServer> lobbies = Lists.newArrayList();
+        FallingServer.getServers().values().forEach(fallingServer -> {
+            if (fallingServer != null && fallingServer.getServerInfo() != null) {
+                lobbies.add(fallingServer);
+            }
+        });
 
         boolean hasMaintenance = plugin.isMaintenance();
 

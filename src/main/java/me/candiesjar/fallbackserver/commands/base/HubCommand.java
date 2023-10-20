@@ -9,6 +9,7 @@ import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import me.candiesjar.fallbackserver.utils.server.ServerUtils;
+import net.md_5.bungee.Util;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -40,7 +41,12 @@ public class HubCommand extends Command {
             return;
         }
 
-        List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
+        List<FallingServer> lobbies = Lists.newArrayList();
+        FallingServer.getServers().values().forEach(fallingServer -> {
+            if (fallingServer != null && fallingServer.getServerInfo() != null) {
+                lobbies.add(fallingServer);
+            }
+        });
 
         boolean hasMaintenance = fallbackServerBungee.isMaintenance();
 
@@ -51,14 +57,6 @@ public class HubCommand extends Command {
         if (lobbies.isEmpty()) {
             BungeeMessages.NO_SERVER.send(player);
             return;
-        }
-
-        for (FallingServer fallingServer : lobbies) {
-            try {
-                Utils.printDebug("Lobby: " + fallingServer.getServerInfo().getName() + " Players: " + fallingServer.getServerInfo().getPlayers().size(), true);
-            } catch (NullPointerException e) {
-                Utils.printDebug("Lobby: " + fallingServer + " gave error", true);
-            }
         }
 
         lobbies.sort(Comparator.comparingInt(server -> server.getServerInfo().getPlayers().size()));
