@@ -55,6 +55,7 @@ public class PingTask {
                 return;
             }
 
+
             createFallingServer(serverInfo);
         });
     }
@@ -76,6 +77,11 @@ public class PingTask {
     }
 
     private void createFallingServer(ServerInfo serverInfo) {
+
+        if (FallingServer.getServers().containsKey(serverInfo)) {
+            return;
+        }
+
         new FallingServer(serverInfo);
     }
 
