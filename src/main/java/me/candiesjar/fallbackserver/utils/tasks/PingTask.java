@@ -55,7 +55,6 @@ public class PingTask {
                 return;
             }
 
-
             createFallingServer(serverInfo);
         });
     }

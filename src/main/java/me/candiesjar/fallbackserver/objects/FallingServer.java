@@ -12,13 +12,16 @@ public class FallingServer implements Comparable<FallingServer> {
     @Getter
     private static final Map<ServerInfo, FallingServer> servers = Maps.newHashMap();
 
-    private final ServerInfo serverInfo;
+    private ServerInfo serverInfo = null;
 
     public FallingServer(ServerInfo serverInfo) {
 
-        this.serverInfo = serverInfo;
-        if (serverInfo == null) {
+        if (serverInfo == null && servers.containsKey(null)) {
             servers.remove(null);
+            return;
+        }
+
+        if (serverInfo == null) {
             return;
         }
 
@@ -26,6 +29,7 @@ public class FallingServer implements Comparable<FallingServer> {
             return;
         }
 
+        this.serverInfo = serverInfo;
         servers.put(serverInfo, this);
     }
 
