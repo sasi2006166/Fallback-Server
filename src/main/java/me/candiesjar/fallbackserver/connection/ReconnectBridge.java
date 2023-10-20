@@ -1,7 +1,6 @@
 package me.candiesjar.fallbackserver.connection;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
@@ -53,7 +52,6 @@ public class ReconnectBridge extends DownstreamBridge {
             if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
                 teleportToServer();
             }
-
         }
 
         ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent(userConnection, server.getInfo());
@@ -94,15 +92,7 @@ public class ReconnectBridge extends DownstreamBridge {
     }
 
     private void teleportToServer() {
-        ServerInfo server = proxyServer.getServerInfo(BungeeConfig.RECONNECT_SERVER.getString());
-
-        if (server == null) {
-            plugin.getLogger().severe("The server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!");
-            plugin.getLogger().severe("Check your config.yml file for more infos.");
-            plugin.getLogger().severe("Moving to limbo mode instead.");
-            return;
-        }
-
-        userConnection.connect(server);
+        ServerInfo reconnectServer = plugin.getReconnectServer();
+        userConnection.connect(reconnectServer);
     }
 }

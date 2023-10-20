@@ -1,14 +1,12 @@
 package me.candiesjar.fallbackserver.connection;
 
-import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.netty.ChannelWrapper;
 
@@ -27,9 +25,6 @@ public class FallbackBridge extends DownstreamBridge {
 
     @Override
     public void disconnected(ChannelWrapper channel) {
-
-        Utils.printDebug("FallbackBridge#disconnected", false);
-
         server.getInfo().removePlayer(userConnection);
 
         if (proxyServer.getReconnectHandler() != null) {
@@ -43,16 +38,11 @@ public class FallbackBridge extends DownstreamBridge {
         server.setObsolete(true);
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
-        ServerKickEvent serverKickEvent = new ServerKickEvent(userConnection, server.getInfo(), ComponentSerializer.parse("crash"), nextServer, ServerKickEvent.State.CONNECTED);
+        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacyText("crash"), nextServer, ServerKickEvent.State.CONNECTED));
 
         if (userConnection.isConnected()) {
-
             if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
-                userConnection.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
-            } else {
-                proxyServer.getPluginManager().callEvent(serverKickEvent);
             }
-
         }
 
         ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent(userConnection, server.getInfo());
@@ -60,4 +50,21 @@ public class FallbackBridge extends DownstreamBridge {
 
     }
 
+    @Override
+    public void exception(Throwable t) {
+        String reason = proxyServer.getTranslation("lost_connection");
+
+        if (server.isObsolete()) {
+            return;
+        }
+
+        server.setObsolete(true);
+
+        ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
+        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacyText(reason), nextServer, ServerKickEvent.State.CONNECTED));
+
+        if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
+        }
+
+    }
 }

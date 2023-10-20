@@ -3,7 +3,7 @@ package me.candiesjar.fallbackserver.listeners;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
-import me.candiesjar.fallbackserver.utils.CheckUtil;
+import me.candiesjar.fallbackserver.utils.ConditionUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -36,7 +36,7 @@ public class ReconnectListener implements Listener {
         boolean isEmpty = event.getKickReasonComponent() == null;
         String reason = isEmpty ? "" : BaseComponent.toLegacyText(event.getKickReasonComponent());
 
-        boolean canContinue = CheckUtil.preChecks(player, state, reason, true);
+        boolean canContinue = ConditionUtil.preChecks(player, state, reason, true);
 
         if (canContinue) {
             disconnect(player, reason);
@@ -68,7 +68,7 @@ public class ReconnectListener implements Listener {
 
         task.start();
 
-        boolean usePhysicalServer = BungeeConfig.RECONNECT_USE_SERVER.getBoolean();
+        boolean usePhysicalServer = plugin.getReconnectServer() != null;
 
         if (usePhysicalServer) {
             event.setCancelled(true);

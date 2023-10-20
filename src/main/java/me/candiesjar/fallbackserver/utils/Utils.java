@@ -28,9 +28,9 @@ public class Utils {
     private Field userChannelWrapperField = null;
 
     static {
-        for (Field f : UserConnection.class.getDeclaredFields()) {
-            if (ChannelWrapper.class.isAssignableFrom(f.getType())) {
-                userChannelWrapperField = f;
+        for (Field field : UserConnection.class.getDeclaredFields()) {
+            if (ChannelWrapper.class.isAssignableFrom(field.getType())) {
+                userChannelWrapperField = field;
                 userChannelWrapperField.setAccessible(true);
                 break;
             }
@@ -61,14 +61,6 @@ public class Utils {
         });
     }
 
-    public void printDebug(String s, boolean exception) {
-        if (!exception) {
-            fallbackServerBungee.getLogger().warning("[DEBUG] " + s);
-        } else {
-            fallbackServerBungee.getLogger().severe("[ERROR] " + s);
-        }
-    }
-
     public String getDots(int s) {
         switch (s % 4) {
             case 0:
@@ -94,10 +86,18 @@ public class Utils {
             try {
                 return (ChannelWrapper) userChannelWrapperField.get(user);
             } catch (ClassCastException | IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
+                printDebug("Cannot get user channel wrapper for " + user.getName(), true);
             }
         }
         return null;
+    }
+
+    public void printDebug(String s, boolean exception) {
+        if (!exception) {
+            fallbackServerBungee.getLogger().warning("[DEBUG] " + s);
+        } else {
+            fallbackServerBungee.getLogger().severe("[ERROR] " + s);
+        }
     }
 
 }

@@ -45,6 +45,7 @@ settings:
   # If you want to use the reconnect mode, fallback_mode must be set to RECONNECT.
   # Those values will clear the chat on reconnect (after success) or when players
   # get fallback-ed to another server.
+  # Reconnect_join will clear player chat when the reconnect phase starts.
   clear_chat:
     fallback: true
     reconnect: false
@@ -62,7 +63,8 @@ settings:
 
     # This option is used by the addon ping system
     # for checking if the spigot instance is fully started up.
-    # WARNING: Recommended to not touch.
+    # WARNING: Change the value only if you're encountering
+    # issues, remember to change the value in the spigot addon too.
     player_count_check: -1
 
     # Connect a player to a physical server instead

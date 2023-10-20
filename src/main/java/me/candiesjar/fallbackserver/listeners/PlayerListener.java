@@ -27,7 +27,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(ServerConnectEvent event) {
-
         ProxiedPlayer player = event.getPlayer();
 
         if (!player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
@@ -56,6 +55,5 @@ public class PlayerListener implements Listener {
         if (reconnectHandler != null) {
             plugin.cancelReconnect(uuid);
         }
-
     }
 }

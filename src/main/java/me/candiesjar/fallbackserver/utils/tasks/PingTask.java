@@ -25,6 +25,8 @@ public class PingTask {
     private ScheduledTask task;
 
     public void start() {
+        lobbyServers.clear();
+        FallingServer.clear();
         loadServerList(BungeeServers.SERVERS.getStringList());
         loadServerList(BungeeConfig.FALLBACK_LIST.getStringList());
         int delay = BungeeConfig.PING_DELAY.getInt();
@@ -34,14 +36,14 @@ public class PingTask {
     private void pingServers() {
         lobbyServers.forEach(server -> {
             ServerInfo serverInfo = proxyServer.getServerInfo(server);
-            pingServer(serverInfo);
+            ping(serverInfo);
         });
     }
 
-    private void pingServer(ServerInfo serverInfo) {
+    private void ping(ServerInfo serverInfo) {
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
-                removeIfContains(serverInfo);
+                FallingServer.removeServer(serverInfo);
                 return;
             }
 
@@ -49,7 +51,7 @@ public class PingTask {
             int max = result.getPlayers().getMax();
 
             if (players == max) {
-                removeIfContains(serverInfo);
+                FallingServer.removeServer(serverInfo);
                 return;
             }
 
@@ -60,9 +62,11 @@ public class PingTask {
     private void loadServerList(List<String> serverList) {
         for (String serverName : serverList) {
             ServerInfo serverInfo = getServerInfo(serverName);
+
             if (serverInfo == null) {
                 continue;
             }
+
             lobbyServers.add(serverName);
         }
     }
@@ -75,10 +79,9 @@ public class PingTask {
         new FallingServer(serverInfo);
     }
 
-    private void removeIfContains(ServerInfo serverInfo) {
-        if (FallingServer.getServers().containsKey(serverInfo)) {
-            FallingServer.removeServer(serverInfo);
-        }
+    public void reload() {
+        task.cancel();
+        start();
     }
 
 }

@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ReconnectHandler {
 
     private final String LOST_CONNECTION = ProxyServer.getInstance().getTranslation("lost_connection");
+    private final AtomicInteger MAX_TRIES = new AtomicInteger(BungeeConfig.RECONNECT_TRIES.getInt());
     private final AtomicInteger DOTS = new AtomicInteger(0);
     private final AtomicInteger TRIES = new AtomicInteger(0);
 
@@ -72,9 +73,7 @@ public class ReconnectHandler {
     }
 
     private void reconnect() {
-
-        boolean maxTries = TRIES.incrementAndGet() == BungeeConfig.RECONNECT_TRIES.getInt();
-        Utils.printDebug("Reconnect tries: " + TRIES.get(), true);
+        boolean maxTries = TRIES.incrementAndGet() == MAX_TRIES.get();
 
         if (maxTries) {
             boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
@@ -84,32 +83,40 @@ public class ReconnectHandler {
                 return;
             }
 
-            fallbackServerBungee.cancelReconnect(player.getUniqueId());
+            fallbackServerBungee.cancelReconnect(uuid);
             player.disconnect(new TextComponent(LOST_CONNECTION));
             return;
         }
 
         targetServerInfo.ping(((result, error) -> {
-
             if (error != null || result == null) {
                 return;
             }
 
             int maxPlayers = result.getPlayers().getMax();
-            int check = BungeeConfig.RECONNECT_PLAYER_COUNT_CHECK.getInt();
+            int connectedPlayers = result.getPlayers().getOnline();
 
-            if (maxPlayers == check) {
-                titleTask.cancel();
-                resetDots();
-                reconnectTask.cancel();
-                clear();
-
-                titleTask = taskScheduler.schedule(fallbackServerBungee, () -> sendTitle(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 0, 1, TimeUnit.SECONDS);
-                connectTask = taskScheduler.schedule(fallbackServerBungee, this::handleConnection, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), TimeUnit.SECONDS);
+            if (connectedPlayers == maxPlayers) {
+                TRIES.set(MAX_TRIES.get());
+                return;
             }
 
-        }));
+            int check = BungeeConfig.RECONNECT_PLAYER_COUNT_CHECK.getInt();
 
+            if (maxPlayers != check) {
+                return;
+            }
+
+            titleTask.cancel();
+            reconnectTask.cancel();
+
+            resetDots();
+            clear();
+
+            titleTask = taskScheduler.schedule(fallbackServerBungee, () -> sendTitle(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 0, 1, TimeUnit.SECONDS);
+            connectTask = taskScheduler.schedule(fallbackServerBungee, this::handleConnection, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), TimeUnit.SECONDS);
+
+        }));
     }
 
     private void handleConnection() {
@@ -139,37 +146,34 @@ public class ReconnectHandler {
             ChatUtil.clearChat(player);
         }
 
+        fallbackServerBungee.cancelReconnect(uuid);
+
         pingServer(targetServerInfo, (result, error) -> {
             if (error != null || result == null) {
-
-                if (!fallbackServerBungee.isReconnectError()) {
-                    Utils.printDebug("Target reconnect server went offline.", true);
-                    Utils.printDebug("Preventing player timeout enabling fallback mode", true);
-                    Utils.printDebug("Moving player to fallback server..", true);
-                    Utils.printDebug("Your spigot instances are likely unstable, please fix them.", true);
+                Utils.printDebug("Value: " + fallbackServerBungee.isReconnectError(), true);
+                if (fallbackServerBungee.isReconnectError()) {
+                    return;
                 }
-
+                Utils.printDebug("Target reconnect server went offline.", true);
+                Utils.printDebug("Preventing player timeout enabling fallback mode", true);
+                Utils.printDebug("Your spigot instances are likely unstable, please fix them.", true);
                 fallbackServerBungee.setReconnectError(true);
-
                 handleFallback();
             }
-
         });
+    }
 
-        fallbackServerBungee.cancelReconnect(uuid);
+    private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
+        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(PipelineUtils.BASE).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000).remoteAddress(target.getAddress());
+        bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }
 
     private void handleFallback() {
         fallbackServerBungee.cancelReconnect(uuid);
         clear();
 
-        FallbackEvent fallbackEvent = new FallbackEvent(player, targetServerInfo, "ReconnectHandler");
+        FallbackEvent fallbackEvent = new FallbackEvent(player, targetServerInfo, "Failed reconnection");
         proxyServer.getPluginManager().callEvent(fallbackEvent);
-    }
-
-    private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
-        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(PipelineUtils.BASE).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000).remoteAddress(target.getAddress());
-        bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }
 
     private void sendTitle(BungeeMessages title, BungeeMessages subTitle) {

@@ -28,13 +28,11 @@ public class ReloadSubCommand implements SubCommand {
     public void perform(CommandSender sender, String[] arguments) {
 
         boolean oldCommand = BungeeConfig.LOBBY_COMMAND.getBoolean();
-        String oldMode = BungeeConfig.FALLBACK_MODE.getString();
 
         TextFile.reloadAll();
         plugin.reloadTask();
 
         boolean newCommand = BungeeConfig.LOBBY_COMMAND.getBoolean();
-        String newMode = BungeeConfig.FALLBACK_MODE.getString();
 
         if (oldCommand != newCommand) {
 
@@ -44,10 +42,6 @@ public class ReloadSubCommand implements SubCommand {
                 plugin.getProxy().getPluginManager().unregisterCommand(new HubCommand(plugin));
             }
 
-        }
-
-        if (!oldMode.equals(newMode)) {
-            plugin.reloadListeners();
         }
 
         BungeeMessages.RELOAD.send(sender);

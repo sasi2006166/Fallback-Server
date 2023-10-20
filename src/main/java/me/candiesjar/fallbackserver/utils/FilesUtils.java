@@ -28,7 +28,6 @@ public class FilesUtils {
 
     @SneakyThrows
     public void deleteFile(String name, File folder) {
-
         File oldFile = new File(folder, name);
 
         if (!oldFile.exists()) {
@@ -36,6 +35,5 @@ public class FilesUtils {
         }
 
         Files.delete(oldFile.toPath());
-
     }
 }

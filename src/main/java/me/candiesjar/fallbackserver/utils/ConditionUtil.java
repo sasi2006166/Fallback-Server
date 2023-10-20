@@ -8,7 +8,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import java.util.List;
 
 @UtilityClass
-public class CheckUtil {
+public class ConditionUtil {
 
     public boolean preChecks(ProxiedPlayer player, ServerKickEvent.State state, String reason, boolean reconnect) {
 
@@ -33,7 +33,6 @@ public class CheckUtil {
     }
 
     private boolean checkReason(List<String> ignoredReasons, String reason) {
-
         for (String word : ignoredReasons) {
 
             if (reason.contains(word)) {
@@ -41,10 +40,7 @@ public class CheckUtil {
             }
 
         }
-
         return false;
-
     }
-
 }
 

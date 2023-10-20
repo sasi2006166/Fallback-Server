@@ -6,8 +6,9 @@ import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.server.ServerUtils;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
+import me.candiesjar.fallbackserver.utils.server.ServerUtils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -26,7 +27,6 @@ public class HubCommand extends Command {
     }
 
     public void execute(CommandSender sender, String[] args) {
-
         if (!(sender instanceof ProxiedPlayer)) {
             BungeeMessages.ONLY_PLAYER.send(sender);
             return;
@@ -35,7 +35,7 @@ public class HubCommand extends Command {
         ProxiedPlayer player = (ProxiedPlayer) sender;
         ServerInfo playerServer = player.getServer().getInfo();
 
-        if (fallbackServerBungee.isHub(playerServer)) {
+        if (isHub(playerServer)) {
             BungeeMessages.ALREADY_IN_LOBBY.send(player);
             return;
         }
@@ -53,7 +53,15 @@ public class HubCommand extends Command {
             return;
         }
 
-        lobbies.sort(Comparator.comparing(server -> server.getServerInfo().getPlayers().size()));
+        for (FallingServer fallingServer : lobbies) {
+            try {
+                Utils.printDebug("Lobby: " + fallingServer.getServerInfo().getName() + " Players: " + fallingServer.getServerInfo().getPlayers().size(), true);
+            } catch (NullPointerException e) {
+                Utils.printDebug("Lobby: " + fallingServer + " gave error", true);
+            }
+        }
+
+        lobbies.sort(Comparator.comparingInt(server -> server.getServerInfo().getPlayers().size()));
 
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
 
@@ -75,5 +83,9 @@ public class HubCommand extends Command {
 
         }
 
+    }
+
+    private boolean isHub(ServerInfo server) {
+        return BungeeConfig.FALLBACK_LIST.getStringList().contains(server.getName());
     }
 }

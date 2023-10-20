@@ -11,14 +11,15 @@ public class FallbackEvent extends Event {
     private final ProxiedPlayer player;
 
     @Getter
-    private final ServerInfo actualServer;
+    private final ServerInfo kickServer;
 
     @Getter
     private final String reason;
 
-    public FallbackEvent(ProxiedPlayer player, ServerInfo actualServer, String reason) {
+    public FallbackEvent(ProxiedPlayer player, ServerInfo kickServer, String reason) {
         this.player = player;
-        this.actualServer = actualServer;
+        this.kickServer = kickServer;
         this.reason = reason;
     }
+
 }

@@ -7,11 +7,12 @@ import me.candiesjar.fallbackserver.enums.BungeeConfig;
 @UtilityClass
 public class UpdateUtil {
 
+    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
+
     public void checkUpdates() {
+        boolean isBeta = fallbackServerBungee.isBeta();
 
-        boolean isAlpha = FallbackServerBungee.getInstance().isAlpha();
-
-        if (isAlpha) {
+        if (isBeta) {
             return;
         }
 

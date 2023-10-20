@@ -7,11 +7,11 @@ import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.CheckUtil;
+import me.candiesjar.fallbackserver.utils.ConditionUtil;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import me.candiesjar.fallbackserver.utils.server.ServerUtils;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -29,11 +29,12 @@ import java.util.concurrent.atomic.LongAdder;
 
 public class FallbackListener implements Listener {
 
-    private final FallbackServerBungee fallbackServerBungee;
-    private final HashMap<String, LongAdder> pendingConnections = Maps.newHashMap();
+    private final FallbackServerBungee plugin;
+    private final HashMap<String, LongAdder> pendingConnections;
 
-    public FallbackListener(FallbackServerBungee fallbackServerBungee) {
-        this.fallbackServerBungee = fallbackServerBungee;
+    public FallbackListener(FallbackServerBungee plugin) {
+        this.plugin = plugin;
+        this.pendingConnections = Maps.newHashMap();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -46,7 +47,7 @@ public class FallbackListener implements Listener {
         boolean isEmpty = event.getKickReasonComponent() == null;
         String reason = isEmpty ? "" : BaseComponent.toLegacyText(event.getKickReasonComponent());
 
-        boolean canContinue = CheckUtil.preChecks(player, state, reason, false);
+        boolean canContinue = ConditionUtil.preChecks(player, state, reason, false);
 
         if (canContinue) {
             return;
@@ -61,7 +62,7 @@ public class FallbackListener implements Listener {
         FallingServer.removeServer(kickedFrom);
         List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
 
-        boolean hasMaintenance = fallbackServerBungee.isMaintenance();
+        boolean hasMaintenance = plugin.isMaintenance();
 
         if (hasMaintenance) {
             lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
@@ -76,6 +77,14 @@ public class FallbackListener implements Listener {
             return;
         }
 
+        for (FallingServer fallingServer : lobbies) {
+            try {
+                Utils.printDebug("Lobby: " + fallingServer.getServerInfo().getName() + " Players: " + fallingServer.getServerInfo().getPlayers().size(), true);
+            } catch (NullPointerException e) {
+                Utils.printDebug("Lobby: " + fallingServer + " gave error", true);
+            }
+        }
+
         lobbies.sort(Comparator.comparingInt(server -> server.getServerInfo().getPlayers().size() + getPendingConnections(server.getServerInfo().getName())));
 
         ServerInfo serverInfo = lobbies.get(0).getServerInfo();
@@ -83,7 +92,7 @@ public class FallbackListener implements Listener {
         player.connect(serverInfo);
 
         incrementPendingConnections(serverInfo.getName());
-        fallbackServerBungee.getProxy().getScheduler().schedule(fallbackServerBungee, () -> decrementPendingConnections(serverInfo.getName()), 2, TimeUnit.SECONDS);
+        plugin.getProxy().getScheduler().schedule(plugin, () -> decrementPendingConnections(serverInfo.getName()), 2, TimeUnit.SECONDS);
 
         boolean clearChat = BungeeConfig.CLEAR_CHAT_FALLBACK.getBoolean();
 
@@ -99,7 +108,7 @@ public class FallbackListener implements Listener {
 
         if (useTitle) {
 
-            ProxyServer.getInstance().getScheduler().schedule(fallbackServerBungee, () -> TitleUtil.sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
+            plugin.getProxy().getScheduler().schedule(plugin, () -> TitleUtil.sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
                             BungeeMessages.FALLBACK_STAY.getInt(),
                             BungeeMessages.FALLBACK_FADE_OUT.getInt(),
                             BungeeMessages.FALLBACK_TITLE,

@@ -16,6 +16,11 @@ public class FallingServer implements Comparable<FallingServer> {
 
     public FallingServer(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
+
+        if (serverInfo == null || servers.containsKey(serverInfo)) {
+            return;
+        }
+
         servers.put(serverInfo, this);
     }
 
@@ -26,5 +31,9 @@ public class FallingServer implements Comparable<FallingServer> {
 
     public static void removeServer(ServerInfo serverInfo) {
         servers.remove(serverInfo);
+    }
+
+    public static void clear() {
+        servers.clear();
     }
 }
