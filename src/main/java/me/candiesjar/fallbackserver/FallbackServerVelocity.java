@@ -64,7 +64,7 @@ public class FallbackServerVelocity {
 
     @Getter
     @Setter
-    private boolean alpha = false;
+    private boolean beta = false;
 
     @Getter
     @Setter
@@ -131,7 +131,7 @@ public class FallbackServerVelocity {
         loadTask();
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully");
-        checkAlpha();
+        checkForBeta();
 
         checkUpdate();
 
@@ -220,9 +220,9 @@ public class FallbackServerVelocity {
                 .schedule();
     }
 
-    private void checkAlpha() {
+    private void checkForBeta() {
         if (getVERSION().contains("Alpha") || getVERSION().contains("Beta")) {
-            setAlpha(true);
+            setBeta(true);
             getLogger().info(" ");
             getLogger().info("§7You're running an §c§lBETA VERSION §7of Fallback Server.");
             getLogger().info("§7If you find any bugs, please report them on discord.");
@@ -285,6 +285,12 @@ public class FallbackServerVelocity {
 
         if (isLobbyCommandEnabled) {
             String[] aliases = VelocityConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]);
+
+            if (aliases.length == 0) {
+                getLogger().error("§7[§c!§7] §cYou have to set at least one alias for the lobby command!");
+                getLogger().error("§7[§c!§7] §cDisabling lobby command..");
+                return;
+            }
 
             CommandMeta commandMeta = server.getCommandManager()
                     .metaBuilder(VelocityConfig.LOBBY_ALIASES.getStringList().get(0))

@@ -48,7 +48,12 @@ public class HubCommand implements SimpleCommand {
             return;
         }
 
-        List<RegisteredServer> lobbies = Lists.newArrayList(plugin.getFallingServerManager().getAll());
+        List<RegisteredServer> lobbies = Lists.newArrayList();
+        plugin.getFallingServerManager().getCache().values().forEach(registeredServer -> {
+            if (registeredServer != null && registeredServer.getServerInfo() != null) {
+                lobbies.add(registeredServer);
+            }
+        });
 
         if (lobbies.isEmpty()) {
             VelocityMessages.NO_SERVER.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));

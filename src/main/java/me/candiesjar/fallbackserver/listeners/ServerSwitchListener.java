@@ -5,7 +5,6 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.utils.Utils;
 
 import java.util.UUID;
 
