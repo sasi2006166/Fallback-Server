@@ -30,7 +30,7 @@ public class PlayerListener {
             return;
         }
 
-        if (plugin.isAlpha()) {
+        if (plugin.isBeta()) {
             return;
         }
 

@@ -67,8 +67,12 @@ public class FallbackListener {
         }
 
         fallingServerManager.remove(serverName);
-
-        List<RegisteredServer> lobbies = Lists.newArrayList(fallingServerManager.getAll());
+        List<RegisteredServer> lobbies = Lists.newArrayList();
+        fallingServerManager.getCache().values().forEach(registeredServer -> {
+            if (registeredServer != null && registeredServer.getServerInfo() != null) {
+                lobbies.add(registeredServer);
+            }
+        });
 
         boolean useMaintenance = fallbackServerVelocity.isMaintenance();
 

@@ -16,6 +16,19 @@ public class FallingServerManager implements ObjectManager<String, RegisteredSer
 
     @Override
     public void add(String key, RegisteredServer value) {
+
+        if (cache.containsKey(key.toLowerCase())) {
+            return;
+        }
+
+        if (cache.containsValue(value)) {
+            return;
+        }
+
+        if (value == null || value.getServerInfo() == null) {
+            return;
+        }
+
         cache.put(key.toLowerCase(), value);
     }
 
