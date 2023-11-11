@@ -3,9 +3,9 @@ package me.candiesjar.fallbackserver.listeners;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.ConditionUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
@@ -30,10 +30,12 @@ import java.util.concurrent.atomic.LongAdder;
 public class FallbackListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ServerCacheManager serverCacheManager;
     private final HashMap<String, LongAdder> pendingConnections;
 
     public FallbackListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.serverCacheManager = plugin.getServerCacheManager();
         this.pendingConnections = Maps.newHashMap();
     }
 
@@ -59,13 +61,13 @@ public class FallbackListener implements Listener {
 
         event.setCancelled(true);
 
-        FallingServer.removeServer(kickedFrom);
-        List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
+        serverCacheManager.remove(kickedFrom);
+        List<ServerInfo> lobbies = Lists.newArrayList(serverCacheManager.getServers().keySet());
 
         boolean hasMaintenance = plugin.isMaintenance();
 
         if (hasMaintenance) {
-            lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
+            lobbies.removeIf(ServerUtils::checkMaintenance);
         }
 
         if (lobbies.isEmpty()) {
@@ -77,19 +79,26 @@ public class FallbackListener implements Listener {
             return;
         }
 
-        for (FallingServer fallingServer : lobbies) {
+        for (ServerInfo serverInfo : lobbies) {
             try {
-                Utils.printDebug("Lobby: " + fallingServer.getServerInfo().getName() + " Players: " + fallingServer.getServerInfo().getPlayers().size(), true);
+                Utils.printDebug("[FL] Lobby: " + serverInfo.getName() + " Players: " + serverInfo.getPlayers().size(), true);
             } catch (NullPointerException e) {
-                Utils.printDebug("Lobby: " + fallingServer + " gave error", true);
+                Utils.printDebug("[FL] Lobby: " + serverInfo + " gave error", true);
             }
         }
 
-        lobbies.sort(Comparator.comparingInt(server -> server.getServerInfo().getPlayers().size() + getPendingConnections(server.getServerInfo().getName())));
+        Utils.printDebug("Lobbies before sorting: " + lobbies.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append), true);
 
-        ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+        lobbies.sort(Comparator.comparing(server -> server.getPlayers().size() + getPendingConnections(server.getName())));
 
-        player.connect(serverInfo);
+        Utils.printDebug("Lobbies after sorting: " + lobbies.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append), true);
+
+        ServerInfo serverInfo = lobbies.get(0);
+        Utils.printDebug("[FL] Selected server: " + serverInfo.getName(), true);
+
+        event.setCancelServer(serverInfo);
+
+        Utils.printDebug("[FL] Cancel server: " + event.getCancelServer().getName(), true);
 
         incrementPendingConnections(serverInfo.getName());
         plugin.getProxy().getScheduler().schedule(plugin, () -> decrementPendingConnections(serverInfo.getName()), 2, TimeUnit.SECONDS);
@@ -99,10 +108,6 @@ public class FallbackListener implements Listener {
         if (clearChat) {
             ChatUtil.clearChat(player);
         }
-
-        BungeeMessages.KICKED_TO_LOBBY.sendList(player,
-                new Placeholder("server", serverInfo.getName()),
-                new Placeholder("reason", ChatUtil.color(reason)));
 
         boolean useTitle = BungeeMessages.USE_FALLBACK_TITLE.getBoolean();
 
@@ -117,6 +122,10 @@ public class FallbackListener implements Listener {
                             player),
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
+
+        BungeeMessages.KICKED_TO_LOBBY.sendList(player,
+                new Placeholder("server", serverInfo.getName()),
+                new Placeholder("reason", ChatUtil.color(reason)));
 
     }
 

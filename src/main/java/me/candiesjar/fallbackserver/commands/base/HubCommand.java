@@ -2,9 +2,9 @@ package me.candiesjar.fallbackserver.commands.base;
 
 import com.google.common.collect.Lists;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.FallingServer;
 import me.candiesjar.fallbackserver.objects.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
@@ -20,10 +20,12 @@ import java.util.List;
 public class HubCommand extends Command {
 
     private final FallbackServerBungee fallbackServerBungee;
+    private final ServerCacheManager serverCacheManager;
 
     public HubCommand(FallbackServerBungee fallbackServerBungee) {
         super(BungeeConfig.LOBBY_ALIASES.getStringList().get(0), null, BungeeConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]));
         this.fallbackServerBungee = fallbackServerBungee;
+        this.serverCacheManager = fallbackServerBungee.getServerCacheManager();
     }
 
     public void execute(CommandSender sender, String[] args) {
@@ -40,12 +42,12 @@ public class HubCommand extends Command {
             return;
         }
 
-        List<FallingServer> lobbies = Lists.newArrayList(FallingServer.getServers().values());
+        List<ServerInfo> lobbies = Lists.newArrayList(serverCacheManager.getServers().keySet());
 
         boolean hasMaintenance = fallbackServerBungee.isMaintenance();
 
         if (hasMaintenance) {
-            lobbies.removeIf(fallingServer -> ServerUtils.checkMaintenance(fallingServer.getServerInfo()));
+            lobbies.removeIf(ServerUtils::checkMaintenance);
         }
 
         if (lobbies.isEmpty()) {
@@ -53,17 +55,17 @@ public class HubCommand extends Command {
             return;
         }
 
-        for (FallingServer fallingServer : lobbies) {
+        for (ServerInfo serverInfo : lobbies) {
             try {
-                Utils.printDebug("Lobby: " + fallingServer.getServerInfo().getName() + " Players: " + fallingServer.getServerInfo().getPlayers().size(), true);
+                Utils.printDebug("[LC] Lobby: " + serverInfo.getName() + " Players: " + serverInfo.getPlayers().size(), true);
             } catch (NullPointerException e) {
-                Utils.printDebug("Lobby: " + fallingServer + " gave error", true);
+                Utils.printDebug("[LC] Lobby: " + serverInfo + " gave error", true);
             }
         }
 
-        lobbies.sort(Comparator.comparingInt(server -> server.getServerInfo().getPlayers().size()));
+        lobbies.sort(Comparator.comparingInt(server -> server.getPlayers().size()));
 
-        ServerInfo serverInfo = lobbies.get(0).getServerInfo();
+        ServerInfo serverInfo = lobbies.get(0);
 
         player.connect(serverInfo);
 

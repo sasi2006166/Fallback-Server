@@ -8,11 +8,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.netty.ChannelWrapper;
-import net.md_5.bungee.protocol.packet.Kick;
 
 public class ReconnectBridge extends DownstreamBridge {
 
@@ -76,21 +73,6 @@ public class ReconnectBridge extends DownstreamBridge {
         }
 
     }
-
-    @Override
-    public void handle(Kick kick) {
-        ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
-        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), ComponentSerializer.parse(kick.getMessage()), nextServer, ServerKickEvent.State.CONNECTED));
-
-        if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
-            teleportToServer();
-        }
-
-        server.setObsolete(true);
-
-        throw CancelSendSignal.INSTANCE;
-    }
-
     private void teleportToServer() {
         ServerInfo reconnectServer = plugin.getReconnectServer();
         userConnection.connect(reconnectServer);

@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserver;
 import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
+import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
@@ -71,10 +72,14 @@ public final class FallbackServerBungee extends Plugin {
     @Getter
     private PlayerCacheManager playerCacheManager;
 
+    @Getter
+    private ServerCacheManager serverCacheManager;
+
     public void onEnable() {
         instance = this;
         version = getDescription().getVersion();
         playerCacheManager = PlayerCacheManager.getInstance();
+        serverCacheManager = ServerCacheManager.getInstance();
 
         getLogger().info("\n" +
                 "  _____     _ _ _                _     ____                           \n" +

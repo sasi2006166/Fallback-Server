@@ -4,9 +4,10 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeServers;
-import me.candiesjar.fallbackserver.objects.FallingServer;
+import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -19,6 +20,7 @@ public class PingTask {
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
     private final ProxyServer proxyServer = ProxyServer.getInstance();
+    private final ServerCacheManager serverCacheManager = fallbackServerBungee.getServerCacheManager();
     private final List<String> lobbyServers = Lists.newArrayList();
 
     @Getter
@@ -26,7 +28,7 @@ public class PingTask {
 
     public void start() {
         lobbyServers.clear();
-        FallingServer.clear();
+        serverCacheManager.clear();
         loadServerList(BungeeServers.SERVERS.getStringList());
         loadServerList(BungeeConfig.FALLBACK_LIST.getStringList());
         int delay = BungeeConfig.PING_DELAY.getInt();
@@ -43,7 +45,7 @@ public class PingTask {
     private void ping(ServerInfo serverInfo) {
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
-                FallingServer.removeServer(serverInfo);
+                serverCacheManager.remove(serverInfo);
                 return;
             }
 
@@ -51,11 +53,19 @@ public class PingTask {
             int max = result.getPlayers().getMax();
 
             if (players == max) {
-                FallingServer.removeServer(serverInfo);
+                serverCacheManager.remove(serverInfo);
                 return;
             }
 
-            createFallingServer(serverInfo);
+            if (serverCacheManager.containsKey(serverInfo)) {
+                return;
+            }
+
+            Utils.printDebug("Serverinfo " + serverInfo + " passed all errors.", true);
+            Utils.printDebug("Adding server " + serverInfo.getName() + " to cache", false);
+
+            serverCacheManager.put(serverInfo, true);
+
         });
     }
 
@@ -73,10 +83,6 @@ public class PingTask {
 
     private ServerInfo getServerInfo(String serverName) {
         return proxyServer.getServerInfo(serverName);
-    }
-
-    private void createFallingServer(ServerInfo serverInfo) {
-        new FallingServer(serverInfo);
     }
 
     public void reload() {
