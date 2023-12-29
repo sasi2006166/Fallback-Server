@@ -24,14 +24,12 @@ public class FSACommand implements CommandExecutor {
         }
 
         if (!args[0].equalsIgnoreCase("reload")) {
-            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
-                    .replace("version", plugin.getDescription().getVersion()));
+            sendDefaultMessage(sender);
             return true;
         }
 
         if (!sender.hasPermission(plugin.getConfig().getString("settings.reload_permission", "fallbackserveradmin.reload"))) {
-            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
-                    .replace("version", plugin.getDescription().getVersion()));
+            sendDefaultMessage(sender);
             return true;
         }
 
@@ -46,5 +44,14 @@ public class FSACommand implements CommandExecutor {
     private void reloadConfig() {
         plugin.reloadConfig();
         plugin.loadConfig();
+    }
+
+    private void sendDefaultMessage(CommandSender sender) {
+        if (plugin.getConfig().getBoolean("settings.hide_command", false)) {
+            return;
+        }
+
+        sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
+                .replace("version", plugin.getDescription().getVersion()));
     }
 }

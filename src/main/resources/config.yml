@@ -22,6 +22,10 @@ settings:
   reload_permission: 'fallbackserver.reload'
   reload_message: '&7&lF&b&lS &8&l» &b&nFallback Server Addon %version%&r&7 reloaded successfully.'
 
+  # true: Normal players will not be able to see the /fsa output.
+  # false: Everyone will be able to see the simple "running fallbackserver" message.
+  hide_command: false
+
   # NOTE: This will work only if you set up the mode to 'ADDON'.
   addon:
 
