@@ -17,7 +17,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 
 @Setter
@@ -101,13 +100,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         }
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Creating new configurations...");
-        try {
-            ConfigUpdater.update(this, "config.yml", configFile, Collections.emptyList());
-        } catch (IOException ignored) {
-            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Unable to update configuration files, please reset it.");
-            getPluginLoader().disablePlugin(this);
-            return;
-        }
+        ConfigUpdater.update(this, "config.yml", configFile, Collections.emptyList());
 
         version.set("version", getDescription().getVersion());
         version.save(versionFile);
