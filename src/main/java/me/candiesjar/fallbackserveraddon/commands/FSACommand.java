@@ -18,19 +18,19 @@ public class FSACommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
         if (args.length != 1) {
-            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version &7by &b&nCandiesJar")
+            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
                     .replace("version", plugin.getDescription().getVersion()));
             return true;
         }
 
         if (!args[0].equalsIgnoreCase("reload")) {
-            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version &7by &b&nCandiesJar")
+            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
                     .replace("version", plugin.getDescription().getVersion()));
             return true;
         }
 
         if (!sender.hasPermission(plugin.getConfig().getString("settings.reload_permission", "fallbackserveradmin.reload"))) {
-            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version &7by &b&nCandiesJar")
+            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
                     .replace("version", plugin.getDescription().getVersion()));
             return true;
         }
@@ -38,11 +38,13 @@ public class FSACommand implements CommandExecutor {
         String oldValue = plugin.getConfig().getString("settings.mode", "NONE");
         reloadConfig();
         plugin.executeReload(oldValue);
+        sender.sendMessage(ChatUtil.color(plugin.getConfig().getString("settings.reload_message"))
+                .replace("%version%", plugin.getDescription().getVersion()));
         return true;
     }
 
     private void reloadConfig() {
         plugin.reloadConfig();
-        plugin.saveDefaultConfig();
+        plugin.loadConfig();
     }
 }

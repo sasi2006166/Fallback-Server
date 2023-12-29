@@ -93,13 +93,6 @@ public final class FallbackServerAddon extends JavaPlugin {
         bukkitLibraryManager.loadLibrary(configUpdater);
     }
 
-    private void loadConfig() {
-        File versionFile = new File(getDataFolder(), "version.yml");
-        YamlConfiguration version = YamlConfiguration.loadConfiguration(versionFile);
-        saveDefaultConfig();
-        updateConfig(versionFile, version);
-    }
-
     @SneakyThrows
     private void updateConfig(File versionFile, YamlConfiguration version) {
         File configFile = new File(getDataFolder(), "config.yml");
@@ -123,6 +116,13 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     private void schedule() {
         GeneralTask.schedule(this, UniversalScheduler.getScheduler(this));
+    }
+
+    public void loadConfig() {
+        File versionFile = new File(getDataFolder(), "version.yml");
+        YamlConfiguration version = YamlConfiguration.loadConfiguration(versionFile);
+        saveDefaultConfig();
+        updateConfig(versionFile, version);
     }
 
     public void executeStart() {
