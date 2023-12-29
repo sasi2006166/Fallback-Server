@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserveraddon.listeners.addon;
 
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.event.EventHandler;
@@ -42,7 +43,7 @@ public class PingListener implements Listener {
             return;
         }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        UniversalScheduler.getScheduler(plugin).runTaskLater(() -> {
             finished = true;
             Utils.unregisterEvent(this);
         }, plugin.getConfig().getInt("settings.addon.disable_after", 30) * 20L);
