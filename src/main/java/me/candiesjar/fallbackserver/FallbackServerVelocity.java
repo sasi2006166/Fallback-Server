@@ -35,7 +35,7 @@ import ru.vyarus.yaml.updater.util.FileUtils;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +64,7 @@ public class FallbackServerVelocity {
 
     @Getter
     @Setter
-    private boolean alpha = false;
+    private boolean beta = false;
 
     @Getter
     @Setter
@@ -131,7 +131,7 @@ public class FallbackServerVelocity {
         loadTask();
 
         getLogger().info("§7[§b!§7] Plugin loaded successfully");
-        checkAlpha();
+        checkBeta();
 
         checkUpdate();
 
@@ -187,13 +187,20 @@ public class FallbackServerVelocity {
     }
 
     private void checkPlugins() {
-
         if (getServer().getPluginManager().getPlugin("ajQueue").isPresent()) {
             getLogger().info("§7[§b!§7] Hooking in AjQueue");
             setAjQueue(true);
         }
 
         if (getServer().getPluginManager().getPlugin("Maintenance").isPresent()) {
+
+            PluginContainer container = getServer().getPluginManager().getPlugin("Maintenance").get();
+            String author = container.getDescription().getAuthors().toString();
+
+            if (!author.equalsIgnoreCase("kennytv")) {
+                return;
+            }
+
             getLogger().info("§7[§b!§7] Hooking in Maintenance");
             setMaintenance(true);
         }
@@ -220,9 +227,9 @@ public class FallbackServerVelocity {
                 .schedule();
     }
 
-    private void checkAlpha() {
-        if (getVERSION().contains("Alpha") || getVERSION().contains("Beta")) {
-            setAlpha(true);
+    private void checkBeta() {
+        if (getVERSION().contains("Beta")) {
+            setBeta(true);
             getLogger().info(" ");
             getLogger().info("§7You're running an §c§lBETA VERSION §7of Fallback Server.");
             getLogger().info("§7If you find any bugs, please report them on discord.");
@@ -245,7 +252,6 @@ public class FallbackServerVelocity {
     }
 
     private void updateConfiguration() {
-
         if (pluginContainer.getDescription().getVersion().isEmpty()) {
             return;
         }
@@ -285,6 +291,12 @@ public class FallbackServerVelocity {
 
         if (isLobbyCommandEnabled) {
             String[] aliases = VelocityConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]);
+
+            if (aliases.length == 0) {
+                getLogger().error("§7[§c!§7] §cYou have to set at least one alias for the lobby command!");
+                getLogger().error("§7[§c!§7] §cUsing default 'hub' alias.");
+                aliases = new String[]{"hub"};
+            }
 
             CommandMeta commandMeta = server.getCommandManager()
                     .metaBuilder(VelocityConfig.LOBBY_ALIASES.getStringList().get(0))
@@ -360,7 +372,7 @@ public class FallbackServerVelocity {
     }
 
     public boolean isHub(String serverName) {
-        LinkedList<String> list = Lists.newLinkedList();
+        List<String> list = Lists.newArrayList();
 
         for (String lobby : VelocityConfig.LOBBIES_LIST.getStringList()) {
             String toLowerCase = lobby.toLowerCase();
@@ -368,32 +380,6 @@ public class FallbackServerVelocity {
         }
 
         return list.contains(serverName.toLowerCase());
-    }
-
-    public void reloadListeners() {
-
-        getServer().getEventManager().unregisterListener(this, new FallbackListener(this));
-
-        if (limboApi) {
-            getServer().getEventManager().unregisterListener(this, new ReconnectListener(this));
-        }
-
-        String mode = VelocityConfig.FALLBACK_MODE.get(String.class);
-
-        switch (mode) {
-            case "DEFAULT":
-                getServer().getEventManager().register(this, new FallbackListener(this));
-                break;
-            case "RECONNECT":
-                loadReconnect();
-                break;
-            default:
-                getLogger().error("Configuration error under fallback_mode: " + VelocityConfig.FALLBACK_MODE.get(String.class));
-                getLogger().error("Using default mode..");
-                getServer().getEventManager().register(this, new FallbackListener(this));
-                break;
-        }
-
     }
 
     public void reloadAll() {

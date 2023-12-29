@@ -8,6 +8,7 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityServers;
 import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
+import me.candiesjar.fallbackserver.utils.Utils;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,21 +47,25 @@ public class LobbyTask implements Runnable {
     private void pingServers(List<RegisteredServer> serverList) {
         serverList.forEach(server -> server.ping().whenComplete((result, throwable) -> {
             if (throwable != null || result == null) {
-                removeIfContains(server);
+                fallingServerManager.remove(server.getServerInfo().getName());
                 return;
             }
 
             Optional<ServerPing.Players> playersOptional = result.getPlayers();
 
             if (playersOptional.isEmpty()) {
-                removeIfContains(server);
+                fallingServerManager.remove(server.getServerInfo().getName());
                 return;
             }
 
             ServerPing.Players players = playersOptional.get();
 
             if (players.getOnline() == players.getMax()) {
-                removeIfContains(server);
+                fallingServerManager.remove(server.getServerInfo().getName());
+                return;
+            }
+
+            if (fallingServerManager.getCache().containsValue(server)) {
                 return;
             }
 
@@ -70,12 +75,6 @@ public class LobbyTask implements Runnable {
 
     private ServerInfo getServerInfo(String serverName) {
         return fallbackServerVelocity.getServer().getServer(serverName).map(RegisteredServer::getServerInfo).orElse(null);
-    }
-
-    private void removeIfContains(RegisteredServer registeredServer) {
-        if (fallingServerManager.getCache().containsValue(registeredServer)) {
-            fallingServerManager.remove(registeredServer.getServerInfo().getName());
-        }
     }
 
     private void loadServerList(List<String> serverList) {

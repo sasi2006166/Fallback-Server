@@ -9,7 +9,7 @@ import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 
 @RequiredArgsConstructor
-public class StatusSubCommand implements SubCommand {
+public class    StatusSubCommand implements SubCommand {
 
     private final FallbackServerVelocity plugin;
 

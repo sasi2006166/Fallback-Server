@@ -6,9 +6,9 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ServerUtils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -19,9 +19,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-@RequiredArgsConstructor
 public class HubCommand implements SimpleCommand {
     private final FallbackServerVelocity plugin;
+    private final FallingServerManager fallingServerManager;
+
+    public HubCommand(FallbackServerVelocity plugin) {
+        this.plugin = plugin;
+        this.fallingServerManager = plugin.getFallingServerManager();
+    }
 
     @Override
     public void execute(Invocation invocation) {
@@ -33,7 +38,6 @@ public class HubCommand implements SimpleCommand {
         }
 
         Player player = (Player) commandSource;
-
         Optional<ServerConnection> serverConnectionOptional = player.getCurrentServer();
 
         if (serverConnectionOptional.isEmpty()) {
@@ -48,17 +52,19 @@ public class HubCommand implements SimpleCommand {
             return;
         }
 
-        List<RegisteredServer> lobbies = Lists.newArrayList(plugin.getFallingServerManager().getAll());
-
-        if (lobbies.isEmpty()) {
-            VelocityMessages.NO_SERVER.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
-            return;
-        }
+        List<RegisteredServer> lobbies = Lists.newArrayList(fallingServerManager.getAll());
 
         boolean useMaintenance = plugin.isMaintenance();
 
         if (useMaintenance) {
             lobbies.removeIf(ServerUtils::isMaintenance);
+        }
+
+        lobbies.removeIf(server -> server.getServerInfo() == null);
+
+        if (lobbies.isEmpty()) {
+            VelocityMessages.NO_SERVER.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
+            return;
         }
 
         lobbies.sort(Comparator.comparingInt(o -> o.getPlayersConnected().size()));
@@ -78,8 +84,8 @@ public class HubCommand implements SimpleCommand {
             plugin.getServer().getScheduler().buildTask(plugin, () -> TitleUtil.sendTitle(VelocityMessages.HUB_TITLE_FADE_IN.get(Integer.class),
                             VelocityMessages.HUB_TITLE_STAY.get(Integer.class),
                             VelocityMessages.HUB_TITLE_FADE_OUT.get(Integer.class),
-                            ChatUtil.color(VelocityMessages.HUB_TITLE.get(String.class)),
-                            ChatUtil.color(VelocityMessages.HUB_SUB_TITLE.get(String.class)),
+                            VelocityMessages.HUB_TITLE.get(String.class),
+                            VelocityMessages.HUB_SUB_TITLE.get(String.class),
                             player)).delay(VelocityMessages.HUB_TITLE_DELAY.get(Integer.class), TimeUnit.SECONDS)
                     .schedule();
         }

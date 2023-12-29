@@ -66,7 +66,7 @@ public class ReconnectListener {
 
             boolean clearChat = VelocityConfig.CLEAR_CHAT_RECONNECT_JOIN.get(Boolean.class);
 
-            if (clearTab) {
+            if (clearChat) {
                 ChatUtil.clearChat(player);
             }
 

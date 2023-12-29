@@ -12,7 +12,7 @@
 # Velocity configuration file
 
 # IMPORTANT WARNING: Before reporting any issue on discord, READ carefully the comments!
-# Some features are DISABLED since they're under developing, don't report any bugs on them.
+# Some features are DISABLED since they're under development, don't report any bugs on them.
 # Thanks for understanding.
 
 settings:
@@ -50,23 +50,22 @@ settings:
   # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
   # Customize things like delays and title mode, everything in seconds.
   auto_reconnect:
-
-    # Time for time-outing the server on ping.
-    # In Milliseconds, 2000 for example = 2 seconds.
-    ping_timeout: 2000
-
-    # This option is used by the addon ping system
-    # for checking if the spigot instance is fully started up.
-    # WARNING: Recommended to not touch.
-    player_count_check: -1
+    # Tries before disconnecting or moving player to lobbies.
+    max_tries: 5
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
     # In seconds.
     ping_delay: 7
 
-    # Tries before disconnecting or moving player to lobbies.
-    max_tries: 5
+    # This option is used by the addon ping system
+    # for checking if the spigot instance is fully started up.
+    # WARNING: Recommended to not touch.
+    player_count_check: -1
+
+    # Time for time-outing the server on ping.
+    # In Milliseconds, 2000 for example = 2 seconds.
+    ping_timeout: 2000
 
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.
@@ -137,7 +136,7 @@ settings:
   # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
   # By default this setting is set on "true" to help me improve the plugin.
   # Obviously you can disable it if you want, feel free to do so.
-  stats: true
+  telemetry: true
 
   # True: the plugin will automatically choose best lobby when connecting and balance all players.
   # Warning: If the list contains one lobby the balancing will not work.

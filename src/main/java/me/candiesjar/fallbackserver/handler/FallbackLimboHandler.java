@@ -162,8 +162,8 @@ public class FallbackLimboHandler implements LimboSessionHandler {
                                     VelocityMessages.FALLBACK_FADE_IN.get(Integer.class),
                                     VelocityMessages.FALLBACK_STAY.get(Integer.class),
                                     VelocityMessages.FALLBACK_FADE_OUT.get(Integer.class),
-                                    ChatUtil.color(VelocityMessages.FALLBACK_TITLE.get(String.class)),
-                                    ChatUtil.color(VelocityMessages.FALLBACK_SUB_TITLE.get(String.class)),
+                                    VelocityMessages.FALLBACK_TITLE.get(String.class),
+                                    VelocityMessages.FALLBACK_SUB_TITLE.get(String.class),
                                     player
                             )).delay(VelocityMessages.FALLBACK_DELAY.get(Integer.class), TimeUnit.SECONDS)
                     .schedule();

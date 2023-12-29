@@ -24,7 +24,7 @@ public class Utils {
     @SneakyThrows(Exception.class)
     public CompletableFuture<Boolean> getUpdates() {
 
-        if (fallbackServerVelocity.isAlpha()) {
+        if (fallbackServerVelocity.isBeta()) {
             return CompletableFuture.supplyAsync(() -> {
                 fallbackServerVelocity.getLogger().info("§7Updater is disabled in alpha version(s).");
                 fallbackServerVelocity.getLogger().info(" ");

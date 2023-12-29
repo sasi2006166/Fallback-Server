@@ -29,12 +29,10 @@ public class ReloadSubCommand implements SubCommand {
     public void perform(CommandSource commandSource, String[] args) {
 
         boolean oldCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
-        String oldMode = VelocityConfig.FALLBACK_MODE.get(String.class);
 
         plugin.reloadAll();
 
         boolean newCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
-        String newMode = VelocityConfig.FALLBACK_MODE.get(String.class);
 
         if (oldCommand != newCommand) {
 
@@ -51,10 +49,6 @@ public class ReloadSubCommand implements SubCommand {
                 plugin.getServer().getCommandManager().unregister(commandMeta);
             }
 
-        }
-
-        if (!oldMode.equals(newMode)) {
-            plugin.reloadListeners();
         }
 
         VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));

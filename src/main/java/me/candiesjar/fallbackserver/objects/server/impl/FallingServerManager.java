@@ -16,6 +16,10 @@ public class FallingServerManager implements ObjectManager<String, RegisteredSer
 
     @Override
     public void add(String key, RegisteredServer value) {
+        if (cache.containsKey(key.toLowerCase())) {
+            return;
+        }
+
         cache.put(key.toLowerCase(), value);
     }
 
@@ -32,10 +36,6 @@ public class FallingServerManager implements ObjectManager<String, RegisteredSer
     @Override
     public Collection<RegisteredServer> getAll() {
         return cache.values();
-    }
-
-    public void clearCache() {
-        cache.clear();
     }
 
 }

@@ -18,7 +18,10 @@ public class TitleUtil {
                 Duration.ofSeconds(stay),
                 Duration.ofSeconds(fadeOut));
 
-        Title createdTitle = Title.title(Component.text(title), Component.text(subTitle), times);
+        Title createdTitle = Title.title(
+                Component.text(ChatUtil.color(title)),
+                Component.text(ChatUtil.color(subTitle)),
+                times);
 
         player.showTitle(createdTitle);
 

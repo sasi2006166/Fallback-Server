@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.listeners;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
@@ -21,14 +22,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 public class FallbackListener {
     private final FallbackServerVelocity fallbackServerVelocity;
     private final FallingServerManager fallingServerManager;
-    private final Map<String, LongAdder> pendingConnections = new ConcurrentHashMap<>();
+    private final Map<String, LongAdder> pendingConnections = Maps.newLinkedHashMap();
 
     public FallbackListener(FallbackServerVelocity fallbackServerVelocity) {
         this.fallbackServerVelocity = fallbackServerVelocity;
@@ -76,6 +76,8 @@ public class FallbackListener {
             lobbies.removeIf(ServerUtils::isMaintenance);
         }
 
+        lobbies.removeIf(server -> server.getServerInfo() == null);
+
         if (lobbies.isEmpty()) {
             if (kickReasonString.isEmpty()) {
                 String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", ChatUtil.getFormattedString(VelocityMessages.PREFIX));
@@ -89,7 +91,6 @@ public class FallbackListener {
         lobbies.sort(Comparator.comparingInt(server -> server.getPlayersConnected().size() + getPendingConnections(server.getServerInfo().getName())));
 
         RegisteredServer selectedServer = lobbies.get(0);
-
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(selectedServer));
 
         incrementPendingConnections(selectedServer.getServerInfo().getName());
@@ -116,8 +117,8 @@ public class FallbackListener {
                                     VelocityMessages.FALLBACK_FADE_IN.get(Integer.class),
                                     VelocityMessages.FALLBACK_STAY.get(Integer.class),
                                     VelocityMessages.FALLBACK_FADE_OUT.get(Integer.class),
-                                    ChatUtil.color(VelocityMessages.FALLBACK_TITLE.get(String.class)),
-                                    ChatUtil.color(VelocityMessages.FALLBACK_SUB_TITLE.get(String.class)),
+                                    VelocityMessages.FALLBACK_TITLE.get(String.class),
+                                    VelocityMessages.FALLBACK_SUB_TITLE.get(String.class),
                                     player
                             )).delay(VelocityMessages.FALLBACK_DELAY.get(Integer.class), TimeUnit.SECONDS)
                     .schedule();

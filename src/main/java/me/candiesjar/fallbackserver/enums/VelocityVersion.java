@@ -8,7 +8,6 @@ public enum VelocityVersion {
 
     VERSION("version");
 
-
     private final String path;
     private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
 
@@ -19,6 +18,5 @@ public enum VelocityVersion {
     public String getString() {
         return fallbackServerVelocity.getVersionTextFile().getConfig().getString(getPath());
     }
-
 
 }

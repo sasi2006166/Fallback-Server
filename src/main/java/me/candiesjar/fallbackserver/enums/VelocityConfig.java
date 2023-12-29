@@ -27,7 +27,7 @@ public enum VelocityConfig {
 
     UPDATER("settings.updater"),
     PING_DELAY("settings.ping_delay"),
-    TELEMETRY("settings.stats"),
+    TELEMETRY("settings.telemetry"),
     USE_COMMAND_BLOCKER("settings.command_blocker"),
     LOBBIES_LIST("settings.fallback_list"),
     IGNORED_REASONS("settings.ignored_reasons"),
