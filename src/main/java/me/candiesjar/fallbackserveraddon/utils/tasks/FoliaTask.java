@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserveraddon.utils;
+package me.candiesjar.fallbackserveraddon.utils.tasks;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
@@ -7,7 +7,7 @@ import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import org.bukkit.plugin.Plugin;
 
 @UtilityClass
-public class FoliaUtil {
+public class FoliaTask {
 
     private final FallbackServerAddon instance = FallbackServerAddon.getInstance();
     private WrappedTask foliaTask;

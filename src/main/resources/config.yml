@@ -39,7 +39,6 @@ settings:
     # If you are having problems with fallbackserver (in reconnect), you could increase this value.
     disable_after: 30
 
-
   # NOTE: This will work only if you set up the mode to 'STANDALONE'.
   standalone:
 
@@ -62,7 +61,7 @@ settings:
     join_message: "&7[&a+&7] %player_name%"
     quit_message: "&7[&c-&7] %player_name%"
 
-    # NOTE: This won't work for 1.8<= servers.
+    # Will work from 1.8 and up, 1.7.10 may not work.
     actionbar:
       enabled: true
       message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."

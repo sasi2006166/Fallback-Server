@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserveraddon.listeners.standalone;
 
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
-import me.candiesjar.fallbackserveraddon.utils.Utils;
+import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,20 +16,8 @@ public class PlayerListener implements Listener {
 
     private final FallbackServerAddon plugin;
 
-    private boolean actionbar = false;
-
     public PlayerListener(FallbackServerAddon plugin) {
         this.plugin = plugin;
-        checkActionBar();
-    }
-
-    private void checkActionBar() {
-        try {
-            Class.forName("net.md_5.bungee.api.ChatMessageType");
-            actionbar = true;
-        } catch (ClassNotFoundException ignored) {
-            actionbar = false;
-        }
     }
 
     @EventHandler
@@ -37,7 +25,7 @@ public class PlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if (actionbar && plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
+        if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message", "&f"));
         }
 
@@ -46,7 +34,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        event.setJoinMessage(Utils.color(plugin.getConfig().getString("settings.standalone.join_message", null))
+        event.setJoinMessage(ChatUtil.color(plugin.getConfig().getString("settings.standalone.join_message", null))
                 .replace("%player_name%", player.getName()));
     }
 
@@ -61,7 +49,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        event.setQuitMessage(Utils.color(plugin.getConfig().getString("settings.standalone.quit_message", null))
+        event.setQuitMessage(ChatUtil.color(plugin.getConfig().getString("settings.standalone.quit_message", null))
                 .replace("%player_name%", player.getName()));
     }
 
@@ -93,7 +81,6 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPickup(PlayerPickupItemEvent event) {
         if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.item_pickup", true)) {

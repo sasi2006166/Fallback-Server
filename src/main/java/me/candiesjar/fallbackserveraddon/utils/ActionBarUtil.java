@@ -1,11 +1,11 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
+import com.connorlinfoot.actionbarapi.ActionBarAPI;
+import com.google.common.collect.Maps;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -15,10 +15,9 @@ import java.util.UUID;
 @UtilityClass
 public class ActionBarUtil {
 
-    private final HashMap<UUID, BukkitTask> actionbarTask = new HashMap<>();
-    private final HashMap<UUID, WrappedTask> actionbarFoliaTask = new HashMap<>();
-
-    private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
+    private final HashMap<UUID, BukkitTask> actionbarTask = Maps.newHashMap();
+    private final HashMap<UUID, WrappedTask> actionbarFoliaTask = Maps.newHashMap();
+    private final FallbackServerAddon instance = FallbackServerAddon.getInstance();
 
     public void startActionBar(Player player, String message) {
         if (Utils.isFolia()) {
@@ -26,7 +25,7 @@ public class ActionBarUtil {
             return;
         }
 
-        actionbarTask.put(player.getUniqueId(), plugin.getServer().getScheduler().runTaskTimer(plugin, () -> sendActionBar(player, message), 20, 20));
+        actionbarTask.put(player.getUniqueId(), instance.getServer().getScheduler().runTaskTimer(instance, () -> sendActionBar(player, message), 20, 20));
     }
 
     public void stopActionBar(Player player) {
@@ -49,20 +48,11 @@ public class ActionBarUtil {
     }
 
     private void startActionBarFolia(Player player, String message) {
-        FoliaLib foliaLib = new FoliaLib(plugin);
+        FoliaLib foliaLib = new FoliaLib(instance);
         actionbarFoliaTask.put(player.getUniqueId(), foliaLib.getImpl().runTimer(() -> sendActionBar(player, message), 20, 20));
     }
 
     private void sendActionBar(Player player, String message) {
-        try {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Utils.color(message)));
-
-        } catch (NoSuchMethodError ignored) {
-            if (Utils.isFolia()) {
-                stopActionBarFolia(player);
-                return;
-            }
-            stopActionBar(player);
-        }
+        ActionBarAPI.sendActionBar(player, ChatUtil.color(message));
     }
 }

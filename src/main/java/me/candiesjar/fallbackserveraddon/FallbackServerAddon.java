@@ -5,16 +5,14 @@ import lombok.Setter;
 import me.candiesjar.fallbackserveraddon.commands.FSACommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
-import me.candiesjar.fallbackserveraddon.utils.FoliaUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
+import me.candiesjar.fallbackserveraddon.utils.tasks.FoliaTask;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
 import net.byteflux.libby.relocation.Relocation;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.util.Objects;
 
 public final class FallbackServerAddon extends JavaPlugin {
 
@@ -33,10 +31,9 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         instance = this;
 
-        getServer().getConsoleSender().sendMessage("\n" +
+        getLogger().info("\n" +
                 "  ______ _____            _     _             \n" +
                 " |  ____/ ____|  /\\      | |   | |            \n" +
                 " | |__ | (___   /  \\   __| | __| | ___  _ __  \n" +
@@ -44,24 +41,24 @@ public final class FallbackServerAddon extends JavaPlugin {
                 " | |    ____) / ____ \\ (_| | (_| | (_) | | | |\n" +
                 " |_|   |_____/_/    \\_\\__,_|\\__,_|\\___/|_| |_|\n");
 
-        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Warming up...");
+        getLogger().info("[FallbackServerAddon] §7[§b!§7] Warming up...");
 
         loadDependencies();
         saveDefaultConfig();
         schedule();
 
-        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
+        getLogger().info("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
     }
 
     @Override
     public void onDisable() {
-        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Un-Loaded.");
+        getLogger().info("[FallbackServerAddon] §7[§c!§7] Un-Loaded.");
     }
 
     public void loadDependencies() {
         BukkitLibraryManager bukkitLibraryManager = new BukkitLibraryManager(this);
 
-        final Relocation foliaRelocation = new Relocation("folialib", "me{}candiesjar{}libs{}folialib");
+        Relocation foliaRelocation = new Relocation("folialib", "me{}candiesjar{}libs{}folialib");
         Library folia = Library.builder()
                 .groupId("com{}tcoded{}folialib")
                 .artifactId("folialib")
@@ -76,7 +73,7 @@ public final class FallbackServerAddon extends JavaPlugin {
     private void schedule() {
 
         if (Utils.isFolia()) {
-            FoliaUtil.schedule();
+            FoliaTask.schedule();
             return;
         }
 
@@ -104,42 +101,40 @@ public final class FallbackServerAddon extends JavaPlugin {
     }
 
     public void executeStart() {
-        getCommand("fallbackserveraddon").setExecutor(new FSACommand());
-        switch (Objects.requireNonNull(getConfig().getString("settings.mode"))) {
+        getCommand("fallbackserveraddon").setExecutor(new FSACommand(this));
+        String mode = getConfig().getString("settings.mode");
 
+        switch (mode) {
             case "STANDALONE":
                 getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
+                getLogger().info("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
                 break;
-
             case "ADDON":
                 getServer().getPluginManager().registerEvents(new PingListener(this), this);
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
+                getLogger().info("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
                 break;
-
             default:
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Detected an invalid mode...");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §c§lFIRST SETUP GUIDE");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eSelect the mode of your server!");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eYou can choose between §bSTANDALONE §eor §bADDON§e.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eYou can change the mode in the config.yml file.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eAfter you have selected the mode, restart the server.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eCheck the config.yml for more information about this.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §cThe plugin is now in passive mode:");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §cUse §b/fsa reload §cwhen you finished the setup.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] Detected an invalid mode...");
+                getLogger().info("[FallbackServerAddon]");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] §c§lFIRST SETUP GUIDE");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eSelect the mode of your server!");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eYou can choose between §bSTANDALONE §eor §bADDON§e.");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eYou can change the mode in the config.yml file.");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eAfter you have selected the mode, restart the server.");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eCheck the config.yml for more information about this.");
+                getLogger().info("[FallbackServerAddon]");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] §cThe plugin is now in passive mode:");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] §cUse §b/fsa reload §cwhen you finished the setup.");
+                getLogger().info("[FallbackServerAddon]");
                 break;
-
         }
     }
 
     public void executeReload(String oldValue) {
-        switch (Objects.requireNonNull(getConfig().getString("settings.mode"))) {
+        String mode = getConfig().getString("settings.mode");
 
+        switch (mode) {
             case "STANDALONE":
-
                 if (oldValue.equalsIgnoreCase("ADDON")) {
                     Utils.unregisterEvent(new PingListener(this));
                 }
@@ -149,11 +144,9 @@ public final class FallbackServerAddon extends JavaPlugin {
                 }
 
                 getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
+                getLogger().info("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
                 break;
-
             case "ADDON":
-
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
                     Utils.unregisterEvent(new PlayerListener(this));
                 }
@@ -163,11 +156,10 @@ public final class FallbackServerAddon extends JavaPlugin {
                 }
 
                 getServer().getPluginManager().registerEvents(new PingListener(this), this);
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
+                getLogger().info("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
                 break;
 
             default:
-
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
                     Utils.unregisterEvent(new PlayerListener(this));
                 }
@@ -176,18 +168,18 @@ public final class FallbackServerAddon extends JavaPlugin {
                     Utils.unregisterEvent(new PingListener(this));
                 }
 
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Detected an invalid mode...");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §c§lFIRST SETUP GUIDE");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eSelect the mode of your server!");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eYou can choose between §bSTANDALONE §eor §bADDON§e.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eYou can change the mode in the config.yml file.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eAfter you have selected the mode, restart the server.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§e!§7] §eCheck the config.yml for more information about this.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §cThe plugin is now in passive mode:");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §cUse §b/fsa reload §cwhen you finished the setup.");
-                getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] Detected an invalid mode...");
+                getLogger().info("[FallbackServerAddon]");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] §c§lFIRST SETUP GUIDE");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eSelect the mode of your server!");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eYou can choose between §bSTANDALONE §eor §bADDON§e.");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eYou can change the mode in the config.yml file.");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eAfter you have selected the mode, restart the server.");
+                getLogger().info("[FallbackServerAddon] §7[§e!§7] §eCheck the config.yml for more information about this.");
+                getLogger().info("[FallbackServerAddon]");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] §cThe plugin is now in passive mode:");
+                getLogger().info("[FallbackServerAddon] §7[§c!§7] §cUse §b/fsa reload §cwhen you finished the setup.");
+                getLogger().info("[FallbackServerAddon]");
                 break;
         }
     }
