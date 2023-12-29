@@ -33,15 +33,6 @@ settings:
   # IMPORTANT: This option requires a proxy reboot.
   fallback_mode: DEFAULT
 
-  # Add here all your lobbies that will be used
-  # for the plugin as fallback and for balancing.
-  # This list will also be used for /hub command (if enabled).
-  # WARNING: It's case-sensitive.
-  fallback_list:
-    - lobby1
-    - lobby2
-    - lobby3
-
   # If you want to use the reconnect mode, fallback_mode must be set to RECONNECT.
   # Those values will clear the chat on reconnect (after success) or when players
   # get fallback-ed to another server.
@@ -50,6 +41,15 @@ settings:
     fallback: true
     reconnect: false
     reconnect_join: true
+
+  # Add here all your lobbies that will be used
+  # for the plugin as fallback and for balancing.
+  # This list will also be used for /hub command (if enabled).
+  # WARNING: It's case-sensitive.
+  fallback_list:
+    - lobby1
+    - lobby2
+    - lobby3
 
   # Reconnect section, it will ONLY work if fallback_mode is set to RECONNECT.
   # Customize things like delays and title mode, everything in seconds.
@@ -165,7 +165,7 @@ settings:
   admin_notification: true
 
   # Choose if you want to use fallbackserver's built-in command blocker.
-  use_command_blocker: true
+  command_blocker: true
 
   # WARNING: will only work if "use_command_blocker" is set on true.
   # Add here the servers with the command(s) you want to block.

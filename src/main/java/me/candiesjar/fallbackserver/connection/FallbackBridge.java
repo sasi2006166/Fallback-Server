@@ -48,7 +48,6 @@ public class FallbackBridge extends DownstreamBridge {
 
         ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent(userConnection, server.getInfo());
         proxyServer.getPluginManager().callEvent(serverDisconnectEvent);
-
     }
 
     @Override
@@ -67,6 +66,5 @@ public class FallbackBridge extends DownstreamBridge {
         if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
             userConnection.connect(serverKickEvent.getCancelServer());
         }
-
     }
 }

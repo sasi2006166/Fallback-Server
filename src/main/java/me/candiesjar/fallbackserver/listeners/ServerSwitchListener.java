@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.connection.FallbackBridge;
-import me.candiesjar.fallbackserver.connection.ReconnectBridge;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import net.md_5.bungee.ServerConnection;
@@ -36,14 +35,14 @@ public class ServerSwitchListener implements Listener {
     @SneakyThrows
     @EventHandler
     public void onServerSwitch(ServerSwitchEvent event) {
-        UserConnection user = (UserConnection) event.getPlayer();
-        ProxiedPlayer player = event.getPlayer();
-        ServerInfo playerServer = user.getServer().getInfo();
 
         if (event.getFrom() == null) {
             return;
         }
 
+        UserConnection user = (UserConnection) event.getPlayer();
+        ProxiedPlayer player = event.getPlayer();
+        ServerInfo playerServer = user.getServer().getInfo();
         UUID uuid = user.getUniqueId();
         ServerConnection server = user.getServer();
         ChannelWrapper channelWrapper = server.getCh();
@@ -58,12 +57,6 @@ public class ServerSwitchListener implements Listener {
             if (reconnectServer != playerServer) {
                 removeFromReconnect(player);
             }
-        }
-
-        if (plugin.isReconnect()) {
-            ReconnectBridge reconnectBridge = new ReconnectBridge(proxyServer, user, server, plugin);
-            channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(reconnectBridge);
-            return;
         }
 
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);

@@ -16,6 +16,8 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import java.util.List;
+
 public class ReconnectListener implements Listener {
 
     private final FallbackServerBungee plugin;
@@ -28,17 +30,27 @@ public class ReconnectListener implements Listener {
     public void onServerKick(ServerKickEvent event) {
 
         ProxiedPlayer player = event.getPlayer();
+
+        if (!player.isConnected()) {
+            return;
+        }
+
         ServerInfo kickedFrom = event.getKickedFrom();
         UserConnection userConnection = (UserConnection) player;
         ServerConnection serverConnection = userConnection.getServer();
         ServerKickEvent.State state = event.getState();
 
+        if (state != ServerKickEvent.State.CONNECTED) {
+            return;
+        }
+
         boolean isEmpty = event.getKickReasonComponent() == null;
         String reason = isEmpty ? "" : BaseComponent.toLegacyText(event.getKickReasonComponent());
+        List<String> ignoredReasons = BungeeConfig.RECONNECT_IGNORED_REASONS.getStringList();
 
-        boolean canContinue = ConditionUtil.preChecks(player, state, reason, true);
+        boolean matches = ConditionUtil.checkReason(ignoredReasons, reason);
 
-        if (canContinue) {
+        if (matches) {
             disconnect(player, reason);
             return;
         }
@@ -72,6 +84,7 @@ public class ReconnectListener implements Listener {
 
         if (usePhysicalServer) {
             event.setCancelled(true);
+            event.setCancelServer(plugin.getReconnectServer());
         }
 
     }

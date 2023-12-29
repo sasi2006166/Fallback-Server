@@ -32,7 +32,7 @@ public enum BungeeConfig {
     UPDATER("settings.updater"),
     PING_DELAY("settings.ping_delay"),
     TELEMETRY("settings.telemetry"),
-    USE_COMMAND_BLOCKER("settings.use_command_blocker"),
+    USE_COMMAND_BLOCKER("settings.command_blocker"),
     FALLBACK_LIST("settings.fallback_list"),
     IGNORED_REASONS("settings.ignored_reasons"),
     ADMIN_NOTIFICATION("settings.admin_notification"),

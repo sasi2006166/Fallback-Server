@@ -3,7 +3,6 @@ package me.candiesjar.fallbackserver;
 import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
-import me.candiesjar.fallbackserver.cache.ServerCacheManager;
 import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
@@ -26,7 +25,6 @@ import ru.vyarus.yaml.updater.util.FileUtils;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public final class FallbackServerBungee extends Plugin {
 
@@ -34,13 +32,20 @@ public final class FallbackServerBungee extends Plugin {
     private static FallbackServerBungee instance;
 
     @Getter
-    private TextFile configTextFile, messagesTextFile, serversTextFile, versionTextFile;
+    private TextFile configTextFile, messagesTextFile, versionTextFile, serversTextFile;
 
     @Getter
     private String version;
 
     @Getter
     private ServerInfo reconnectServer;
+
+    @Getter
+    private PlayerCacheManager playerCacheManager;
+
+    @Getter
+    @Setter
+    private boolean firstEnable = true;
 
     @Getter
     @Setter
@@ -66,20 +71,10 @@ public final class FallbackServerBungee extends Plugin {
     @Setter
     private boolean isReconnect = false;
 
-    @Getter
-    private boolean reconnectError = false;
-
-    @Getter
-    private PlayerCacheManager playerCacheManager;
-
-    @Getter
-    private ServerCacheManager serverCacheManager;
-
     public void onEnable() {
         instance = this;
         version = getDescription().getVersion();
         playerCacheManager = PlayerCacheManager.getInstance();
-        serverCacheManager = ServerCacheManager.getInstance();
 
         getLogger().info("\n" +
                 "  _____     _ _ _                _     ____                           \n" +
@@ -144,6 +139,13 @@ public final class FallbackServerBungee extends Plugin {
         }
 
         if (getProxy().getPluginManager().getPlugin("Maintenance") != null) {
+
+            String author = getProxy().getPluginManager().getPlugin("Maintenance").getDescription().getAuthor();
+
+            if (!author.equals("kennytv")) {
+                return;
+            }
+
             getLogger().info("§7[§b!§7] Hooked in Maintenance");
             setMaintenance(true);
         }
@@ -169,7 +171,6 @@ public final class FallbackServerBungee extends Plugin {
 
     private void loadCommands() {
         getLogger().info("§7[§b!§7] Preparing commands..");
-
         getProxy().getPluginManager().registerCommand(this, new SubCommandManager(this));
 
         boolean lobbyCommand = BungeeConfig.LOBBY_COMMAND.getBoolean();
@@ -207,16 +208,19 @@ public final class FallbackServerBungee extends Plugin {
 
                 boolean physicalServer = BungeeConfig.RECONNECT_USE_SERVER.getBoolean();
 
-                if (physicalServer) {
-                    reconnectServer = getProxy().getServerInfo(BungeeConfig.RECONNECT_SERVER.getString());
-                    if (reconnectServer == null) {
-                        getLogger().severe("The server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!");
-                        getLogger().severe("Check your config.yml file for more infos.");
-                        getLogger().severe("Please add it and RESTART your proxy.");
-                        getLogger().severe("Moving to limbo mode instead.");
-                        break;
-                    }
+                if (!physicalServer) {
+                    break;
                 }
+
+                reconnectServer = getProxy().getServerInfo(BungeeConfig.RECONNECT_SERVER.getString());
+
+                if (reconnectServer == null) {
+                    getLogger().severe("The server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!");
+                    getLogger().severe("Check your config.yml file for more infos.");
+                    getLogger().severe("Please add it and RESTART your proxy.");
+                    getLogger().severe("Moving to limbo mode instead.");
+                }
+
                 break;
             default:
                 getLogger().severe("Configuration error under fallback_mode: " + BungeeConfig.FALLBACK_MODE.getString());
@@ -300,11 +304,6 @@ public final class FallbackServerBungee extends Plugin {
 
     public void reloadTask() {
         PingTask.reload();
-    }
-
-    public void setReconnectError(boolean b) {
-        this.reconnectError = b;
-        getProxy().getScheduler().schedule(this, () -> setReconnectError(false), 10, TimeUnit.SECONDS);
     }
 
     public Configuration getConfig() {

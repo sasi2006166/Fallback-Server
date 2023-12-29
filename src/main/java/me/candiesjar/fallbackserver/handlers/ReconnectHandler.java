@@ -110,7 +110,6 @@ public class ReconnectHandler {
             titleTask.cancel();
             reconnectTask.cancel();
 
-            resetDots();
             clear();
 
             titleTask = taskScheduler.schedule(fallbackServerBungee, () -> sendTitle(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 0, 1, TimeUnit.SECONDS);
@@ -131,7 +130,6 @@ public class ReconnectHandler {
 
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo);
         ChannelFutureListener listener = channelFuture -> proxyServer.getScheduler().schedule(fallbackServerBungee, () -> TitleUtil.sendTitle(fadeIn, stay, fadeOut, BungeeMessages.CONNECTED_TITLE, BungeeMessages.CONNECTED_SUB_TITLE, targetServerInfo, player), delay, TimeUnit.SECONDS);
-
         Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(targetServerInfo.getAddress())).group(Utils.getUserChannelWrapper(userConnection).getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout).remoteAddress(targetServerInfo.getAddress());
 
         if (userConnection.getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows()) {
@@ -150,14 +148,6 @@ public class ReconnectHandler {
 
         pingServer(targetServerInfo, (result, error) -> {
             if (error != null || result == null) {
-                Utils.printDebug("Value: " + fallbackServerBungee.isReconnectError(), true);
-                if (fallbackServerBungee.isReconnectError()) {
-                    return;
-                }
-                Utils.printDebug("Target reconnect server went offline.", true);
-                Utils.printDebug("Preventing player timeout enabling fallback mode", true);
-                Utils.printDebug("Your spigot instances are likely unstable, please fix them.", true);
-                fallbackServerBungee.setReconnectError(true);
                 handleFallback();
             }
         });
@@ -184,10 +174,6 @@ public class ReconnectHandler {
         }
 
         TitleUtil.sendReconnectingTitle(0, 1 + 20, DOTS.get(), title, subTitle, player);
-    }
-
-    private void resetDots() {
-        DOTS.set(0);
     }
 
     public void clear() {

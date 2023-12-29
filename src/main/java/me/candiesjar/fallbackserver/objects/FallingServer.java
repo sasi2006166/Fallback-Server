@@ -17,7 +17,7 @@ public class FallingServer implements Comparable<FallingServer> {
     public FallingServer(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
 
-        if (serverInfo == null || servers.containsKey(serverInfo)) {
+        if (servers.containsKey(serverInfo)) {
             return;
         }
 
