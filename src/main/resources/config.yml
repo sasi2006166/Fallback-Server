@@ -18,8 +18,13 @@ settings:
   # If you want to use this addon as Reconnect Server, you need to set the mode to 'STANDALONE'.
   mode: 'NONE'
 
-  # Here you can set up the plugin reload's permission.
+  # Here you can set up the plugin reload's permission and message.
   reload_permission: 'fallbackserver.reload'
+  reload_message: '&7&lF&b&lS &8&l» &b&nFallback Server Addon %version%&r&7 reloaded successfully.'
+
+  # true: Normal players will not be able to see the /fsa output.
+  # false: Everyone will be able to see the simple "running fallbackserver" message.
+  hide_command: false
 
   # NOTE: This will work only if you set up the mode to 'ADDON'.
   addon:
@@ -42,12 +47,16 @@ settings:
   # NOTE: This will work only if you set up the mode to 'STANDALONE'.
   standalone:
 
+    # When a player joins the server, the plugin will automatically teleport him to the world spawn (/setworldspawn).
+    teleport_worldspawn: true
+
     # You can block some events here, to prevent players from doing something during the reconnect.
     event_blocker:
 
       damage: true
       block_break: true
       block_place: true
+      hunger: true
       item_drop: true
       item_pickup: true
       interact: true
@@ -61,7 +70,7 @@ settings:
     join_message: "&7[&a+&7] %player_name%"
     quit_message: "&7[&c-&7] %player_name%"
 
-    # Will work from 1.8 and up, 1.7.10 may not work.
+    # Will work from 1.8 and up, versions <= 1.7 may not work.
     actionbar:
       enabled: true
       message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."

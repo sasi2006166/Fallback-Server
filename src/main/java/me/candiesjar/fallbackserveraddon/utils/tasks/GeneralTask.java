@@ -1,40 +1,36 @@
 package me.candiesjar.fallbackserveraddon.utils.tasks;
 
-import com.tcoded.folialib.FoliaLib;
-import com.tcoded.folialib.wrapper.task.WrappedTask;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import org.bukkit.plugin.Plugin;
 
 @UtilityClass
-public class FoliaTask {
+public class GeneralTask {
 
-    private final FallbackServerAddon instance = FallbackServerAddon.getInstance();
-    private WrappedTask foliaTask;
-
-    public void schedule() {
-        FoliaLib foliaLib = new FoliaLib(instance);
-        foliaTask = foliaLib.getImpl().runTimer(() -> {
+    private MyScheduledTask task;
+    public void schedule(FallbackServerAddon instance, TaskScheduler scheduler) {
+        task = scheduler.runTaskTimer(() -> {
 
             if (instance.isLocked()) {
-                foliaTask.cancel();
+                task.cancel();
                 return;
             }
 
             for (Plugin plugin : instance.getServer().getPluginManager().getPlugins()) {
-                if (!plugin.isEnabled()) {
-                    instance.setAllPluginsLoaded(false);
-                    break;
+                if (plugin.isEnabled()) {
+                    continue;
                 }
+                instance.setAllPluginsLoaded(false);
             }
 
             if (instance.isAllPluginsLoaded()) {
                 instance.setLocked(true);
                 instance.executeStart();
-                foliaTask.cancel();
+                task.cancel();
             }
 
         }, 20L, 40L);
     }
-
 }
