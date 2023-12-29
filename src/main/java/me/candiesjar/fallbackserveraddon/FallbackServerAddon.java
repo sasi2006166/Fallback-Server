@@ -1,8 +1,10 @@
 package me.candiesjar.fallbackserveraddon;
 
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.tchristofferson.configupdater.ConfigUpdater;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.commands.FSACommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
@@ -11,7 +13,12 @@ import me.candiesjar.fallbackserveraddon.utils.tasks.GeneralTask;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
 import net.byteflux.libby.relocation.Relocation;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 
 @Setter
 public final class FallbackServerAddon extends JavaPlugin {
@@ -40,7 +47,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Warming up...");
 
         loadDependencies();
-        saveDefaultConfig();
+        loadConfig();
         schedule();
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
@@ -55,25 +62,63 @@ public final class FallbackServerAddon extends JavaPlugin {
         BukkitLibraryManager bukkitLibraryManager = new BukkitLibraryManager(this);
         bukkitLibraryManager.addJitPack();
 
-        Relocation scheduler = new Relocation("scheduler", "me{}candiesjar{}libs{}scheduler");
-        Library universalScheduler = Library.builder()
+        Relocation schedulerRelocation = new Relocation("scheduler", "me{}candiesjar{}libs{}scheduler");
+        Library scheduler = Library.builder()
                 .groupId("com{}github{}Anon8281")
                 .artifactId("UniversalScheduler")
                 .version("0.1.6")
-                .relocate(scheduler)
+                .relocate(schedulerRelocation)
                 .build();
 
-        Relocation actionbar = new Relocation("actionbar", "me{}candiesjar{}libs{}actionbar");
-        Library actionBar = Library.builder()
+        Relocation actionbarRelocation = new Relocation("actionbar", "me{}candiesjar{}libs{}actionbar");
+        Library actionbar = Library.builder()
                 .groupId("com{}connorlinfoot{}actionbarapi")
                 .artifactId("ActionBarAPI")
                 .version("2.0.0")
-                .relocate(actionbar)
+                .relocate(actionbarRelocation)
                 .url("https://github.com/sasi2006166/ActionBarAPI/raw/master/ActionBarAPI-2.0.0.jar")
                 .build();
 
-        bukkitLibraryManager.loadLibrary(universalScheduler);
-        bukkitLibraryManager.loadLibrary(actionBar);
+        Relocation updaterRelocation = new Relocation("updater", "me{}candiesjar{}libs{}updater");
+        Library configUpdater = Library.builder()
+                .groupId("com{}tchristofferson")
+                .artifactId("ConfigUpdater")
+                .version("2.1-SNAPSHOT")
+                .relocate(updaterRelocation)
+                .url("https://github.com/frafol/Config-Updater/releases/download/compile/ConfigUpdater-2.1-SNAPSHOT.jar")
+                .build();
+
+        bukkitLibraryManager.loadLibrary(scheduler);
+        bukkitLibraryManager.loadLibrary(actionbar);
+        bukkitLibraryManager.loadLibrary(configUpdater);
+    }
+
+    private void loadConfig() {
+        File versionFile = new File(getDataFolder(), "version.yml");
+        YamlConfiguration version = YamlConfiguration.loadConfiguration(versionFile);
+        saveDefaultConfig();
+        updateConfig(versionFile, version);
+    }
+
+    @SneakyThrows
+    private void updateConfig(File versionFile, YamlConfiguration version) {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (getDescription().getVersion().equals(version.getString("version"))) {
+            return;
+        }
+
+        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Creating new configurations...");
+        try {
+            ConfigUpdater.update(this, "config.yml", configFile, Collections.emptyList());
+        } catch (IOException ignored) {
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Unable to update configuration files, please reset it.");
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
+
+        version.set("version", getDescription().getVersion());
+        version.save(versionFile);
+        saveDefaultConfig();
     }
 
     private void schedule() {
