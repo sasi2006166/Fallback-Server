@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
 
         if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
-            ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message", "&f"));
+            ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
         }
 
         if (plugin.getConfig().getString("settings.standalone.join_message").equals("none")) {

@@ -12,23 +12,7 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class Utils {
 
-    private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
-
     public void unregisterEvent(Listener listener) {
         HandlerList.unregisterAll(listener);
-    }
-
-    public boolean isFolia() {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServerInitEvent");
-        } catch (ClassNotFoundException ignored) {
-            return false;
-        }
-        return true;
-    }
-
-    public void reloadConfig() {
-        plugin.reloadConfig();
-        plugin.saveDefaultConfig();
     }
 }
