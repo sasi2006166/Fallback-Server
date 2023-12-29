@@ -51,6 +51,7 @@ settings:
       damage: true
       block_break: true
       block_place: true
+      hunger: true
       item_drop: true
       item_pickup: true
       interact: true

@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
@@ -137,6 +138,14 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onWeather(WeatherChangeEvent event) {
         if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.weather_cycle", true)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHunger(FoodLevelChangeEvent event) {
+        if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.hunger", true)) {
+            event.setFoodLevel(20);
             event.setCancelled(true);
         }
     }
