@@ -25,6 +25,10 @@ public class PlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
+        if (plugin.getConfig().getBoolean("settings.standalone.teleport_worldspawn", true)) {
+            player.teleport(player.getWorld().getSpawnLocation());
+        }
+
         if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
         }

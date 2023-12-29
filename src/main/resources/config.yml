@@ -42,6 +42,9 @@ settings:
   # NOTE: This will work only if you set up the mode to 'STANDALONE'.
   standalone:
 
+    # When a player joins the server, the plugin will automatically teleport him to the world spawn (/setworldspawn).
+    teleport_worldspawn: true
+
     # You can block some events here, to prevent players from doing something during the reconnect.
     event_blocker:
 
@@ -61,7 +64,7 @@ settings:
     join_message: "&7[&a+&7] %player_name%"
     quit_message: "&7[&c-&7] %player_name%"
 
-    # Will work from 1.8 and up, 1.7.10 may not work.
+    # Will work from 1.8 and up, versions <= 1.7 may not work.
     actionbar:
       enabled: true
       message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."
