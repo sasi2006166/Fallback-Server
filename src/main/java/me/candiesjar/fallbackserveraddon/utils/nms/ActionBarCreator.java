@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserveraddon.utils.nms;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.bukkit.Bukkit;
+import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
@@ -14,13 +14,13 @@ public class ActionBarCreator {
     private static boolean useOldMethods = false;
 
     @SneakyThrows
-    public static void sendActionBar(Player player, String message) {
+    public static void sendActionBar(Player player, String message, FallbackServerAddon instance) {
 
         if (!player.isOnline()) {
             return;
         }
 
-        nmsVersion = Bukkit.getServer().getClass().getPackage().getName();
+        nmsVersion = instance.getServer().getClass().getPackage().getName();
         nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
 
         if (nmsVersion.equalsIgnoreCase("v1_8_R1") || nmsVersion.startsWith("v1_7_")) {
