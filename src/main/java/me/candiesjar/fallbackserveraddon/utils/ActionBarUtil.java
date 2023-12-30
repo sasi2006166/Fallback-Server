@@ -1,11 +1,11 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
-import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import com.google.common.collect.Maps;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
+import me.candiesjar.fallbackserveraddon.utils.nms.ActionBarCreator;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -32,6 +32,8 @@ public class ActionBarUtil {
     }
 
     private void sendActionBar(Player player, String message) {
-        ActionBarAPI.sendActionBar(player, ChatUtil.color(message));
+        if (!instance.isUnsupported()) {
+            ActionBarCreator.sendActionBar(player, ChatUtil.color(message));
+        }
     }
 }

@@ -31,6 +31,9 @@ public final class FallbackServerAddon extends JavaPlugin {
     @Getter
     private boolean locked = false;
 
+    @Getter
+    private boolean unsupported = false;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -48,6 +51,12 @@ public final class FallbackServerAddon extends JavaPlugin {
         loadDependencies();
         loadConfig();
         schedule();
+
+        if (Utils.isUnsupported(this)) {
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Detected an unsupported server version. [" + getServer().getVersion() + "]");
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Some features may not work properly, we won't fix problems caused by this fork.");
+            unsupported = true;
+        }
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
     }
@@ -74,15 +83,6 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .relocate(schedulerRelocation)
                 .build();
 
-        Relocation actionbarRelocation = new Relocation("actionbar", "me{}candiesjar{}libs{}actionbar");
-        Library actionbar = Library.builder()
-                .groupId("com{}connorlinfoot{}actionbarapi")
-                .artifactId("ActionBarAPI")
-                .version("2.0.0")
-                .relocate(actionbarRelocation)
-                .url("https://github.com/sasi2006166/ActionBarAPI/raw/master/ActionBarAPI-2.0.0.jar")
-                .build();
-
         Relocation updaterRelocation = new Relocation("updater", "me{}candiesjar{}libs{}updater");
         Library configUpdater = Library.builder()
                 .groupId("com{}tchristofferson")
@@ -93,7 +93,6 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .build();
 
         bukkitLibraryManager.loadLibrary(scheduler);
-        bukkitLibraryManager.loadLibrary(actionbar);
         bukkitLibraryManager.loadLibrary(configUpdater);
     }
 
