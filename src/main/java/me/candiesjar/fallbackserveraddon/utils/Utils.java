@@ -13,12 +13,9 @@ import java.lang.reflect.Field;
 public class Utils {
 
     public void unregisterEvent(Listener listener) {
-
-        if (listener == null) {
-            return;
+        if (listener != null) {
+            HandlerList.unregisterAll(listener);
         }
-
-        HandlerList.unregisterAll(listener);
     }
 
     @SneakyThrows

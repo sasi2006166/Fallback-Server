@@ -103,13 +103,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.connorlinfoot.actionbarapi</groupId>
-            <artifactId>ActionBarAPI</artifactId>
-            <version>2.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/ActionBarAPI-2.0.0.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>com.tchristofferson</groupId>
             <artifactId>ConfigUpdater</artifactId>
             <version>2.1-SNAPSHOT</version>

@@ -74,15 +74,6 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .relocate(schedulerRelocation)
                 .build();
 
-        Relocation actionbarRelocation = new Relocation("actionbar", "me{}candiesjar{}libs{}actionbar");
-        Library actionbar = Library.builder()
-                .groupId("com{}connorlinfoot{}actionbarapi")
-                .artifactId("ActionBarAPI")
-                .version("2.0.0")
-                .relocate(actionbarRelocation)
-                .url("https://github.com/sasi2006166/ActionBarAPI/raw/master/ActionBarAPI-2.0.0.jar")
-                .build();
-
         Relocation updaterRelocation = new Relocation("updater", "me{}candiesjar{}libs{}updater");
         Library configUpdater = Library.builder()
                 .groupId("com{}tchristofferson")
@@ -93,7 +84,6 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .build();
 
         bukkitLibraryManager.loadLibrary(scheduler);
-        bukkitLibraryManager.loadLibrary(actionbar);
         bukkitLibraryManager.loadLibrary(configUpdater);
     }
 
