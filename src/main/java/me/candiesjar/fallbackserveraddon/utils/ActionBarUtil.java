@@ -32,8 +32,6 @@ public class ActionBarUtil {
     }
 
     private void sendActionBar(Player player, String message) {
-        if (!instance.isUnsupported()) {
-            ActionBarCreator.sendActionBar(player, ChatUtil.color(message));
-        }
+        ActionBarCreator.sendActionBar(player, ChatUtil.color(message));
     }
 }

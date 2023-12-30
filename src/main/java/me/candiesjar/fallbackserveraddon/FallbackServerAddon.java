@@ -31,9 +31,6 @@ public final class FallbackServerAddon extends JavaPlugin {
     @Getter
     private boolean locked = false;
 
-    @Getter
-    private boolean unsupported = false;
-
     @Override
     public void onEnable() {
         instance = this;
@@ -51,12 +48,6 @@ public final class FallbackServerAddon extends JavaPlugin {
         loadDependencies();
         loadConfig();
         schedule();
-
-        if (Utils.isUnsupported(this)) {
-            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Detected an unsupported server version. [" + getServer().getVersion() + "]");
-            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Some features may not work properly, we won't fix problems caused by this fork.");
-            unsupported = true;
-        }
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
     }

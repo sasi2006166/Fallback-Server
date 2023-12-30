@@ -12,19 +12,6 @@ import java.lang.reflect.Field;
 @UtilityClass
 public class Utils {
 
-    private final String[] unsupported = new String[] {
-            "PandaSpigot", "VortexSpigot"
-    };
-
-    public boolean isUnsupported(FallbackServerAddon plugin) {
-        for (String s : unsupported) {
-            if (plugin.getServer().getVersion().contains(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void unregisterEvent(Listener listener) {
         if (listener != null) {
             HandlerList.unregisterAll(listener);
