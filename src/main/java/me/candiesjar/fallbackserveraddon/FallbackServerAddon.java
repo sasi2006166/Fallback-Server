@@ -54,6 +54,11 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Shutting down...");
+        getCommand("fallbackserveraddon").unregister(Utils.getCommandMap(this));
+        Utils.unregisterEvent(new PlayerListener(this));
+        Utils.unregisterEvent(new PingListener(this));
+        instance = null;
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Un-Loaded.");
     }
 
