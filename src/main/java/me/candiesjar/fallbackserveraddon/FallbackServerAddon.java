@@ -26,6 +26,9 @@ public final class FallbackServerAddon extends JavaPlugin {
     public static FallbackServerAddon instance;
 
     @Getter
+    private boolean PAPI = false;
+
+    @Getter
     private boolean allPluginsLoaded = true;
 
     @Getter
@@ -85,6 +88,10 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         bukkitLibraryManager.loadLibrary(scheduler);
         bukkitLibraryManager.loadLibrary(configUpdater);
+
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            PAPI = true;
+        }
     }
 
     @SneakyThrows

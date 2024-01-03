@@ -32,6 +32,6 @@ public class ActionBarUtil {
     }
 
     private void sendActionBar(Player player, String message) {
-        ActionBarCreator.sendActionBar(player, ChatUtil.color(message), ActionBarUtil.instance);
+        ActionBarCreator.sendActionBar(player, ChatUtil.color(player, message), ActionBarUtil.instance);
     }
 }
