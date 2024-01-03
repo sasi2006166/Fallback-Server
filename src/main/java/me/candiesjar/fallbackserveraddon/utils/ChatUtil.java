@@ -1,6 +1,9 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
 import lombok.experimental.UtilityClass;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,14 +11,14 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class ChatUtil {
 
-    public String color(String message) {
-        return convertHexColors(message).replace('&', '§');
+    public String color(Player player, String message) {
+        return convertHexColors(applyPlaceholder(player, message));
     }
 
     private String convertHexColors(String message) {
 
         if (!containsHexColor(message)) {
-            return message;
+            return message.replace('&', '§');
         }
 
         Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
@@ -28,7 +31,7 @@ public class ChatUtil {
             matcher = pattern.matcher(message);
         }
 
-        return message;
+        return message.replace('&', '§');
     }
 
     private String convertHexToColorCode(String hexCode) {
@@ -45,5 +48,9 @@ public class ChatUtil {
     private boolean containsHexColor(String message) {
         String hexColorPattern = "(?i)&#[a-f0-9]{6}";
         return message.matches(".*" + hexColorPattern + ".*");
+    }
+
+    private String applyPlaceholder(OfflinePlayer player, String text) {
+        return PlaceholderAPI.setPlaceholders(player, text);
     }
 }

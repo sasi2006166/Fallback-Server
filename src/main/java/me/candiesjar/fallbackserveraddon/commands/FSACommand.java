@@ -5,6 +5,7 @@ import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class FSACommand implements CommandExecutor {
 
@@ -18,7 +19,7 @@ public class FSACommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
         if (args.length != 1) {
-            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
+            sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
                     .replace("version", plugin.getDescription().getVersion()));
             return true;
         }
@@ -36,7 +37,14 @@ public class FSACommand implements CommandExecutor {
         String oldValue = plugin.getConfig().getString("settings.mode", "NONE");
         reloadConfig();
         plugin.executeReload(oldValue);
-        sender.sendMessage(ChatUtil.color(plugin.getConfig().getString("settings.reload_message"))
+
+        if (sender instanceof Player) {
+            sender.sendMessage(ChatUtil.color((Player) sender, plugin.getConfig().getString("settings.reload_message"))
+                    .replace("%version%", plugin.getDescription().getVersion()));
+            return true;
+        }
+
+        sender.sendMessage((plugin.getConfig().getString("settings.reload_message")).replace('&', '§')
                 .replace("%version%", plugin.getDescription().getVersion()));
         return true;
     }
@@ -51,7 +59,7 @@ public class FSACommand implements CommandExecutor {
             return;
         }
 
-        sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
+        sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
                 .replace("version", plugin.getDescription().getVersion()));
     }
 }

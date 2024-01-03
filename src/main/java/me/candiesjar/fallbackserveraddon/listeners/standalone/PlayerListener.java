@@ -39,7 +39,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        event.setJoinMessage(ChatUtil.color(plugin.getConfig().getString("settings.standalone.join_message", null))
+        event.setJoinMessage(ChatUtil.color(player, plugin.getConfig().getString("settings.standalone.join_message", null))
                 .replace("%player_name%", player.getName()));
     }
 
@@ -54,7 +54,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        event.setQuitMessage(ChatUtil.color(plugin.getConfig().getString("settings.standalone.quit_message", null))
+        event.setQuitMessage(ChatUtil.color(player, plugin.getConfig().getString("settings.standalone.quit_message", null))
                 .replace("%player_name%", player.getName()));
     }
 
