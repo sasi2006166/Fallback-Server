@@ -6,13 +6,15 @@
 # |_|   |_____/_/    \_\__,_|\__,_|\___/|_| |_|
 #
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/dJ8DG2cSzt | Telegram: @CandiesJar
-# Spigot configuration file.
 
 name: FallbackServerAddon
 author: CandiesJar
 version: '${project.version}'
 folia-supported: true
 main: me.candiesjar.fallbackserveraddon.FallbackServerAddon
+
+softdepend:
+  - PlaceholderAPI
 
 commands:
     fallbackserveraddon:

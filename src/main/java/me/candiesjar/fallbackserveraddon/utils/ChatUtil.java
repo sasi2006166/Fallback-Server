@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
 import lombok.experimental.UtilityClass;
+import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -10,6 +11,8 @@ import java.util.regex.Pattern;
 
 @UtilityClass
 public class ChatUtil {
+
+    private final FallbackServerAddon instance = FallbackServerAddon.getInstance();
 
     public String color(Player player, String message) {
         return convertHexColors(applyPlaceholder(player, message));
@@ -51,6 +54,11 @@ public class ChatUtil {
     }
 
     private String applyPlaceholder(OfflinePlayer player, String text) {
+
+        if (!instance.isPAPI()) {
+            return text;
+        }
+
         return PlaceholderAPI.setPlaceholders(player, text);
     }
 }
