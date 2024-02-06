@@ -1,5 +1,8 @@
 package me.candiesjar.fallbackserveraddon;
 
+import com.alessiodp.libby.BukkitLibraryManager;
+import com.alessiodp.libby.Library;
+import com.alessiodp.libby.relocation.Relocation;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import lombok.Getter;
@@ -10,9 +13,6 @@ import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import me.candiesjar.fallbackserveraddon.utils.tasks.GeneralTask;
-import net.byteflux.libby.BukkitLibraryManager;
-import net.byteflux.libby.Library;
-import net.byteflux.libby.relocation.Relocation;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
