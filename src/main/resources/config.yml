@@ -70,6 +70,21 @@ settings:
     join_message: "&7[&a+&7] %player_name%"
     quit_message: "&7[&c-&7] %player_name%"
 
+    # You can set up the scoreboard here, you can use color codes and placeholders, hex colors are supported.
+    scoreboard:
+      enabled: true
+      update_interval: 20 # In ticks
+      title: "&c&lRECONNECTING"
+      lines:
+        - ""
+        - "&7The server suddenly"
+        - "&7went &c&ldown&7."
+        - ""
+        - "&7We're trying to"
+        - "&7reconnect you."
+        - ""
+        - "&emc.yourserver.com"
+
     # Will work from 1.8 and up, versions <= 1.7 may not work.
     actionbar:
       enabled: true

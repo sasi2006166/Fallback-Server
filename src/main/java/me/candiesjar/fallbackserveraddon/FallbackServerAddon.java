@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.commands.FSACommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
+import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import me.candiesjar.fallbackserveraddon.utils.tasks.GeneralTask;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,7 +39,7 @@ public final class FallbackServerAddon extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        getLogger().info("\n" +
+        getServer().getConsoleSender().sendMessage("\n" +
                 "  ______ _____            _     _             \n" +
                 " |  ____/ ____|  /\\      | |   | |            \n" +
                 " | |__ | (___   /  \\   __| | __| | ___  _ __  \n" +
@@ -69,6 +70,14 @@ public final class FallbackServerAddon extends JavaPlugin {
         BukkitLibraryManager bukkitLibraryManager = new BukkitLibraryManager(this);
         bukkitLibraryManager.addJitPack();
 
+        final Relocation scoreboardrelocation = new Relocation("scoreboard", "me{}candiesjar{}libs{}scoreboard");
+        Library scoreboard = Library.builder()
+                .groupId("fr{}mrmicky")
+                .artifactId("FastBoard")
+                .version("2.0.2")
+                .relocate(scoreboardrelocation)
+                .build();
+
         Relocation schedulerRelocation = new Relocation("scheduler", "me{}candiesjar{}libs{}scheduler");
         Library scheduler = Library.builder()
                 .groupId("com{}github{}Anon8281")
@@ -86,6 +95,7 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .url("https://github.com/frafol/Config-Updater/releases/download/compile/ConfigUpdater-2.1-SNAPSHOT.jar")
                 .build();
 
+        bukkitLibraryManager.loadLibrary(scoreboard);
         bukkitLibraryManager.loadLibrary(scheduler);
         bukkitLibraryManager.loadLibrary(configUpdater);
 
@@ -126,6 +136,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         switch (mode) {
             case "STANDALONE":
+                ScoreboardUtil.taskBoards();
                 getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
                 break;
@@ -153,6 +164,7 @@ public final class FallbackServerAddon extends JavaPlugin {
                     return;
                 }
 
+                ScoreboardUtil.reloadBoards();
                 getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
                 break;
