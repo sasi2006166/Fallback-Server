@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserveraddon.listeners.standalone;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
+import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,6 +35,10 @@ public class PlayerListener implements Listener {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
         }
 
+        if (plugin.getConfig().getBoolean("settings.standalone.scoreboard.enabled", false)) {
+            ScoreboardUtil.createScoreboard(player);
+        }
+
         if (plugin.getConfig().getString("settings.standalone.join_message").equals("none")) {
             event.setJoinMessage(null);
             return;
@@ -48,6 +53,7 @@ public class PlayerListener implements Listener {
 
         Player player = event.getPlayer();
         ActionBarUtil.stopActionBar(player);
+        ScoreboardUtil.deleteScoreboard(player);
 
         if (plugin.getConfig().getString("settings.standalone.quit_message").equals("none")) {
             event.setQuitMessage(null);

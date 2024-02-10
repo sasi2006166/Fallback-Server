@@ -12,10 +12,17 @@ import java.lang.reflect.Field;
 @UtilityClass
 public class Utils {
 
+    private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
+
     public void unregisterEvent(Listener listener) {
         if (listener != null) {
             HandlerList.unregisterAll(listener);
         }
+    }
+
+    public void reloadConfig() {
+        plugin.reloadConfig();
+        plugin.loadConfig();
     }
 
     @SneakyThrows

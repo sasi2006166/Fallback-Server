@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserveraddon.commands;
 
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
+import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,7 @@ public class FSACommand implements CommandExecutor {
         }
 
         String oldValue = plugin.getConfig().getString("settings.mode", "NONE");
-        reloadConfig();
+        Utils.reloadConfig();
         plugin.executeReload(oldValue);
 
         if (sender instanceof Player) {
@@ -49,17 +50,10 @@ public class FSACommand implements CommandExecutor {
         return true;
     }
 
-    private void reloadConfig() {
-        plugin.reloadConfig();
-        plugin.loadConfig();
-    }
-
     private void sendDefaultMessage(CommandSender sender) {
-        if (plugin.getConfig().getBoolean("settings.hide_command", false)) {
-            return;
+        if (!plugin.getConfig().getBoolean("settings.hide_command", false)) {
+            sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
+                    .replace("version", plugin.getDescription().getVersion()));
         }
-
-        sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
-                .replace("version", plugin.getDescription().getVersion()));
     }
 }
