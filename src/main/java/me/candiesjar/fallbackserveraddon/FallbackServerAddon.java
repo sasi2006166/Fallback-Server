@@ -5,12 +5,14 @@ import com.alessiodp.libby.Library;
 import com.alessiodp.libby.relocation.Relocation;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.tchristofferson.configupdater.ConfigUpdater;
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.commands.FSACommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
+import me.candiesjar.fallbackserveraddon.utils.ProtocolLibUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import me.candiesjar.fallbackserveraddon.utils.tasks.GeneralTask;
@@ -28,6 +30,9 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     @Getter
     private boolean PAPI = false;
+
+    @Getter
+    private boolean PLIB = false;
 
     @Getter
     private boolean allPluginsLoaded = true;
@@ -100,7 +105,12 @@ public final class FallbackServerAddon extends JavaPlugin {
         bukkitLibraryManager.loadLibrary(configUpdater);
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] PlaceholderAPI support enabled.");
             PAPI = true;
+        }
+
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+            PLIB = true;
         }
     }
 
@@ -131,6 +141,11 @@ public final class FallbackServerAddon extends JavaPlugin {
     }
 
     public void executeStart() {
+
+        if (!getConfig().getBoolean("settings.protocollib_support", true)) {
+            PLIB = false;
+        }
+
         getCommand("fallbackserveraddon").setExecutor(new FSACommand(this));
         getCommand("fallbackserveraddon").setTabCompleter(new FSACommand(this));
         String mode = getConfig().getString("settings.mode", "NONE");
@@ -142,7 +157,7 @@ public final class FallbackServerAddon extends JavaPlugin {
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
                 break;
             case "ADDON":
-                getServer().getPluginManager().registerEvents(new PingListener(this), this);
+                registerPing();
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
                 break;
             default:
@@ -159,6 +174,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
                 if (oldValue.equalsIgnoreCase("ADDON")) {
                     Utils.unregisterEvent(new PingListener(this));
+                    Utils.unregisterEvent(ProtocolLibUtil.getProtocolManager(), ProtocolLibUtil.getPacketListener());
                 }
 
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
@@ -180,7 +196,7 @@ public final class FallbackServerAddon extends JavaPlugin {
                     return;
                 }
 
-                getServer().getPluginManager().registerEvents(new PingListener(this), this);
+                registerPing();
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
                 break;
 
@@ -212,5 +228,13 @@ public final class FallbackServerAddon extends JavaPlugin {
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §cThe plugin is now in passive mode:");
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] §cUse §b/fsa reload §cwhen you finished the setup.");
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon]");
+    }
+
+    private void registerPing() {
+        if (PLIB) {
+            ProtocolLibUtil.start(this);
+            return;
+        }
+        getServer().getPluginManager().registerEvents(new PingListener(this), this);
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 
-public class PingListener implements Listener {
+public class PingListener implements Listener{
 
     private final FallbackServerAddon plugin;
     private final TaskScheduler scheduler;

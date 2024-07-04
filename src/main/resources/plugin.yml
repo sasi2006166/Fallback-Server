@@ -16,6 +16,7 @@ main: me.candiesjar.fallbackserveraddon.FallbackServerAddon
 
 softdepend:
   - PlaceholderAPI
+  - ProtocolLib
 
 commands:
     fallbackserveraddon:

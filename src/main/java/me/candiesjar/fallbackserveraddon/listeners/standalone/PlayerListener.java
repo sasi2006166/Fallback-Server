@@ -1,9 +1,11 @@
 package me.candiesjar.fallbackserveraddon.listeners.standalone;
 
+import io.papermc.lib.PaperLib;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,7 +30,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
 
         if (plugin.getConfig().getBoolean("settings.standalone.teleport_worldspawn", true)) {
-            player.teleport(player.getWorld().getSpawnLocation());
+            teleport(player, player.getWorld().getSpawnLocation());
         }
 
         if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
@@ -154,5 +156,13 @@ public class PlayerListener implements Listener {
             event.setFoodLevel(20);
             event.setCancelled(true);
         }
+    }
+
+    private void teleport(Player player, Location location) {
+        if (PaperLib.isPaper() && PaperLib.getMinecraftVersion() >= 575) {
+            PaperLib.teleportAsync(player, location);
+            return;
+        }
+        player.teleport(player.getWorld().getSpawnLocation());
     }
 }
