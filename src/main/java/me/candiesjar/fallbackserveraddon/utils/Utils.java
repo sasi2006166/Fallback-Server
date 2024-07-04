@@ -1,5 +1,7 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketListener;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
@@ -17,6 +19,12 @@ public class Utils {
     public void unregisterEvent(Listener listener) {
         if (listener != null) {
             HandlerList.unregisterAll(listener);
+        }
+    }
+
+    public void unregisterEvent(ProtocolManager manager, PacketListener listener) {
+        if (manager != null && listener != null) {
+            manager.removePacketListener(listener);
         }
     }
 

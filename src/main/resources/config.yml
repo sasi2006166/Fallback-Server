@@ -26,6 +26,11 @@ settings:
   # false: Everyone will be able to see the simple "running fallbackserver" message.
   hide_command: false
 
+  # Support for faster addon method using ProtocolLib.
+  # If you enable this, the plugin will use ProtocolLib to send ping packets.
+  # If ProtocolLib is not installed,  we'll use the normal method.
+  protocollib_support: true
+
   # NOTE: This will work only if you set up the mode to 'ADDON'.
   addon:
 
