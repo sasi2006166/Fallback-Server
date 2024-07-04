@@ -6,9 +6,13 @@ import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class FSACommand implements CommandExecutor {
+import java.util.Collections;
+import java.util.List;
+
+public class FSACommand implements CommandExecutor, TabCompleter {
 
     private final FallbackServerAddon plugin;
 
@@ -55,5 +59,13 @@ public class FSACommand implements CommandExecutor {
             sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
                     .replace("version", plugin.getDescription().getVersion()));
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length != 1) {
+            return Collections.emptyList();
+        }
+        return List.of("reload");
     }
 }

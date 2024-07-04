@@ -74,7 +74,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         Library scoreboard = Library.builder()
                 .groupId("fr{}mrmicky")
                 .artifactId("FastBoard")
-                .version("2.0.2")
+                .version("2.1.2")
                 .relocate(scoreboardrelocation)
                 .build();
 
@@ -132,6 +132,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     public void executeStart() {
         getCommand("fallbackserveraddon").setExecutor(new FSACommand(this));
+        getCommand("fallbackserveraddon").setTabCompleter(new FSACommand(this));
         String mode = getConfig().getString("settings.mode", "NONE");
 
         switch (mode) {
