@@ -132,6 +132,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     public void executeStart() {
         getCommand("fallbackserveraddon").setExecutor(new FSACommand(this));
+        getCommand("fallbackserveraddon").setTabCompleter(new FSACommand(this));
         String mode = getConfig().getString("settings.mode", "NONE");
 
         switch (mode) {
