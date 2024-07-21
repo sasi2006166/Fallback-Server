@@ -37,7 +37,6 @@ public class ActionBarCreator {
 
         nmsVersion = instance.getServer().getClass().getPackage().getName();
         nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
-        System.out.println("NMS Version: " + nmsVersion);
 
         if (nmsVersion.equalsIgnoreCase("craftbukkit")) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
