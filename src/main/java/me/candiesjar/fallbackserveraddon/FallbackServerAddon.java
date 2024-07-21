@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserveraddon;
 import com.alessiodp.libby.BukkitLibraryManager;
 import com.alessiodp.libby.Library;
 import com.alessiodp.libby.relocation.Relocation;
+import com.comphenix.protocol.ProtocolManager;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.papermc.lib.PaperLib;
@@ -79,7 +80,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         Library scoreboard = Library.builder()
                 .groupId("fr{}mrmicky")
                 .artifactId("FastBoard")
-                .version("2.1.2")
+                .version("2.1.3")
                 .relocate(scoreboardrelocation)
                 .build();
 

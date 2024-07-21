@@ -27,27 +27,6 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 
-        Player player = event.getPlayer();
-
-        if (plugin.getConfig().getBoolean("settings.standalone.teleport_worldspawn", true)) {
-            teleport(player, player.getWorld().getSpawnLocation());
-        }
-
-        if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
-            ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
-        }
-
-        if (plugin.getConfig().getBoolean("settings.standalone.scoreboard.enabled", false)) {
-            ScoreboardUtil.createScoreboard(player);
-        }
-
-        if (plugin.getConfig().getString("settings.standalone.join_message").equals("none")) {
-            event.setJoinMessage(null);
-            return;
-        }
-
-        event.setJoinMessage(ChatUtil.color(player, plugin.getConfig().getString("settings.standalone.join_message", null))
-                .replace("%player_name%", player.getName()));
     }
 
     @EventHandler
