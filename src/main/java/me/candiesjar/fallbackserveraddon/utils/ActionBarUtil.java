@@ -19,7 +19,7 @@ public class ActionBarUtil {
 
     public void startActionBar(Player player, String message) {
         actionbarTask.put(player.getUniqueId(), UniversalScheduler.getScheduler(instance).runTaskTimer(() ->
-                sendActionBar(player, message), 20, 20));
+                sendActionBar(player, message), 20L, 20L));
     }
 
     public void stopActionBar(Player player) {
