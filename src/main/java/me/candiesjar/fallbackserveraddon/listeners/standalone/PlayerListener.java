@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserveraddon.listeners.standalone;
 import io.papermc.lib.PaperLib;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
+import me.candiesjar.fallbackserveraddon.utils.BossBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import org.bukkit.Location;
@@ -36,6 +37,14 @@ public class PlayerListener implements Listener {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
         }
 
+        if (plugin.getConfig().getBoolean("settings.standalone.bossbar.enabled", false)) {
+            BossBarUtil.sendBossBar(player,
+                    ChatUtil.color(player, plugin.getConfig().getString("settings.standalone.bossbar.message")),
+                    plugin.getConfig().getString("settings.standalone.bossbar.color"),
+                    plugin.getConfig().getString("settings.standalone.bossbar.style"),
+                    plugin.getConfig().getDouble("settings.standalone.bossbar.progress"));
+        }
+
         if (plugin.getConfig().getBoolean("settings.standalone.scoreboard.enabled", false)) {
             ScoreboardUtil.createScoreboard(player);
         }
@@ -53,6 +62,7 @@ public class PlayerListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
 
         Player player = event.getPlayer();
+        BossBarUtil.removeBossBar(player);
         ActionBarUtil.stopActionBar(player);
         ScoreboardUtil.deleteScoreboard(player);
 

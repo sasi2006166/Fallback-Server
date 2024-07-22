@@ -94,3 +94,11 @@ settings:
     actionbar:
       enabled: true
       message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."
+
+    # Will work from 1.9 and up, in versions <= 1.8 the bossbar will not be shown.
+    bossbar:
+      enabled: true
+      message: "&cYou are currently in reconnect mode."
+      color: "RED" # Accepted values: "BLUE", "GREEN", "PINK", "PURPLE", "RED", "WHITE", "YELLOW"
+      style: "SOLID" # Accepted values: "SOLID", "SEGMENTED_6", "SEGMENTED_10", "SEGMENTED_12", "SEGMENTED_20"
+      progress: 1.0

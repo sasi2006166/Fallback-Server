@@ -23,12 +23,10 @@ public class ActionBarUtil {
     }
 
     public void stopActionBar(Player player) {
-        if (!actionbarTask.containsKey(player.getUniqueId())) {
-            return;
+        if (actionbarTask.containsKey(player.getUniqueId())) {
+            actionbarTask.get(player.getUniqueId()).cancel();
+            actionbarTask.remove(player.getUniqueId());
         }
-
-        actionbarTask.get(player.getUniqueId()).cancel();
-        actionbarTask.remove(player.getUniqueId());
     }
 
     private void sendActionBar(Player player, String message) {
