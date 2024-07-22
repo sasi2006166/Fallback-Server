@@ -91,11 +91,13 @@ settings:
         - "&emc.yourserver.com"
 
     # Will work from 1.8 and up, versions <= 1.7 may not work.
+    # PlaceholderAPI and Hex Colors are also supported.
     actionbar:
       enabled: true
       message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."
 
     # Will work from 1.9 and up, in versions <= 1.8 the bossbar will not be shown.
+    # PlaceholderAPI and Hex Colors are also supported.
     bossbar:
       enabled: true
       message: "&cYou are currently in reconnect mode."
