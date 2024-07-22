@@ -1,8 +1,15 @@
 package me.candiesjar.fallbackserveraddon.utils.nms;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
@@ -20,10 +27,27 @@ public class ActionBarCreator {
             return;
         }
 
+        if (instance.isPLIB()) {
+            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+            PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SET_ACTION_BAR_TEXT);
+            packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+            protocolManager.sendServerPacket(player, packet);
+            return;
+        }
+
         nmsVersion = instance.getServer().getClass().getPackage().getName();
         nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
 
-        if (nmsVersion.equalsIgnoreCase("v1_8_R1") || nmsVersion.startsWith("v1_7_")) {
+        if (nmsVersion.startsWith("v1_7_")) {
+            return;
+        }
+
+        if (nmsVersion.equalsIgnoreCase("craftbukkit")) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
+            return;
+        }
+
+        if (nmsVersion.equalsIgnoreCase("v1_8_R1")) {
             useOldMethods = true;
         }
 

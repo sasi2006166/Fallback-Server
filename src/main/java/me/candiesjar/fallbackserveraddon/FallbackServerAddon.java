@@ -5,7 +5,6 @@ import com.alessiodp.libby.Library;
 import com.alessiodp.libby.relocation.Relocation;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.tchristofferson.configupdater.ConfigUpdater;
-import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -79,7 +78,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         Library scoreboard = Library.builder()
                 .groupId("fr{}mrmicky")
                 .artifactId("FastBoard")
-                .version("2.1.2")
+                .version("2.1.3")
                 .relocate(scoreboardrelocation)
                 .build();
 

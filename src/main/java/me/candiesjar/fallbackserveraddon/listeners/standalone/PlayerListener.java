@@ -3,6 +3,7 @@ package me.candiesjar.fallbackserveraddon.listeners.standalone;
 import io.papermc.lib.PaperLib;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
+import me.candiesjar.fallbackserveraddon.utils.BossBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import org.bukkit.Location;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
@@ -26,7 +28,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-
         Player player = event.getPlayer();
 
         if (plugin.getConfig().getBoolean("settings.standalone.teleport_worldspawn", true)) {
@@ -35,6 +36,14 @@ public class PlayerListener implements Listener {
 
         if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
+        }
+
+        if (plugin.getConfig().getBoolean("settings.standalone.bossbar.enabled", false)) {
+            BossBarUtil.sendBossBar(player,
+                    ChatUtil.color(player, plugin.getConfig().getString("settings.standalone.bossbar.message")),
+                    plugin.getConfig().getString("settings.standalone.bossbar.color"),
+                    plugin.getConfig().getString("settings.standalone.bossbar.style"),
+                    plugin.getConfig().getDouble("settings.standalone.bossbar.progress"));
         }
 
         if (plugin.getConfig().getBoolean("settings.standalone.scoreboard.enabled", false)) {
@@ -54,6 +63,7 @@ public class PlayerListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
 
         Player player = event.getPlayer();
+        BossBarUtil.removeBossBar(player);
         ActionBarUtil.stopActionBar(player);
         ScoreboardUtil.deleteScoreboard(player);
 
@@ -75,13 +85,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.pvp", true)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onEntityInteract(PlayerInteractAtEntityEvent event) {
         if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.pvp", true)) {
             event.setCancelled(true);
         }
@@ -154,6 +157,13 @@ public class PlayerListener implements Listener {
     public void onHunger(FoodLevelChangeEvent event) {
         if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.hunger", true)) {
             event.setFoodLevel(20);
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onSpawn(CreatureSpawnEvent event) {
+        if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.entity_spawn", true)) {
             event.setCancelled(true);
         }
     }

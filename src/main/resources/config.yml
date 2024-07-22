@@ -58,6 +58,7 @@ settings:
     # You can block some events here, to prevent players from doing something during the reconnect.
     event_blocker:
 
+      entity_spawn: true
       damage: true
       block_break: true
       block_place: true
@@ -90,7 +91,17 @@ settings:
         - ""
         - "&emc.yourserver.com"
 
-    # Will work from 1.8 and up, versions <= 1.7 may not work.
+    # Will work from 1.8 and up, in 1.7 it may not work.
+    # PlaceholderAPI and Hex Colors are also supported.
     actionbar:
       enabled: true
       message: "&cYou are currently in reconnect mode. Please wait until the server is fully started."
+
+    # Will work from 1.9 and up, in versions <= 1.8 the bossbar will not be shown.
+    # PlaceholderAPI and Hex Colors are also supported.
+    bossbar:
+      enabled: true
+      message: "&cYou are currently in reconnect mode."
+      color: "RED" # Accepted values: "BLUE", "GREEN", "PINK", "PURPLE", "RED", "WHITE", "YELLOW"
+      style: "SOLID" # Accepted values: "SOLID", "SEGMENTED_6", "SEGMENTED_10", "SEGMENTED_12", "SEGMENTED_20"
+      progress: 1.0
