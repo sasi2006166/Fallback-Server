@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
@@ -156,6 +157,13 @@ public class PlayerListener implements Listener {
     public void onHunger(FoodLevelChangeEvent event) {
         if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.hunger", true)) {
             event.setFoodLevel(20);
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onSpawn(CreatureSpawnEvent event) {
+        if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.entity_spawn", true)) {
             event.setCancelled(true);
         }
     }

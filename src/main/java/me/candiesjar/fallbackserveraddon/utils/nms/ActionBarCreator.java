@@ -38,12 +38,16 @@ public class ActionBarCreator {
         nmsVersion = instance.getServer().getClass().getPackage().getName();
         nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
 
+        if (nmsVersion.startsWith("v1_7_")) {
+            return;
+        }
+
         if (nmsVersion.equalsIgnoreCase("craftbukkit")) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
             return;
         }
 
-        if (nmsVersion.equalsIgnoreCase("v1_8_R1") || nmsVersion.startsWith("v1_7_")) {
+        if (nmsVersion.equalsIgnoreCase("v1_8_R1")) {
             useOldMethods = true;
         }
 
