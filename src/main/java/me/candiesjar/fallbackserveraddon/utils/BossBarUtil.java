@@ -1,5 +1,7 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import org.bukkit.boss.BarColor;
@@ -11,12 +13,14 @@ import org.bukkit.entity.Player;
 public class BossBarUtil {
 
     private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
+    private final TaskScheduler scheduler = UniversalScheduler.getScheduler(plugin);
 
     public void sendBossBar(Player player, String message, String barColor, String barStyle, double progress) {
         if (validVersion()) {
-            BossBar bar = plugin.getServer().createBossBar(message, parseBarColor(barColor), parseBarStyle(barStyle));
-            bar.setProgress(progress);
-            bar.addPlayer(player);
+            BossBar bossBar = plugin.getServer().createBossBar(message, parseBarColor(barColor), parseBarStyle(barStyle));
+            bossBar.setProgress(progress);
+            bossBar.addPlayer(player);
+            scheduler.runTaskTimer(() -> updateBossBar(player, message), 20L, 20L);
         }
     }
 
@@ -25,6 +29,16 @@ public class BossBarUtil {
             plugin.getServer().getBossBars().forEachRemaining(bar -> {
                 if (bar.getPlayers().contains(player)) {
                     bar.removePlayer(player);
+                }
+            });
+        }
+    }
+
+    private void updateBossBar(Player player, String message) {
+        if (validVersion()) {
+            plugin.getServer().getBossBars().forEachRemaining(bar -> {
+                if (bar.getPlayers().contains(player)) {
+                    bar.setTitle(message);
                 }
             });
         }
