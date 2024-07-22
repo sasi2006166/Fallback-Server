@@ -90,13 +90,6 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityInteract(PlayerInteractAtEntityEvent event) {
-        if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.pvp", true)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         if (plugin.getConfig().getBoolean("settings.standalone.event_blocker.item_drop", true)) {
             event.setCancelled(true);
