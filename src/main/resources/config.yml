@@ -35,7 +35,6 @@ settings:
   addon:
 
     # If you enable this, the plugin will automatically shutdown itself when the work is done.
-    # Leave it enabled for better performance.
     # It's normal if you see the plugin shutting down itself and is showing red in plugin's list.
     auto_remove: false
 
@@ -54,6 +53,14 @@ settings:
 
     # When a player joins the server, the plugin will automatically teleport him to the world spawn (/setworldspawn).
     teleport_worldspawn: true
+
+    # Accepted values: "SURVIVAL", "CREATIVE", "ADVENTURE", "SPECTATOR", "NONE".
+    join_gamemode: "ADVENTURE"
+
+    # Depends on your server version! (Set "NONE" to disable this feature.)
+    # You can choose between values based on this link: https://shorturl.at/mZRL4
+    # 1.9 sounds are valid also for all updated versions.
+    join_sound: "NONE"
 
     # You can block some events here, to prevent players from doing something during the reconnect.
     event_blocker:

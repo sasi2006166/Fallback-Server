@@ -94,8 +94,8 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>lumine-releases-repo</id>
-            <url>https://mvn.lumine.io/repository/maven-public/</url>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
         <repository>
             <id>maven_central</id>

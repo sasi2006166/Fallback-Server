@@ -22,7 +22,12 @@ public class ScoreboardUtil {
 
     public void createScoreboard(Player player) {
         UniversalScheduler.getScheduler(instance).runTaskLater(() -> {
-            FastBoard board = new FastBoard(player);
+            FastBoard board = new FastBoard(player) {
+                @Override
+                public boolean hasLinesMaxLength() {
+                    return true;
+                }
+            };
             scoreboards.put(player.getUniqueId(), board);
         }, 20L);
     }

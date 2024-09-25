@@ -6,7 +6,9 @@ import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.BossBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,6 +36,25 @@ public class PlayerListener implements Listener {
             teleport(player, player.getWorld().getSpawnLocation());
         }
 
+        if (!plugin.getConfig().getString("settings.standalone.join_gamemode", "NONE").equals("NONE")) {
+            switch (plugin.getConfig().getString("settings.standalone.join_gamemode", "NONE")) {
+                case "SURVIVAL":
+                    player.setGameMode(GameMode.SURVIVAL);
+                    break;
+                case "CREATIVE":
+                    player.setGameMode(GameMode.CREATIVE);
+                    break;
+                case "ADVENTURE":
+                    player.setGameMode(GameMode.ADVENTURE);
+                    break;
+                case "SPECTATOR":
+                    player.setGameMode(GameMode.SPECTATOR);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         if (plugin.getConfig().getBoolean("settings.standalone.actionbar.enabled", false)) {
             ActionBarUtil.startActionBar(player, plugin.getConfig().getString("settings.standalone.actionbar.message"));
         }
@@ -48,6 +69,11 @@ public class PlayerListener implements Listener {
 
         if (plugin.getConfig().getBoolean("settings.standalone.scoreboard.enabled", false)) {
             ScoreboardUtil.createScoreboard(player);
+        }
+
+        if (!plugin.getConfig().getString("settings.standalone.join_sound").equals("NONE")) {
+            Sound sound = Sound.valueOf(plugin.getConfig().getString("settings.standalone.join_sound"));
+            player.playSound(player.getLocation(), sound, 1.0F, 1.0F);
         }
 
         if (plugin.getConfig().getString("settings.standalone.join_message").equals("none")) {
