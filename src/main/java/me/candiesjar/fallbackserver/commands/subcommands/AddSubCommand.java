@@ -6,7 +6,7 @@ import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.BungeeServers;
-import me.candiesjar.fallbackserver.objects.Placeholder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -37,7 +37,7 @@ public class AddSubCommand implements SubCommand {
 
         String server = arguments[1];
 
-        if (BungeeServers.SERVERS.getStringList().contains(server) || BungeeConfig.FALLBACK_LIST.getStringList().contains(server)) {
+        if (BungeeServers.SERVERS.getStringList().contains(server) || BungeeConfig.FALLBACK_SECTION.getStringList().contains(server)) {
             BungeeMessages.SERVER_CONTAINED.send(sender, new Placeholder("server", server));
             return;
         }

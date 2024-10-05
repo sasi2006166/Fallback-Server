@@ -7,9 +7,9 @@ import java.util.List;
 public enum BungeeConfig {
 
     TAB_COMPLETE("settings.command_tab_complete"),
-    HIDE_COMMAND("settings.hide_command"),
-    FALLBACK_MODE("settings.fallback_mode"),
+    PING_MODE("settings.ping_mode"),
     CLEAR_CHAT_RECONNECT("settings.clear_chat.reconnect"),
+    CLEAR_CHAT_SERVER_SWITCH("settings.clear_chat.server_switch"),
     CLEAR_CHAT_FALLBACK("settings.clear_chat.fallback"),
     CLEAR_CHAT_RECONNECT_JOIN("settings.clear_chat.reconnect_join"),
     USE_DEBUG("settings.debug"),
@@ -33,12 +33,13 @@ public enum BungeeConfig {
     PING_DELAY("settings.ping_delay"),
     TELEMETRY("settings.telemetry"),
     USE_COMMAND_BLOCKER("settings.command_blocker"),
-    FALLBACK_LIST("settings.fallback_list"),
+    FALLBACK_SECTION("settings.fallback"),
     IGNORED_REASONS("settings.ignored_reasons"),
     ADMIN_NOTIFICATION("settings.admin_notification"),
-    USE_IGNORED_SERVERS("settings.use_ignored_servers"),
+    USE_IGNORED_SERVERS("settings.ignored_servers"),
     IGNORED_SERVER_LIST("settings.ignored_servers_list"),
     JOIN_BALANCING("settings.join_balancing"),
+    JOIN_BALANCING_GROUP("settings.join_balancing_group"),
 
     ADMIN_PERMISSION("sub_commands.admin.permission"),
     RELOAD_PERMISSION("sub_commands.reload.permission"),

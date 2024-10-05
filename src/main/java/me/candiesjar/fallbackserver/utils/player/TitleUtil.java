@@ -15,27 +15,29 @@ public class TitleUtil {
     private final Title createdTitle = ProxyServer.getInstance().createTitle();
 
     public void sendTitle(int fadeIn, int stay, int fadeOut, BungeeMessages title, BungeeMessages subTitle, ServerInfo serverInfo, ProxiedPlayer proxiedPlayer) {
-
         createdTitle.fadeIn(fadeIn * 20);
         createdTitle.stay(stay * 20);
         createdTitle.fadeOut(fadeOut * 20);
 
-        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title).replace("%server%", serverInfo.getName())));
-        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle).replace("%server%", serverInfo.getName())));
+        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title)
+                .replace("%server%", serverInfo.getName())
+                .replace("%dots%", Utils.getDots(0))));
+        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)
+                .replace("%server%", serverInfo.getName())
+                .replace("%dots%", Utils.getDots(0))));
 
         createdTitle.send(proxiedPlayer);
-
     }
 
     public void sendReconnectingTitle(int fadeIn, int stay, int dots, BungeeMessages title, BungeeMessages subTitle, ProxiedPlayer proxiedPlayer) {
-
         createdTitle.fadeIn(fadeIn);
         createdTitle.stay(stay);
 
-        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title).replace("%dots%", Utils.getDots(dots))));
-        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)));
+        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title)
+                .replace("%dots%", Utils.getDots(dots))));
+        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)
+                .replace("%dots%", Utils.getDots(dots))));
 
         createdTitle.send(proxiedPlayer);
-
     }
 }

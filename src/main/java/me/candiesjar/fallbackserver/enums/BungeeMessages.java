@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserver.enums;
 
 import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.objects.Placeholder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 
@@ -36,6 +36,8 @@ public enum BungeeMessages {
     SERVERS_COMMAND_ONLINE("MESSAGES.servers_command.online"),
     SERVERS_COMMAND_OFFLINE("MESSAGES.servers_command.offline"),
     SERVERS_COMMAND_LIST("MESSAGES.servers_command.servers"),
+    SERVERS_COMMAND_GROUP("MESSAGES.servers_command.group"),
+    SERVERS_COMMAND_MAINTENANCE("MESSAGES.servers_command.maintenance"),
     SERVERS_COMMAND_HEADER("MESSAGES.servers_command.header"),
     SERVERS_COMMAND_FOOTER("MESSAGES.servers_command.footer"),
 
@@ -53,17 +55,25 @@ public enum BungeeMessages {
     CONNECTING_SUB_TITLE("TITLES.reconnect.connecting_sub_title"),
     CONNECTED_TITLE("TITLES.reconnect.connected.title"),
     CONNECTED_SUB_TITLE("TITLES.reconnect.connected.sub_title"),
+    RECONNECT_TITLE_BEAT("TITLES.reconnect.title_beat"),
     CONNECTED_DELAY("TITLES.reconnect.connected.delay"),
     CONNECTED_FADE_IN("TITLES.reconnect.connected.fade_in"),
     CONNECTED_FADE_OUT("TITLES.reconnect.connected.fade_out"),
     CONNECTED_STAY("TITLES.reconnect.connected.stay"),
 
+    USE_ALREADY_IN_LOBBY_TITLE("TITLES.already_in_lobby.enabled"),
+    ALREADY_IN_LOBBY_TITLE("TITLES.already_in_lobby.title"),
+    ALREADY_IN_LOBBY_SUB_TITLE("TITLES.already_in_lobby.sub_title"),
+    ALREADY_IN_LOBBY_FADE_IN("TITLES.already_in_lobby.fade_in"),
+    ALREADY_IN_LOBBY_FADE_OUT("TITLES.already_in_lobby.fade_out"),
+    ALREADY_IN_LOBBY_STAY("TITLES.already_in_lobby.stay"),
+
     USE_HUB_TITLE("TITLES.lobby.enabled"),
     HUB_TITLE_FADE_IN("TITLES.lobby.fade_in"),
     HUB_TITLE_FADE_OUT("TITLES.lobby.fade_out"),
     HUB_TITLE_STAY("TITLES.lobby.stay"),
-    HUB_TITLE("TITLES.lobby.lobby_title"),
-    HUB_SUB_TITLE("TITLES.lobby.lobby_sub_title");
+    HUB_TITLE("TITLES.lobby.title"),
+    HUB_SUB_TITLE("TITLES.lobby.sub_title");
 
     private final String path;
 

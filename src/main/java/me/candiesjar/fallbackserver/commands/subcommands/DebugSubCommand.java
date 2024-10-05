@@ -35,41 +35,38 @@ public class DebugSubCommand implements SubCommand {
 
         String command = arguments[1];
 
-        switch (command.toLowerCase()) {
-            case "ping":
+        if (command.equalsIgnoreCase("ping")) {
+            if (arguments.length < 3) {
+                Utils.printDebug("§cNo server provided!", true);
+                return;
+            }
 
-                if (arguments.length < 3) {
-                    Utils.printDebug("§cNo server provided!", true);
+            String serverName = arguments[2];
+            ServerInfo serverInfo = plugin.getProxy().getServerInfo(serverName);
+
+            if (serverInfo == null) {
+                Utils.printDebug("§cServer not found!", false);
+                return;
+            }
+
+            Utils.printDebug("§cPinging server " + serverName + "...", false);
+
+            serverInfo.ping((result, error) -> {
+                if (error != null || result == null) {
+                    Utils.printDebug("§cError while pinging server!", false);
                     return;
                 }
 
-                String serverName = arguments[2];
-                ServerInfo serverInfo = plugin.getProxy().getServerInfo(serverName);
+                Utils.printDebug("§cServer pinged successfully!", false);
 
-                if (serverInfo == null) {
-                    Utils.printDebug("§cServer not found!", false);
-                    return;
-                }
+                int players = result.getPlayers().getOnline();
 
-                Utils.printDebug("§cPinging server " + serverName + "...", false);
+                Utils.printDebug("§cPlayers: " + players, false);
 
-                serverInfo.ping((result, error) -> {
-                    if (error != null || result == null) {
-                        Utils.printDebug("§cError while pinging server!", false);
-                        return;
-                    }
+                int max = result.getPlayers().getMax();
 
-                    Utils.printDebug("§cServer pinged successfully!", false);
-
-                    int players = result.getPlayers().getOnline();
-
-                    Utils.printDebug("§cPlayers: " + players, false);
-
-                    int max = result.getPlayers().getMax();
-
-                    Utils.printDebug("§cPlayers: " + players + "/" + max, false);
-                });
-                break;
+                Utils.printDebug("§cPlayers: " + players + "/" + max, false);
+            });
         }
 
     }

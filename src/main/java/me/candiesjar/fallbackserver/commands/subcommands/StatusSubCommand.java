@@ -5,7 +5,7 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.Placeholder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 
@@ -33,6 +33,5 @@ public class StatusSubCommand implements SubCommand {
                 new Placeholder("cores", "" + Runtime.getRuntime().availableProcessors()),
                 new Placeholder("version", plugin.getVersion()),
                 new Placeholder("proxy_version", plugin.getProxy().getVersion()));
-
     }
 }

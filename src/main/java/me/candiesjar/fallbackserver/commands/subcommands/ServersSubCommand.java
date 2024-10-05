@@ -1,22 +1,26 @@
 package me.candiesjar.fallbackserver.commands.subcommands;
 
-import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.FallingServer;
-import me.candiesjar.fallbackserver.objects.Placeholder;
+import me.candiesjar.fallbackserver.managers.ServerManager;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 
-@RequiredArgsConstructor
 public class ServersSubCommand implements SubCommand {
 
-    private final FallbackServerBungee plugin;
+    private final OnlineLobbiesManager onlineLobbiesManager;
+
+    public ServersSubCommand(FallbackServerBungee plugin) {
+        this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
+    }
 
     @Override
     public String getPermission() {
@@ -30,28 +34,30 @@ public class ServersSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
-        List<String> servers = BungeeConfig.FALLBACK_LIST.getStringList();
-        AtomicReference<String> status = new AtomicReference<>(BungeeMessages.SERVERS_COMMAND_ONLINE.getString());
+        HashMap<String, List<ServerInfo>> onlineLobbies = onlineLobbiesManager.getOnlineLobbies();
+
+        if (onlineLobbies.isEmpty()) {
+            return;
+        }
 
         BungeeMessages.SERVERS_COMMAND_HEADER.sendList(sender);
 
-        servers.forEach(server -> {
-            ServerInfo serverInfo = plugin.getProxy().getServerInfo(server);
+        onlineLobbies.forEach((group, servers) -> {
+            servers.removeIf(Objects::isNull);
 
-            if (serverInfo == null) {
-                return;
+            if (!servers.isEmpty()) {
+                BungeeMessages.SERVERS_COMMAND_GROUP.send(sender, new Placeholder("group", group));
+
+                servers.forEach(server -> {
+                    String status = ServerManager.checkMaintenance(server) ? BungeeMessages.SERVERS_COMMAND_MAINTENANCE.getString() : BungeeMessages.SERVERS_COMMAND_ONLINE.getString();
+                    BungeeMessages.SERVERS_COMMAND_LIST.send(sender,
+                            new Placeholder("server", server.getName()),
+                            new Placeholder("status", status));
+                });
             }
-
-            if (!FallingServer.getServers().containsKey(serverInfo)) {
-                status.set(BungeeMessages.SERVERS_COMMAND_OFFLINE.getString());
-            }
-
-            BungeeMessages.SERVERS_COMMAND_LIST.send(sender,
-                    new Placeholder("server", serverInfo.getName()),
-                    new Placeholder("status", status.get()));
         });
 
         BungeeMessages.SERVERS_COMMAND_FOOTER.sendList(sender);
-
     }
+
 }

@@ -6,6 +6,8 @@ import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.utils.ReconnectUtil;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
@@ -35,14 +37,11 @@ public class ServerSwitchListener implements Listener {
     @SneakyThrows
     @EventHandler
     public void onServerSwitch(ServerSwitchEvent event) {
-
         if (event.getFrom() == null) {
             return;
         }
 
         UserConnection user = (UserConnection) event.getPlayer();
-        ProxiedPlayer player = event.getPlayer();
-        ServerInfo playerServer = user.getServer().getInfo();
         UUID uuid = user.getUniqueId();
         ServerConnection server = user.getServer();
         ChannelWrapper channelWrapper = server.getCh();
@@ -51,12 +50,18 @@ public class ServerSwitchListener implements Listener {
         handlerField.setAccessible(true);
 
         if (playerCacheManager.containsKey(uuid)) {
-            String serverName = BungeeConfig.RECONNECT_SERVER.getString();
-            ServerInfo reconnectServer = proxyServer.getServerInfo(serverName);
+            ServerInfo reconnectServer = plugin.getReconnectServer();
+            ServerInfo playerServer = user.getServer().getInfo();
 
             if (reconnectServer != playerServer) {
-                removeFromReconnect(player);
+                removeFromReconnect(user);
             }
+        }
+
+        boolean clearChat = BungeeConfig.CLEAR_CHAT_SERVER_SWITCH.getBoolean();
+
+        if (clearChat) {
+            ChatUtil.clearChat(user);
         }
 
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);
@@ -66,7 +71,7 @@ public class ServerSwitchListener implements Listener {
 
     private void removeFromReconnect(ProxiedPlayer player) {
         BungeeMessages.EXITING_RECONNECT.send(player);
-        plugin.cancelReconnect(player.getUniqueId());
+        ReconnectUtil.cancelReconnect(player.getUniqueId());
     }
 
 }

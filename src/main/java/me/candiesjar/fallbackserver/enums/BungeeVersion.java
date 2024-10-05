@@ -6,9 +6,7 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 @Getter
 public enum BungeeVersion {
 
-    VERSION("version")
-
-    ;
+    VERSION("version");
 
     private final String path;
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();

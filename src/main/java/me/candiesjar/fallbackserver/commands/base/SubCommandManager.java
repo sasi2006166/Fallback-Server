@@ -7,8 +7,7 @@ import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.commands.subcommands.*;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.Placeholder;
-import me.candiesjar.fallbackserver.utils.player.ChatUtil;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -23,29 +22,18 @@ public class SubCommandManager extends Command implements TabExecutor {
     private final HashMap<String, SubCommand> subCommands = Maps.newHashMap();
 
     public SubCommandManager(FallbackServerBungee plugin) {
-        super("fs", null, "fallbackserverbungee");
+        super("fs", BungeeConfig.ADMIN_PERMISSION.getString(), "fallbackserverbungee");
         this.plugin = plugin;
 
+        setPermissionMessage("§8§l» §7Running §b§nFallback Server §b" + plugin.getVersion() + " §7by §b§nCandiesJar §8§l«");
+
         subCommands.put("reload", new ReloadSubCommand(plugin));
-        subCommands.put("add", new AddSubCommand(plugin));
-        subCommands.put("remove", new RemoveSubCommand(plugin));
         subCommands.put("status", new StatusSubCommand(plugin));
         subCommands.put("servers", new ServersSubCommand(plugin));
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-
-        if (BungeeConfig.HIDE_COMMAND.getBoolean() && !sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
-            return;
-        }
-
-        if (!sender.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
-            sender.sendMessage(ChatUtil.asLegacyComponent("§8§l» §7Running §b§nFallback Server %version% §7by §b§nCandiesJar"
-                    .replace("%version%", plugin.getDescription().getVersion())));
-            return;
-        }
-
         if (args.length == 0) {
             BungeeMessages.MAIN_COMMAND.sendList(sender, new Placeholder("version", plugin.getDescription().getVersion()));
             return;
@@ -78,7 +66,9 @@ public class SubCommandManager extends Command implements TabExecutor {
             return Collections.emptyList();
         }
 
-        if (!BungeeConfig.TAB_COMPLETE.getBoolean()) {
+        boolean tabComplete = BungeeConfig.TAB_COMPLETE.getBoolean();
+
+        if (!tabComplete) {
             return Collections.emptyList();
         }
 

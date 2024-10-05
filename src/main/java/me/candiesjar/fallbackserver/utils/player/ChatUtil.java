@@ -3,7 +3,7 @@ package me.candiesjar.fallbackserver.utils.player;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.Placeholder;
+import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -59,7 +59,7 @@ public class ChatUtil {
     }
 
     public String color(String s) {
-        return convertHexColors(s);
+        return colorHex(s);
     }
 
     public List<String> color(List<String> list) {
@@ -68,12 +68,6 @@ public class ChatUtil {
 
     public TextComponent asComponent(String s) {
         usableComponent.setText(s);
-        return usableComponent;
-    }
-
-    public TextComponent asLegacyComponent(String s) {
-        usableComponent.setText(s);
-        usableComponent.toLegacyText();
         return usableComponent;
     }
 
@@ -93,22 +87,14 @@ public class ChatUtil {
         }
     }
 
-    public String convertHexColors(String s) {
-        Pattern unicode = Pattern.compile("\\\\u\\+[a-fA-F0-9]{4}");
-        Matcher match = unicode.matcher(s);
-        while (match.find()) {
-            String code = s.substring(match.start(), match.end());
-            s = s.replace(code, Character.toString((char) Integer.parseInt(code.replace("\\u+", ""), 16)));
-            match = unicode.matcher(s);
+    public String colorHex(String s) {
+        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+        for (Matcher matcher = pattern.matcher(s); matcher.find(); matcher = pattern.matcher(s)) {
+            String color = s.substring(matcher.start(), matcher.end());
+            s = s.replace(color, ChatColor.of(color) + "");
         }
-        Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
-        match = pattern.matcher(s);
-        while (match.find()) {
-            String color = s.substring(match.start(), match.end());
-            s = s.replace(color, ChatColor.of(color.replace("&", "")) + "");
-            match = pattern.matcher(s);
-        }
-        return ChatColor.translateAlternateColorCodes('&', s);
+        s = ChatColor.translateAlternateColorCodes('&', s);
+        return s;
     }
 
     public boolean checkMessage(String message, String name) {

@@ -6,8 +6,11 @@ import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.objects.TextFile;
+import me.candiesjar.fallbackserver.objects.text.TextFile;
+import me.candiesjar.fallbackserver.utils.ReconnectUtil;
+import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.config.ServerInfo;
 
 @RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
@@ -26,23 +29,31 @@ public class ReloadSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
+        boolean wasCommandEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
-        boolean oldCommand = BungeeConfig.LOBBY_COMMAND.getBoolean();
-
+        PingTask.getTask().cancel();
         TextFile.reloadAll();
-        plugin.reloadTask();
 
-        boolean newCommand = BungeeConfig.LOBBY_COMMAND.getBoolean();
+        boolean isCommandEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
-        if (oldCommand != newCommand) {
+        if (wasCommandEnabled != isCommandEnabled) {
+            HubCommand hubCommand = new HubCommand(plugin);
 
-            if (newCommand) {
-                plugin.getProxy().getPluginManager().registerCommand(plugin, new HubCommand(plugin));
+            if (isCommandEnabled) {
+                plugin.getProxy().getPluginManager().registerCommand(plugin, hubCommand);
             } else {
-                plugin.getProxy().getPluginManager().unregisterCommand(new HubCommand(plugin));
+                plugin.getProxy().getPluginManager().unregisterCommand(hubCommand);
             }
-
         }
+
+        ServerInfo reconnectServer = ReconnectUtil.checkForPhysicalServer();
+        plugin.setReconnectServer(reconnectServer);
+
+        plugin.getServerTypeManager().clear();
+        plugin.getOnlineLobbiesManager().clear();
+
+        plugin.loadServers();
+        plugin.reloadTask();
 
         BungeeMessages.RELOAD.send(sender);
     }

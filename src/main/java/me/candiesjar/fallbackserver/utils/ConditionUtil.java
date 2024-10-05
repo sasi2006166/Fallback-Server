@@ -6,9 +6,8 @@ import java.util.List;
 
 @UtilityClass
 public class ConditionUtil {
-
     public boolean checkReason(List<String> ignoredReasons, String reason) {
-        if (reason.isEmpty()) {
+        if (reason == null || ignoredReasons == null) {
             return false;
         }
 

@@ -27,16 +27,16 @@ public class PlayerCacheManager {
         return reconnectMap.get(key);
     }
 
+    public ReconnectHandler remove(UUID key) {
+        return reconnectMap.remove(key);
+    }
+
     public void put(UUID key, ReconnectHandler value) {
         reconnectMap.put(key, value);
     }
 
     public boolean containsKey(UUID key) {
         return reconnectMap.containsKey(key);
-    }
-
-    public ReconnectHandler remove(UUID key) {
-        return reconnectMap.remove(key);
     }
 
 }

@@ -8,9 +8,7 @@ import java.util.List;
 @Getter
 public enum BungeeServers {
 
-    SERVERS("servers")
-
-    ;
+    SERVERS("servers");
 
     private final String path;
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();

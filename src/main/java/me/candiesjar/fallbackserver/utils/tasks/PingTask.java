@@ -2,15 +2,23 @@ package me.candiesjar.fallbackserver.utils.tasks;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
+import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeServers;
-import me.candiesjar.fallbackserver.objects.FallingServer;
+import me.candiesjar.fallbackserver.objects.ServerType;
+import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -18,37 +26,52 @@ import java.util.concurrent.TimeUnit;
 public class PingTask {
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
-    private final ProxyServer proxyServer = ProxyServer.getInstance();
-    private final List<String> lobbyServers = Lists.newArrayList();
+    private final ProxyServer proxyServer = fallbackServerBungee.getProxy();
+    private final ServerTypeManager serverTypeManager = fallbackServerBungee.getServerTypeManager();
+    private final OnlineLobbiesManager onlineLobbiesManager = fallbackServerBungee.getOnlineLobbiesManager();
+    private final List<ServerInfo> lobbyServers = Lists.newArrayList();
 
     @Getter
     private ScheduledTask task;
 
-    public void start() {
+    public void start(String mode) {
         lobbyServers.clear();
-        FallingServer.clear();
-        loadServerList(BungeeConfig.FALLBACK_LIST.getStringList());
-        loadServerList(BungeeServers.SERVERS.getStringList());
+
+        for (ServerType serverType : serverTypeManager.getServerTypeMap().values()) {
+            loadServerList(serverType.getLobbies());
+        }
+
         int delay = BungeeConfig.PING_DELAY.getInt();
-        task = proxyServer.getScheduler().schedule(fallbackServerBungee, PingTask::pingServers, 0, delay, TimeUnit.SECONDS);
+
+        switch (mode) {
+            case "DEFAULT":
+                fallbackServerBungee.getLogger().info("§7[§b!§7] Using default ping mode.");
+                task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(false), 2, delay, TimeUnit.SECONDS);
+                break;
+            case "SOCKET":
+                fallbackServerBungee.getLogger().info("§7[§b!§7] Using socket ping mode.");
+                task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(true), 2, delay, TimeUnit.SECONDS);
+                break;
+            default:
+                fallbackServerBungee.getLogger().severe("§7[§c!§7] Configuration error, using default ping mode.");
+                task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(false), 2, delay, TimeUnit.SECONDS);
+                break;
+        }
     }
 
-    private void pingServers() {
-        lobbyServers.forEach(server -> {
-            ServerInfo serverInfo = proxyServer.getServerInfo(server);
-
-            if (serverInfo == null) {
-                return;
-            }
-
-            ping(serverInfo);
-        });
+    @SneakyThrows
+    private void pingServers(boolean sockets) {
+        if (!sockets) {
+            lobbyServers.forEach(PingTask::ping);
+            return;
+        }
+        lobbyServers.forEach(PingTask::socketPing);
     }
 
     private void ping(ServerInfo serverInfo) {
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
-                FallingServer.removeServer(serverInfo);
+                updateFallingServer(serverInfo, true);
                 return;
             }
 
@@ -56,32 +79,89 @@ public class PingTask {
             int max = result.getPlayers().getMax();
 
             if (players == max) {
-                FallingServer.removeServer(serverInfo);
+                updateFallingServer(serverInfo, true);
                 return;
             }
 
-            createFallingServer(serverInfo);
-
+            updateFallingServer(serverInfo, false);
         });
     }
 
-    private void loadServerList(List<String> serverList) {
+    private void socketPing(ServerInfo serverInfo) {
+        SocketAddress socketAddress = serverInfo.getSocketAddress();
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
+        int port = inetSocketAddress.getPort();
+        String address = inetSocketAddress.getAddress().getHostAddress();
 
+        try {
+            InetAddress inetAddress = InetAddress.getByName(address);
+            Socket socket = new Socket(inetAddress, port);
+
+            if (socket.isConnected()) {
+                updateFallingServer(serverInfo, false);
+            }
+
+            socket.close();
+        } catch (IOException exception) {
+            updateFallingServer(serverInfo, true);
+            if (fallbackServerBungee.isDebug()) {
+                Utils.printDebug("§7[§c!§7] Error while pinging server: " + serverInfo.getName(), true);
+            }
+        }
+    }
+
+    private void updateFallingServer(ServerInfo serverInfo, boolean remove) {
+        String name = serverInfo.getName();
+        String group;
+
+        for (ServerType serverType : serverTypeManager.getServerTypeMap().values()) {
+            if (!serverType.getLobbies().contains(name)) {
+                continue;
+            }
+
+            group = serverType.getName();
+            boolean containsValue = onlineLobbiesManager.containsValue(group, serverInfo);
+
+            if (remove) {
+                if (!containsValue) {
+                    continue;
+                }
+
+                onlineLobbiesManager.remove(group, serverInfo);
+                continue;
+            }
+
+            if (containsValue) {
+                continue;
+            }
+
+            onlineLobbiesManager.put(group, serverInfo);
+        }
+    }
+
+    private void loadServerList(List<String> serverList) {
         if (serverList.isEmpty()) {
             return;
         }
 
-        lobbyServers.addAll(serverList);
+        for (String serverName : serverList) {
+            ServerInfo serverInfo = proxyServer.getServerInfo(serverName);
 
-    }
+            if (serverInfo == null) {
+                continue;
+            }
 
-    private void createFallingServer(ServerInfo serverInfo) {
-        new FallingServer(serverInfo);
+            if (lobbyServers.contains(serverInfo)) {
+                continue;
+            }
+
+            lobbyServers.add(serverInfo);
+        }
     }
 
     public void reload() {
+        String mode = BungeeConfig.PING_MODE.getString();
         task.cancel();
-        start();
+        start(mode);
     }
-
 }
