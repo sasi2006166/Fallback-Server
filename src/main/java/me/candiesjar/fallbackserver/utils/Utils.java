@@ -1,10 +1,10 @@
 package me.candiesjar.fallbackserver.utils;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
+import org.simpleyaml.configuration.ConfigurationSection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,11 +25,7 @@ public class Utils {
     public CompletableFuture<Boolean> getUpdates() {
 
         if (fallbackServerVelocity.isBeta()) {
-            return CompletableFuture.supplyAsync(() -> {
-                fallbackServerVelocity.getLogger().info("§7Updater is disabled in alpha version(s).");
-                fallbackServerVelocity.getLogger().info(" ");
-                return false;
-            });
+            return CompletableFuture.supplyAsync(() -> false);
         }
 
         return CompletableFuture.supplyAsync(() -> {
@@ -40,7 +36,7 @@ public class Utils {
                 try (InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream())) {
                     try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
                         remoteVersion = bufferedReader.readLine();
-                        isUpdateAvailable = !fallbackServerVelocity.getVERSION().equalsIgnoreCase(remoteVersion);
+                        isUpdateAvailable = !fallbackServerVelocity.getVersion().equalsIgnoreCase(remoteVersion);
                     }
                 }
             } catch (IOException e) {
@@ -53,11 +49,11 @@ public class Utils {
 
     public void printDebug(String s, boolean exception) {
         if (exception) {
-            fallbackServerVelocity.getLogger().error("[ERROR] " + s);
+            fallbackServerVelocity.getComponentLogger().error("[ERROR] {}", s);
             return;
         }
 
-        fallbackServerVelocity.getLogger().warn("[DEBUG] " + s);
+        fallbackServerVelocity.getComponentLogger().warn("[DEBUG] {}", s);
     }
 
     public String getDots(int s) {
@@ -72,6 +68,13 @@ public class Utils {
             case 3:
                 return "...";
         }
+    }
+
+    public boolean checkIfGroupExists(String group) {
+        ConfigurationSection section = fallbackServerVelocity.getConfigTextFile().getConfig().getConfigurationSection("settings.fallback");
+        ConfigurationSection servers = fallbackServerVelocity.getServersTextFile().getConfig().getConfigurationSection("servers");
+
+        return section.getKeys(false).contains(group) || servers.getKeys(false).contains(group);
     }
 
     public void saveServers(List<String> servers) {

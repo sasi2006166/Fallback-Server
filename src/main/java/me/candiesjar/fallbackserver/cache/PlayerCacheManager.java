@@ -1,11 +1,13 @@
 package me.candiesjar.fallbackserver.cache;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
 
 import java.util.HashMap;
 import java.util.UUID;
 
+@Getter
 public class PlayerCacheManager {
 
     private static PlayerCacheManager instance;

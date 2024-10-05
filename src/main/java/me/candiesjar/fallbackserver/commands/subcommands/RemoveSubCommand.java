@@ -32,7 +32,7 @@ public class RemoveSubCommand implements SubCommand {
     public void perform(CommandSource sender, String[] args) {
 
         if (args.length < 2) {
-            VelocityMessages.EMPTY_SERVER.send(sender, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
+            VelocityMessages.EMPTY_GROUP.send(sender, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 

@@ -30,31 +30,22 @@ public class AddSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSource commandSource, String[] args) {
-
-        if (args.length < 2) {
-            VelocityMessages.EMPTY_SERVER.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
+        // /fs add <group> <server>
+        if (args.length != 3) {
+            VelocityMessages.EMPTY_GROUP.send(commandSource);
             return;
         }
 
-        String server = args[1];
+        String group = args[1];
+        String serverName = args[2];
 
-        if (VelocityServers.SERVERS.getStringList().contains(server) || VelocityConfig.LOBBIES_LIST.getStringList().contains(server)) {
-            VelocityMessages.SERVER_CONTAINED.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)), new Placeholder("server", server));
-            return;
-        }
+        // check group exists
 
-        if (!plugin.getServer().getConfiguration().getServers().containsKey(server)) {
-            VelocityMessages.UNAVAILABLE_SERVER.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)), new Placeholder("server", server));
-            return;
-        }
 
-        save(server);
-        VelocityMessages.SERVER_ADDED.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)), new Placeholder("server", server));
 
     }
 
     private void save(String serverName) {
-
         List<String> servers = VelocityServers.SERVERS.getStringList();
 
         servers.add(serverName);
@@ -63,6 +54,5 @@ public class AddSubCommand implements SubCommand {
         plugin.reloadAll();
 
         servers.clear();
-
     }
 }

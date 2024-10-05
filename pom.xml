@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServerVelocity</artifactId>
-    <version>3.2.0-Beta2</version>
+    <version>3.2.0-Beta3</version>
     <packaging>jar</packaging>
 
     <name>FallBackServerVelocity</name>
@@ -75,19 +75,17 @@
             <id>AlessioDP</id>
             <url>https://repo.alessiodp.com/releases/</url>
         </repository>
+        <repository>
+            <id>elytrium-repo</id>
+            <url>https://maven.elytrium.net/repo/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.velocitypowered</groupId>
-            <artifactId>velocity-proxy</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
+            <version>3.3.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -98,34 +96,39 @@
         </dependency>
         <dependency>
             <groupId>eu.kennytv.maintenance</groupId>
-            <artifactId>maintenance-api</artifactId>
-            <version>4.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/MaintenanceVelocity.jar</systemPath>
+            <artifactId>maintenance-api-proxy</artifactId>
+            <version>4.2.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.byteflux</groupId>
             <artifactId>libby-velocity</artifactId>
-            <version>1.3.0</version>
+            <version>1.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ru.vyarus</groupId>
             <artifactId>yaml-config-updater</artifactId>
-            <version>1.4.2</version>
+            <version>1.4.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.elytrium.limboapi</groupId>
             <artifactId>api</artifactId>
-            <version>1.1.16</version>
+            <version>1.1.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.elytrium.velocitytools</groupId>
+            <artifactId>velocitytools</artifactId>
+            <version>1.2.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/limboapi-1.1.16.jar</systemPath>
+            <systemPath>${project.basedir}/libs/velocity-tools-1.2.4.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

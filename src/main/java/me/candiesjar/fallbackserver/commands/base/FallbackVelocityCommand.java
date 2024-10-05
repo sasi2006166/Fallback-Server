@@ -28,8 +28,6 @@ public class FallbackVelocityCommand implements SimpleCommand {
         this.plugin = plugin;
 
         subCommands.put("reload", new ReloadSubCommand(fallbackServerVelocity));
-        subCommands.put("add", new AddSubCommand(fallbackServerVelocity));
-        subCommands.put("remove", new RemoveSubCommand(fallbackServerVelocity));
         subCommands.put("status", new StatusSubCommand(fallbackServerVelocity));
         subCommands.put("servers", new ServersSubCommand(fallbackServerVelocity));
     }
@@ -48,12 +46,12 @@ public class FallbackVelocityCommand implements SimpleCommand {
 
         if (!commandSource.hasPermission(adminPermission)) {
             commandSource.sendMessage(Component.text(ChatUtil.color("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
-                    .replace("version", plugin.getVERSION()))));
+                    .replace("version", plugin.getVersion()))));
             return;
         }
 
         if (args.length == 0) {
-            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new Placeholder("version", plugin.getVERSION()));
+            VelocityMessages.MAIN_COMMAND.sendList(commandSource, new Placeholder("version", plugin.getVersion()));
             return;
         }
 
@@ -76,7 +74,6 @@ public class FallbackVelocityCommand implements SimpleCommand {
         }
 
         subCommand.perform(commandSource, args);
-
     }
 
     @Override
@@ -95,7 +92,6 @@ public class FallbackVelocityCommand implements SimpleCommand {
             String[] args = invocation.arguments();
 
             switch (args.length) {
-
                 case 0:
                 case 1:
                     LinkedList<String> completion = Lists.newLinkedList(subCommands.keySet());

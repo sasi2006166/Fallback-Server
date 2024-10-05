@@ -9,7 +9,7 @@ import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 
 @RequiredArgsConstructor
-public class    StatusSubCommand implements SubCommand {
+public class StatusSubCommand implements SubCommand {
 
     private final FallbackServerVelocity plugin;
 
@@ -30,7 +30,7 @@ public class    StatusSubCommand implements SubCommand {
                 new Placeholder("total_players", "" + plugin.getServer().getPlayerCount()),
                 new Placeholder("used_memory", "" + Runtime.getRuntime().totalMemory() / (1024 * 1024)),
                 new Placeholder("cores", "" + Runtime.getRuntime().availableProcessors()),
-                new Placeholder("version", plugin.getVERSION()),
+                new Placeholder("version", plugin.getVersion()),
                 new Placeholder("proxy_version", plugin.getServer().getVersion().getName()));
 
     }

@@ -10,6 +10,7 @@ import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
+import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 
 @RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
@@ -28,28 +29,38 @@ public class ReloadSubCommand implements SubCommand {
     @Override
     public void perform(CommandSource commandSource, String[] args) {
 
-        boolean oldCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
+        boolean wasCommandEnabled = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
+        PingTask.getScheduledTask().cancel();
         plugin.reloadAll();
 
-        boolean newCommand = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
+        boolean isCommandEnabled = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
-        if (oldCommand != newCommand) {
-
+        if (wasCommandEnabled != isCommandEnabled) {
             String[] aliases = VelocityConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]);
+
+            if (aliases.length == 0) {
+                aliases = new String[]{"hub"};
+            }
 
             CommandMeta commandMeta = plugin.getServer().getCommandManager()
                     .metaBuilder(VelocityConfig.LOBBY_ALIASES.getStringList().get(0))
                     .aliases(aliases)
                     .build();
 
-            if (newCommand) {
+            if (isCommandEnabled) {
                 plugin.getServer().getCommandManager().register(commandMeta, new HubCommand(plugin));
             } else {
                 plugin.getServer().getCommandManager().unregister(commandMeta);
             }
 
         }
+
+        plugin.getServerTypeManager().clear();
+        plugin.getOnlineLobbiesManager().clear();
+
+        plugin.loadServers();
+        PingTask.reload();
 
         VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
     }

@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserver.listeners;
 
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -8,11 +7,13 @@ import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
+import me.candiesjar.fallbackserver.managers.ServerManager;
+import me.candiesjar.fallbackserver.objects.ServerType;
+import me.candiesjar.fallbackserver.utils.ConditionUtil;
 import me.candiesjar.fallbackserver.utils.WorldUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.elytrium.limboapi.api.event.LoginLimboRegisterEvent;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +23,26 @@ public class ReconnectListener {
 
     private final FallbackServerVelocity plugin;
 
-    @Subscribe(order = PostOrder.FIRST)
+    @Subscribe(priority = Short.MAX_VALUE)
     public void onPlayerKick(LoginLimboRegisterEvent event) {
-
         event.setOnKickCallback(kickEvent -> {
-
-            RegisteredServer kickedFrom = kickEvent.getServer();
-            String serverName = kickedFrom.getServerInfo().getName();
             Player player = event.getPlayer();
+            RegisteredServer kickedFrom = kickEvent.getServer();
+            String kickedFromName = kickedFrom.getServerInfo().getName();
 
             if (kickEvent.kickedDuringServerConnect()) {
+                return false;
+            }
+
+            String group = ServerManager.getGroupByServer(kickedFromName) == null ? "default" : ServerManager.getGroupByServer(kickedFromName);
+
+            if (group == null) {
+                return false;
+            }
+
+            ServerType serverType = plugin.getServerTypeManager().get(group);
+
+            if (!serverType.isReconnect()) {
                 return false;
             }
 
@@ -40,20 +51,11 @@ public class ReconnectListener {
             String kickReasonString = isEmpty ? "" : ChatUtil.componentToString(componentOptional.get());
             List<String> ignoredReasons = VelocityConfig.RECONNECT_IGNORED_REASONS.getStringList();
 
-            for (String blacklist : ignoredReasons) {
-
-                if (isEmpty) {
-                    break;
-                }
-
-                if (PlainTextComponentSerializer.plainText().serialize(componentOptional.get()).contains(blacklist)) {
-                    player.disconnect(Component.text(kickReasonString));
-                    return false;
-                }
-
+            if (shouldIgnore(kickReasonString, ignoredReasons)) {
+                return false;
             }
 
-            if (checkIgnoredServer(serverName)) {
+            if (checkIgnoredServer(kickedFromName)) {
                 player.disconnect(Component.text(kickReasonString));
                 return false;
             }
@@ -72,7 +74,7 @@ public class ReconnectListener {
 
             FallbackLimboHandler fallbackLimboHandler = new FallbackLimboHandler(kickedFrom, player.getUniqueId(), player);
             plugin.getPlayerCacheManager().put(player.getUniqueId(), fallbackLimboHandler);
-            WorldUtil.getFallbackWorld().spawnPlayer(player, fallbackLimboHandler);
+            WorldUtil.getFallbackLimbo().spawnPlayer(player, fallbackLimboHandler);
 
             return true;
         });
@@ -81,6 +83,10 @@ public class ReconnectListener {
 
     private boolean checkIgnoredServer(String serverName) {
         return VelocityConfig.RECONNECT_IGNORED_SERVERS.getStringList().contains(serverName);
+    }
+
+    private boolean shouldIgnore(String reason, List<String> ignoredReasons) {
+        return ConditionUtil.checkReason(ignoredReasons, reason);
     }
 
 }

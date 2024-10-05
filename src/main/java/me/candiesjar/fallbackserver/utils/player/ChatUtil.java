@@ -79,7 +79,6 @@ public class ChatUtil {
     }
 
     public String convertHexColors(String message) {
-
         if (!containsHexColor(message)) {
             return message;
         }

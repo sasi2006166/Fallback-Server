@@ -1,11 +1,14 @@
 package me.candiesjar.fallbackserver.commands.subcommands;
 
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
+import me.candiesjar.fallbackserver.handler.DebugLimboHandler;
+import me.candiesjar.fallbackserver.utils.WorldUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
 
@@ -26,13 +29,17 @@ public class DebugSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSource commandSource, String[] args) {
-
         if (args.length < 2) {
             commandSource.sendMessage(Component.text(ChatUtil.color("&cIncorrent arguments!")));
             return;
         }
 
         String command = args[1];
+
+        if (command.equalsIgnoreCase("spawn")) {
+            Player player = (Player) commandSource;
+            WorldUtil.getFallbackLimbo().spawnPlayer(player, new DebugLimboHandler());
+        }
 
         if (command.equalsIgnoreCase("ping")) {
             if (args.length < 3) {

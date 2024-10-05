@@ -3,24 +3,23 @@ package me.candiesjar.fallbackserver.commands.subcommands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
+import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.objects.server.impl.FallingServerManager;
+import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 
 public class ServersSubCommand implements SubCommand {
 
-    private final FallbackServerVelocity plugin;
-    private final FallingServerManager fallingServerManager;
+    private final OnlineLobbiesManager onlineLobbiesManager;
 
     public ServersSubCommand(FallbackServerVelocity plugin) {
-        this.plugin = plugin;
-        this.fallingServerManager = plugin.getFallingServerManager();
+        this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
     }
 
     @Override
@@ -35,30 +34,29 @@ public class ServersSubCommand implements SubCommand {
 
     @Override
     public void perform(CommandSource sender, String[] args) {
-        List<String> servers = VelocityConfig.LOBBIES_LIST.getStringList();
-        AtomicReference<String> status = new AtomicReference<>(VelocityMessages.SERVERS_COMMAND_ONLINE.get(String.class));
+        HashMap<String, List<RegisteredServer>> onlineLobbies = onlineLobbiesManager.getOnlineLobbies();
+
+        if (onlineLobbies.isEmpty()) {
+            return;
+        }
 
         VelocityMessages.SERVERS_COMMAND_HEADER.sendList(sender);
 
-        servers.forEach(server -> {
-            Optional<RegisteredServer> registeredServerOptional = plugin.getServer().getServer(server);
+        onlineLobbies.forEach((group, servers) -> {
+            servers.removeIf(Objects::isNull);
 
-            if (registeredServerOptional.isEmpty()) {
-                return;
+            if (!servers.isEmpty()) {
+                VelocityMessages.SERVERS_COMMAND_GROUP.send(sender, new Placeholder("group", group));
+
+                servers.forEach(server -> {
+                    String status = ServerManager.checkMaintenance(server) ? VelocityMessages.SERVERS_COMMAND_MAINTENANCE.get(String.class) : VelocityMessages.SERVERS_COMMAND_ONLINE.get(String.class);
+                    VelocityMessages.SERVERS_COMMAND_LIST.send(sender,
+                            new Placeholder("server", server.getServerInfo().getName()),
+                            new Placeholder("status", status));
+                });
             }
-
-            RegisteredServer registeredServer = registeredServerOptional.get();
-
-            if (!fallingServerManager.getCache().containsValue(registeredServer)) {
-                status.set(VelocityMessages.SERVERS_COMMAND_OFFLINE.get(String.class));
-            }
-
-            VelocityMessages.SERVERS_COMMAND_LIST.send(sender,
-                    new Placeholder("server", registeredServer.getServerInfo().getName()),
-                    new Placeholder("status", status.get()));
         });
 
         VelocityMessages.SERVERS_COMMAND_FOOTER.sendList(sender);
-
     }
 }
