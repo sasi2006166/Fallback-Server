@@ -7,9 +7,7 @@ import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.enums.VelocityServers;
-import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
-import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 
 import java.util.List;
 

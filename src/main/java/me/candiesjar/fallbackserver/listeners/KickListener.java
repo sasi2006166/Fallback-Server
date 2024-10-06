@@ -42,6 +42,7 @@ public class KickListener {
 
     @Subscribe(priority = Short.MAX_VALUE)
     public void onPlayerKick(KickedFromServerEvent event) {
+        System.out.println("KickListener.onPlayerKick");
         if (event.kickedDuringServerConnect()) {
             return;
         }

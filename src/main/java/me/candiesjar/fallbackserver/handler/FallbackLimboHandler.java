@@ -14,7 +14,6 @@ import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
-import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.elytrium.limboapi.api.Limbo;
@@ -66,9 +65,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
     @Override
     public void onChat(String chat) {
         if (chat.startsWith("/")) {
-            Utils.printDebug("Command: " + chat, true);
             String command = chat.substring(1);
-            Utils.printDebug("Command: " + command, true);
             fallbackServerVelocity.getServer().getCommandManager().executeImmediatelyAsync(player, command);
             return;
         }
@@ -233,5 +230,4 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         player.clearTitle();
         player.resetTitle();
     }
-
 }
