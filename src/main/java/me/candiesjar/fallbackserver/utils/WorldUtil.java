@@ -69,16 +69,37 @@ public class WorldUtil {
         GameMode gameMode = getGameMode(VelocityConfig.RECONNECT_LIMBO_GAMEMODE.get(String.class));
         int worldTime = VelocityConfig.RECONNECT_LIMBO_WORLD_TIME.get(Integer.class);
         boolean shouldJoin = VelocityConfig.RECONNECT_JOIN_LIMBO.get(Boolean.class);
+        boolean isPhysical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+
+        ServerInfo serverInfo = new ServerInfo("FallbackLimbo", InetSocketAddress.createUnresolved("0.0.0.0", 12345));
+        fallbackServerVelocity.getServer().registerServer(serverInfo);
+
+        if (isPhysical) {
+            fallbackLimbo = factory.createLimbo(world)
+                    .setName(name)
+                    .setWorldTime(worldTime)
+                    .setShouldRejoin(false)
+                    .setGameMode(gameMode)
+                    .setShouldRespawn(true);
+            return;
+        }
+
+        if (useSchematic) {
+            fallbackLimbo = factory.createLimbo(world)
+                    .setName(name)
+                    .setWorldTime(worldTime)
+                    .setShouldRejoin(false)
+                    .setGameMode(gameMode)
+                    .setShouldRespawn(true);
+            return;
+        }
 
         fallbackLimbo = factory.createLimbo(world)
                 .setName(name)
                 .setWorldTime(worldTime)
                 .setShouldRejoin(shouldJoin)
                 .setGameMode(gameMode)
-                .setShouldRespawn(true);
-
-        ServerInfo serverInfo = new ServerInfo("FallbackLimbo", InetSocketAddress.createUnresolved("0.0.0.0", 12345));
-        fallbackServerVelocity.getServer().registerServer(serverInfo);
+                .setShouldRespawn(false);
     }
 
     @SneakyThrows
@@ -97,40 +118,39 @@ public class WorldUtil {
         if (!Files.exists(path)) {
             Utils.printDebug("Schematic not found", true);
             Utils.printDebug("Please add your schematic to the 'schematics' folder", true);
-        } else {
-            String fileName = schematic.getName();
-            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
+            return;
+        }
 
-            WorldFile worldFile;
+        String fileName = schematic.getName();
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
+        WorldFile worldFile;
+        switch (fileExtension) {
+            case "SCHEMATIC":
+                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a SCHEMATIC file"));
+                worldFile = factory.openWorldFile(BuiltInWorldFileType.SCHEMATIC, path);
+                break;
+            case "SCHEM":
+                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a WORLDEDIT_SCHEM file"));
+                worldFile = factory.openWorldFile(BuiltInWorldFileType.WORLDEDIT_SCHEM, path);
+                break;
+            case "STRUCTURE":
+                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a STRUCTURE file"));
+                worldFile = factory.openWorldFile(BuiltInWorldFileType.STRUCTURE, path);
+                break;
+            default:
+                Utils.printDebug("Invalid schematic file", true);
+                Utils.printDebug("Please add a valid schematic file", true);
+                worldFile = null;
+                break;
+        }
 
-            switch (fileExtension) {
-                case "SCHEMATIC":
-                    fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a SCHEMATIC file"));
-                    worldFile = factory.openWorldFile(BuiltInWorldFileType.SCHEMATIC, path);
-                    break;
-                case "SCHEM":
-                    fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a WORLDEDIT_SCHEM file"));
-                    worldFile = factory.openWorldFile(BuiltInWorldFileType.WORLDEDIT_SCHEM, path);
-                    break;
-                case "STRUCTURE":
-                    fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a STRUCTURE file"));
-                    worldFile = factory.openWorldFile(BuiltInWorldFileType.STRUCTURE, path);
-                    break;
-                default:
-                    Utils.printDebug("Invalid schematic file", true);
-                    Utils.printDebug("Please add a valid schematic file", true);
-                    worldFile = null;
-                    break;
-            }
+        if (worldFile != null) {
+            int schematicX = VelocityConfig.RECONNECT_SCHEMATIC_X.get(Integer.class);
+            int schematicY = VelocityConfig.RECONNECT_SCHEMATIC_Y.get(Integer.class);
+            int schematicZ = VelocityConfig.RECONNECT_SCHEMATIC_Z.get(Integer.class);
+            worldFile.toWorld(factory, world, schematicX, schematicY, schematicZ);
 
-            if (worldFile != null) {
-                int schematicX = VelocityConfig.RECONNECT_SCHEMATIC_X.get(Integer.class);
-                int schematicY = VelocityConfig.RECONNECT_SCHEMATIC_Y.get(Integer.class);
-                int schematicZ = VelocityConfig.RECONNECT_SCHEMATIC_Z.get(Integer.class);
-                worldFile.toWorld(factory, world, schematicX, schematicY, schematicZ);
-
-                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Schematic has been pasted at: " + schematicX + " " + schematicY + " " + schematicZ));
-            }
+            fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Schematic has been pasted at: " + schematicX + " " + schematicY + " " + schematicZ));
         }
     }
 

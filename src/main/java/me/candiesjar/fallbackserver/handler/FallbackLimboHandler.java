@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.handler;
 
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -57,7 +58,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         TitleMode titleMode = TitleMode.fromString(VelocityConfig.RECONNECT_TITLE_MODE.get(String.class));
 
         titleTask = scheduleTask(() -> sendTitles(VelocityMessages.RECONNECT_TITLE, VelocityMessages.RECONNECT_SUB_TITLE),
-                0, titleMode.getPeriod());
+                getTitleDelay(player), titleMode.getPeriod());
 
         reconnectTask = scheduleTask(() -> startReconnect(limboPlayer),
                 0, VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class));
@@ -266,5 +267,12 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         player.showTitle(Title.title(Component.empty(), Component.empty()));
         player.clearTitle();
         player.resetTitle();
+    }
+
+    private int getTitleDelay(Player player) {
+        if (player.getProtocolVersion().greaterThan(ProtocolVersion.MINECRAFT_1_20_2)) {
+            return 3;
+        }
+        return 0;
     }
 }

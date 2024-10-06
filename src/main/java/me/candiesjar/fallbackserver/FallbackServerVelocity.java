@@ -209,7 +209,7 @@ public class FallbackServerVelocity {
         YamlUpdater.create(new File(getPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/main/src/main/resources/messages.yml"))
                 .backup(true)
                 .update();
-        versionTextFile.getConfig().set("version", pluginContainer.getDescription().getVersion());
+        versionTextFile.getConfig().set("version", pluginContainer.getDescription().getVersion().get());
         versionTextFile.save();
         loadConfiguration();
     }
