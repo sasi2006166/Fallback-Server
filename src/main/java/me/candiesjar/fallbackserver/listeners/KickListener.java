@@ -42,6 +42,7 @@ public class KickListener {
 
     @Subscribe(priority = Short.MAX_VALUE)
     public void onPlayerKick(KickedFromServerEvent event) {
+
         if (event.kickedDuringServerConnect()) {
             return;
         }
@@ -113,7 +114,6 @@ public class KickListener {
         RegisteredServer registeredServer = lobbies.get(0);
 
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(registeredServer));
-
         incrementPendingConnections(registeredServer.getServerInfo().getName());
 
         plugin.getServer().getScheduler().buildTask(plugin, () -> decrementPendingConnections(registeredServer.getServerInfo().getName()))
