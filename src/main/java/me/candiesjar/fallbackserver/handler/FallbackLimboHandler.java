@@ -61,6 +61,13 @@ public class FallbackLimboHandler implements LimboSessionHandler {
 
         reconnectTask = scheduleTask(() -> startReconnect(limboPlayer),
                 0, VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class));
+
+        boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+        if (physical) {
+            String physicalServerName = VelocityConfig.RECONNECT_PHYSICAL_SERVER.get(String.class);
+            RegisteredServer physicalServer = fallbackServerVelocity.getServer().getServer(physicalServerName).orElse(null);
+            limboPlayer.disconnect(physicalServer);
+        }
     }
 
     @Override
@@ -95,6 +102,13 @@ public class FallbackLimboHandler implements LimboSessionHandler {
             }
 
             ReconnectUtil.cancelReconnect(uuid);
+
+            boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+            if (physical) {
+                player.disconnect(Component.empty());
+                return;
+            }
+
             limboPlayer.disconnect();
             return;
         }
@@ -144,6 +158,12 @@ public class FallbackLimboHandler implements LimboSessionHandler {
             ChatUtil.clearChat(player);
         }
 
+        boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+        if (physical) {
+            player.createConnectionRequest(target).fireAndForget();
+            return;
+        }
+
         limboPlayer.disconnect(target);
     }
 
@@ -157,10 +177,8 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         */
 
         RegisteredServer registeredServer = fallbackServerVelocity.getServer().getServer("FallbackLimbo").get();
-
         Component reason = Component.text("Lost Connection");
         KickedFromServerEvent.ServerKickResult serverKickResult = KickedFromServerEvent.RedirectPlayer.create(registeredServer);
-
         KickedFromServerEvent kickedFromServerEvent = new KickedFromServerEvent(player, registeredServer, reason, false, serverKickResult);
         fallbackServerVelocity.getServer().getEventManager().fireAndForget(kickedFromServerEvent);
 
@@ -169,8 +187,26 @@ public class FallbackLimboHandler implements LimboSessionHandler {
             registeredServer = redirectPlayer.getServer();
         }
 
+        boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
         if (kickedFromServerEvent.getResult() instanceof KickedFromServerEvent.DisconnectPlayer) {
+            if (physical) {
+                player.disconnect(Component.empty());
+                return;
+            }
             limboPlayer.disconnect();
+            return;
+        }
+
+        if (physical) {
+            clearPlayerTitle();
+            player.createConnectionRequest(registeredServer).fireAndForget();
+            scheduleTask(() -> {
+                ReconnectUtil.cancelReconnect(uuid);
+                VelocityMessages.RECONNECTION_FAILED.send(player,
+                        new Placeholder("server", target.getServerInfo().getName()),
+                        new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
+            }, 4, 0);
+            return;
         }
 
         clearPlayerTitle();

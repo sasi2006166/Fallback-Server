@@ -60,6 +60,12 @@ public class KickListener {
             return;
         }
 
+        boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+        if (physical && kickedName.equalsIgnoreCase(VelocityConfig.RECONNECT_PHYSICAL_SERVER.get(String.class))) {
+            handleFallback(event, kickedFrom, player, kickReasonString, kickedName, true);
+            return;
+        }
+
         if (serverType == null) {
             handleFallback(event, kickedFrom, player, kickReasonString, kickedName, false);
             return;

@@ -22,6 +22,9 @@ public enum VelocityConfig {
     RECONNECT_IGNORED_REASONS("settings.auto_reconnect.ignored_reasons"),
     RECONNECT_JOIN_LIMBO("settings.auto_reconnect.join_limbo"),
 
+    RECONNECT_USE_PHYSICAL("settings.auto_reconnect.physical_reconnect.enabled"),
+    RECONNECT_PHYSICAL_SERVER("settings.auto_reconnect.physical_reconnect.server"),
+
     RECONNECT_LIMBO_NAME("settings.auto_reconnect.limbo_settings.name"),
     RECONNECT_LIMBO_DIMENSION("settings.auto_reconnect.limbo_settings.dimension"),
     RECONNECT_LIMBO_WORLD_TIME("settings.auto_reconnect.limbo_settings.world_time"),

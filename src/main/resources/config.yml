@@ -122,6 +122,13 @@ settings:
     # WARNING 2: Remember to change the value also inside spigot addon.
     player_count_check: -1
 
+    # With this option, you can teleport players to a physical server
+    # when they're reconnecting. Useful if you want to entertain your players.
+    # WARNING: You need to have the spigot addon installed and configured on 'STANDALONE'.
+    physical_reconnect:
+      enabled: false
+      server: "reconnectsv"
+
     # Option to choose if making the player join a limbo server
     # while reconnecting.
     # True: Player will be moved to limbo while reconnecting.
