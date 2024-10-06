@@ -81,12 +81,12 @@ public class HubCommand implements SimpleCommand {
         lobbies.sort(Comparator.comparingInt(server -> server.getPlayersConnected().size()));
         RegisteredServer registeredServer = lobbies.get(0);
 
-        player.createConnectionRequest(registeredServer).fireAndForget();
-
         VelocityMessages.MOVED_TO_HUB.send(player,
                 new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)),
                 new Placeholder("server", registeredServer.getServerInfo().getName())
         );
+
+        player.createConnectionRequest(registeredServer).fireAndForget();
 
         boolean useTitle = VelocityMessages.USE_HUB_TITLE.get(Boolean.class);
 

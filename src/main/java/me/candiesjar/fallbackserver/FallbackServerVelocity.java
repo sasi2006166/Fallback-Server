@@ -306,7 +306,6 @@ public class FallbackServerVelocity {
             getComponentLogger().warn(getMiniMessage().deserialize("<gray>Updater is disabled for debugging purposes."));
             getComponentLogger().warn(getMiniMessage().deserialize("<gray>If you find any bugs, please report them on discord."));
             getComponentLogger().warn(" ");
-            return;
         }
     }
 
