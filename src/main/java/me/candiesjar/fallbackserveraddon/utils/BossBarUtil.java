@@ -81,6 +81,6 @@ public class BossBarUtil {
     private boolean validVersion() {
         String nmsVersion = plugin.getServer().getClass().getPackage().getName();
         nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
-        return !nmsVersion.equalsIgnoreCase("v1_8_R1") && !nmsVersion.startsWith("v1_7_");
+        return !nmsVersion.startsWith("v1_8_") && !nmsVersion.startsWith("v1_7_");
     }
 }

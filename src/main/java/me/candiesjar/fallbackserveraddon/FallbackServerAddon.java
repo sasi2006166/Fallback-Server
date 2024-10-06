@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.commands.FSACommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
+import me.candiesjar.fallbackserveraddon.listeners.standalone.MessageListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
 import me.candiesjar.fallbackserveraddon.utils.ProtocolLibUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
@@ -153,6 +154,7 @@ public final class FallbackServerAddon extends JavaPlugin {
             case "STANDALONE":
                 ScoreboardUtil.taskBoards();
                 getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+                getServer().getMessenger().registerIncomingPluginChannel(this, "fs:reconnect", new MessageListener(this));
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected standalone mode, start completed.");
                 break;
             case "ADDON":
