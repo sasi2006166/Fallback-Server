@@ -39,6 +39,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
     private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
     private final Scheduler scheduler = fallbackServerVelocity.getServer().getScheduler();
 
+    @Getter
     private final RegisteredServer target;
     private final UUID uuid;
     private final Player player;

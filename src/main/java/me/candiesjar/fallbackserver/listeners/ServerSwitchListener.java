@@ -38,11 +38,17 @@ public class ServerSwitchListener {
         }
 
         RegisteredServer originalServer = event.getOriginalServer();
+        FallbackLimboHandler limboHandler = plugin.getPlayerCacheManager().get(uuid);
+        RegisteredServer reconnectServer = limboHandler.getTarget();
+
+        if (originalServer.getServerInfo().equals(reconnectServer.getServerInfo())) {
+            return;
+        }
+
         if (!originalServer.getServerInfo().getName().equals("FallbackLimbo")) {
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
         }
 
-        FallbackLimboHandler limboHandler = plugin.getPlayerCacheManager().get(uuid);
         LimboPlayer limboPlayer = limboHandler.getLimboPlayer();
         ReconnectUtil.cancelReconnect(uuid);
         limboPlayer.disconnect(originalServer);
