@@ -10,6 +10,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import lombok.Getter;
 import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
@@ -43,7 +45,7 @@ import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 @Plugin(
         id = "fallbackservervelocity",
         name = "FallbackServerVelocity",
-        version = "3.2.0-Beta3",
+        version = "3.5.0-Beta1",
         url = "github.com/sasi2006166",
         authors = "CandiesJar",
         dependencies = {
@@ -101,6 +103,9 @@ public class FallbackServerVelocity {
     private ServerTypeManager serverTypeManager;
     private OnlineLobbiesManager onlineLobbiesManager;
     private PlayerCacheManager playerCacheManager;
+
+    @Getter
+    private final ChannelIdentifier reconnectIdentifier = MinecraftChannelIdentifier.create("fs", "reconnect");
 
     @Inject
     public FallbackServerVelocity(ProxyServer server, Logger logger, VelocityMetrics.Factory metricsFactory, PluginContainer pluginContainer, @DataDirectory Path path, ComponentLogger componentLogger) {
@@ -204,7 +209,7 @@ public class FallbackServerVelocity {
         YamlUpdater.create(new File(getPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/main/src/main/resources/messages.yml"))
                 .backup(true)
                 .update();
-        versionTextFile.getConfig().set("version", pluginContainer.getDescription().getVersion());
+        versionTextFile.getConfig().set("version", pluginContainer.getDescription().getVersion().get());
         versionTextFile.save();
         loadConfiguration();
     }
@@ -367,6 +372,8 @@ public class FallbackServerVelocity {
         WorldUtil.createLimbo();
         server.getEventManager().register(this, new ServerSwitchListener(this));
         server.getEventManager().register(this, new ReconnectListener(this));
+        boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+        if (physical) server.getChannelRegistrar().register(reconnectIdentifier);
         setReconnect(true);
     }
 
