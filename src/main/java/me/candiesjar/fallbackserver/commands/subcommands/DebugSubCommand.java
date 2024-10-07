@@ -30,7 +30,7 @@ public class DebugSubCommand implements SubCommand {
     @Override
     public void perform(CommandSource commandSource, String[] args) {
         if (args.length < 2) {
-            commandSource.sendMessage(Component.text(ChatUtil.color("&cIncorrent arguments!")));
+            commandSource.sendMessage(Component.text(ChatUtil.formatColor("&cIncorrent arguments!")));
             return;
         }
 
@@ -43,26 +43,26 @@ public class DebugSubCommand implements SubCommand {
 
         if (command.equalsIgnoreCase("ping")) {
             if (args.length < 3) {
-                commandSource.sendMessage(Component.text(ChatUtil.color("&cNo server provided!")));
+                commandSource.sendMessage(Component.text(ChatUtil.formatColor("&cNo server provided!")));
                 return;
             }
 
             String serverName = args[2];
 
-            commandSource.sendMessage(Component.text(ChatUtil.color("&cPinging server " + serverName + "...")));
+            commandSource.sendMessage(Component.text(ChatUtil.formatColor("&cPinging server " + serverName + "...")));
 
             RegisteredServer serverInfo = plugin.getServer().getServer(serverName).get();
 
             serverInfo.ping().whenComplete((result, error) -> {
                 if (error != null || result == null) {
-                    commandSource.sendMessage(Component.text(ChatUtil.color("&cError while pinging server!")));
+                    commandSource.sendMessage(Component.text(ChatUtil.formatColor("&cError while pinging server!")));
                     return;
                 }
 
-                commandSource.sendMessage(Component.text(ChatUtil.color("&aServer pinged successfully!")));
-                commandSource.sendMessage(Component.text(ChatUtil.color("&aPlayers online: " + result.getPlayers().get())));
-                commandSource.sendMessage(Component.text(ChatUtil.color("&aVersion: " + result.getVersion().getName())));
-                commandSource.sendMessage(Component.text(ChatUtil.color("&aMax players: " + result.asBuilder().getMaximumPlayers())));
+                commandSource.sendMessage(Component.text(ChatUtil.formatColor("&aServer pinged successfully!")));
+                commandSource.sendMessage(Component.text(ChatUtil.formatColor("&aPlayers online: " + result.getPlayers().get())));
+                commandSource.sendMessage(Component.text(ChatUtil.formatColor("&aVersion: " + result.getVersion().getName())));
+                commandSource.sendMessage(Component.text(ChatUtil.formatColor("&aMax players: " + result.asBuilder().getMaximumPlayers())));
             });
         }
 

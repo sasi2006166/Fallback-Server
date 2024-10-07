@@ -13,33 +13,33 @@ import java.time.Duration;
 @UtilityClass
 public class TitleUtil {
 
+    private Title createTitle(String title, String subTitle, String serverName, Duration fadeIn, Duration stay, Duration fadeOut) {
+        return Title.title(
+                Component.text(ChatUtil.formatColor(title)
+                        .replace("%server%", serverName)
+                        .replace("%dots%", Utils.getDots(0))),
+                Component.text(ChatUtil.formatColor(subTitle)
+                        .replace("%server%", serverName)
+                        .replace("%dots%", Utils.getDots(0))),
+                Title.Times.times(fadeIn, stay, fadeOut)
+        );
+    }
+
     public void sendTitle(int fadeIn, int stay, int fadeOut, String title, String subTitle, RegisteredServer registeredServer, Player player) {
-        Title.Times times = Title.Times.times(Duration.ofSeconds(fadeIn),
-                Duration.ofSeconds(stay),
-                Duration.ofSeconds(fadeOut));
-
-        Title createdTitle = Title.title(
-                Component.text(ChatUtil.color(title)
-                        .replace("%server%", registeredServer.getServerInfo().getName())
-                        .replace("%dots%", Utils.getDots(0))),
-                Component.text(ChatUtil.color(subTitle)
-                        .replace("%server%", registeredServer.getServerInfo().getName())
-                        .replace("%dots%", Utils.getDots(0))),
-                times);
-
+        String serverName = registeredServer.getServerInfo().getName();
+        Title createdTitle = createTitle(title, subTitle, serverName, Duration.ofSeconds(fadeIn), Duration.ofSeconds(stay), Duration.ofSeconds(fadeOut));
         player.showTitle(createdTitle);
     }
 
     public void sendReconnectingTitle(int fadeIn, int stay, int dots, VelocityMessages title, VelocityMessages subTitle, Player player) {
-        Title.Times times = Title.Times.times(Duration.ofSeconds(fadeIn),
+        Title createdTitle = createTitle(
+                ChatUtil.getFormattedString(title).replace("%dots%", Utils.getDots(dots)),
+                ChatUtil.getFormattedString(subTitle),
+                "",
+                Duration.ofSeconds(fadeIn),
                 Duration.ofSeconds(stay),
-                Duration.ofSeconds(1));
-
-        Title createdTitle = Title.title(Component.text(ChatUtil.getFormattedString(title)
-                        .replace("%dots%", Utils.getDots(dots))),
-                Component.text(ChatUtil.getFormattedString(subTitle)), times);
-
+                Duration.ofSeconds(1)
+        );
         player.showTitle(createdTitle);
     }
-
 }

@@ -47,7 +47,7 @@ public class FallbackVelocityCommand implements SimpleCommand {
         }
 
         if (!commandSource.hasPermission(adminPermission)) {
-            commandSource.sendMessage(Component.text(ChatUtil.color("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
+            commandSource.sendMessage(Component.text(ChatUtil.formatColor("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
                     .replace("version", plugin.getVersion()))));
             return;
         }

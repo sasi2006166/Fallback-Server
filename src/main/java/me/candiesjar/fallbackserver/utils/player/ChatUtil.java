@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserver.utils.player;
 
-import com.google.common.collect.Lists;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import lombok.experimental.UtilityClass;
@@ -10,7 +9,6 @@ import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,103 +16,90 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class ChatUtil {
-    private final FallbackServerVelocity instance = FallbackServerVelocity.getInstance();
+
+    private FallbackServerVelocity getInstance() {
+        return FallbackServerVelocity.getInstance();
+    }
+
+    private final Pattern pattern = getInstance().getPattern();
 
     public String getString(VelocityMessages velocityMessages) {
-        return instance.getMessagesTextFile().getConfig().getString(velocityMessages.getPath());
+        return getInstance().getMessagesTextFile().getConfig().getString(velocityMessages.getPath());
     }
 
     public String getString(VelocityMessages velocityMessages, Placeholder... placeholders) {
-        return applyPlaceHolder(getString(velocityMessages), placeholders);
+        return applyPlaceholders(getString(velocityMessages), placeholders);
     }
 
     public String getFormattedString(VelocityMessages velocityMessages, Placeholder... placeholders) {
-        return color(getString(velocityMessages, placeholders));
+        return formatColor(getString(velocityMessages, placeholders));
     }
 
     public List<String> getStringList(VelocityMessages velocityMessages) {
-        return instance.getMessagesTextFile().getConfig().getStringList(velocityMessages.getPath());
+        return getInstance().getMessagesTextFile().getConfig().getStringList(velocityMessages.getPath());
     }
 
     public List<String> getStringList(VelocityMessages velocityMessages, Placeholder... placeholders) {
-        List<String> newList = new ArrayList<>();
+        return getStringList(velocityMessages).stream()
+                .map(s -> applyPlaceholders(s, placeholders))
+                .collect(Collectors.toList());
+    }
 
-        for (String s : getStringList(velocityMessages)) {
-            s = applyPlaceHolder(s, placeholders);
-            newList.add(s);
+    public String applyPlaceholders(String message, Placeholder... placeholders) {
+        for (Placeholder placeholder : placeholders) {
+            message = message.replace(placeholder.getKey(), placeholder.getValue());
         }
-
-        return newList;
+        return message;
     }
 
-    public String applyPlaceHolder(String s, Placeholder... placeholders) {
-        for (Placeholder placeHolder : placeholders) {
-            s = s.replace(placeHolder.getKey(), placeHolder.getValue());
-        }
-
-        return s;
+    public String formatColor(String message) {
+        return formatHexColor(message.replace("&", "§"));
     }
 
-    public String color(String s) {
-        String hex = convertHexColors(s);
-        return hex.replace("&", "§");
+    public List<String> formatColor(List<String> messages) {
+        return messages.stream()
+                .map(ChatUtil::formatColor)
+                .collect(Collectors.toList());
     }
 
-    public List<String> color(List<String> list) {
-        return list.stream().map(ChatUtil::color).collect(Collectors.toList());
-    }
-
-    public void sendList(CommandSource commandSource, List<String> stringList) {
-        for (String message : stringList) {
-            commandSource.sendMessage(Component.text(message));
-        }
+    public void sendList(CommandSource commandSource, List<String> messages) {
+        messages.forEach(message -> commandSource.sendMessage(Component.text(message)));
     }
 
     public void sendFormattedList(VelocityMessages velocityMessages, CommandSource commandSource, Placeholder... placeholders) {
-        sendList(commandSource, color(getStringList(velocityMessages, placeholders)));
+        sendList(commandSource, formatColor(getStringList(velocityMessages, placeholders)));
     }
 
     public String componentToString(Component component) {
         return PlainTextComponentSerializer.plainText().serialize(component);
     }
 
-    public String convertHexColors(String message) {
+    public String formatHexColor(String message) {
         if (!containsHexColor(message)) {
             return message;
         }
 
-        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
         Matcher matcher = pattern.matcher(message);
+
         while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
-
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch) {
-                builder.append("&").append(c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
+            String hexCode = matcher.group();
+            String formattedHex = hexCode.replace('#', 'x').replaceAll("(.)", "&$1");
+            message = message.replace(hexCode, formattedHex);
         }
+
         return message;
     }
 
     public boolean containsHexColor(String message) {
-        String hexColorPattern = "(?i)&#[a-f0-9]{6}";
-        return message.matches(".*" + hexColorPattern + ".*");
+        return message.matches(".*#[a-fA-F0-9]{6}.*");
     }
 
-    public boolean checkMessage(String message, List<String> stringList) {
-        List<String> list = Lists.newArrayList();
+    public boolean checkMessage(String message, List<String> blockedMessages) {
+        List<String> lowerCasedBlockedMessages = blockedMessages.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
 
-        for (String s : stringList) {
-            String toLowerCase = s.toLowerCase();
-            list.add(toLowerCase);
-        }
-
-        return list.contains(message.toLowerCase());
+        return lowerCasedBlockedMessages.contains(message.toLowerCase());
     }
 
     public void clearChat(Player player) {
@@ -122,5 +107,4 @@ public class ChatUtil {
             player.sendMessage(Component.text(""));
         }
     }
-
 }

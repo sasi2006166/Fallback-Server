@@ -84,14 +84,14 @@ public class KickListener {
         List<String> ignoredReasons = VelocityConfig.IGNORED_REASONS.getStringList();
 
         if (shouldIgnore(kickReasonString, ignoredReasons)) {
-            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(kickReasonString))));
+            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.formatColor(kickReasonString))));
             return;
         }
 
         boolean ignoredServer = VelocityConfig.USE_IGNORED_SERVERS.get(Boolean.class) && VelocityConfig.IGNORED_SERVERS_LIST.getStringList().contains(kickedName);
 
         if (ignoredServer) {
-            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(kickReasonString))));
+            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.formatColor(kickReasonString))));
             return;
         }
 
@@ -109,10 +109,10 @@ public class KickListener {
         if (lobbies.isEmpty()) {
             if (kickReasonString.isEmpty()) {
                 String disconnectMessage = VelocityMessages.NO_SERVER.get(String.class).replace("%prefix%", ChatUtil.getFormattedString(VelocityMessages.PREFIX));
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(disconnectMessage))));
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.formatColor(disconnectMessage))));
                 return;
             }
-            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.color(kickReasonString))));
+            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.formatColor(kickReasonString))));
             return;
         }
 
@@ -151,7 +151,7 @@ public class KickListener {
         if (!reconnect) {
             VelocityMessages.KICKED_TO_LOBBY.sendList(player,
                     new Placeholder("server", registeredServer.getServerInfo().getName()),
-                    new Placeholder("reason", ChatUtil.color(kickReasonString)));
+                    new Placeholder("reason", ChatUtil.formatColor(kickReasonString)));
         }
     }
 

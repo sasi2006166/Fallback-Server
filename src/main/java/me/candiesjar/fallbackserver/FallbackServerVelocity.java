@@ -39,6 +39,7 @@ import ru.vyarus.yaml.updater.util.FileUtils;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
@@ -67,6 +68,9 @@ public class FallbackServerVelocity {
 
     @Setter
     private boolean limboApi = false;
+
+    @Getter
+    private Pattern pattern;
 
     @Getter
     private MiniMessage miniMessage;
@@ -124,6 +128,7 @@ public class FallbackServerVelocity {
         serverTypeManager = ServerTypeManager.getInstance();
         onlineLobbiesManager = OnlineLobbiesManager.getInstance();
         playerCacheManager = PlayerCacheManager.getInstance();
+        pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
         getComponentLogger().info("\n" +
                 "  _____     _ _ _                _     ____                           \n" +
