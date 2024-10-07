@@ -74,7 +74,7 @@ public class WorldUtil {
         ServerInfo serverInfo = new ServerInfo("FallbackLimbo", InetSocketAddress.createUnresolved("0.0.0.0", 12345));
         fallbackServerVelocity.getServer().registerServer(serverInfo);
 
-        if (isPhysical) {
+        if (useSchematic || isPhysical) {
             fallbackLimbo = factory.createLimbo(world)
                     .setName(name)
                     .setWorldTime(worldTime)
@@ -84,11 +84,11 @@ public class WorldUtil {
             return;
         }
 
-        if (useSchematic) {
+        if (shouldJoin) {
             fallbackLimbo = factory.createLimbo(world)
                     .setName(name)
                     .setWorldTime(worldTime)
-                    .setShouldRejoin(false)
+                    .setShouldRejoin(true)
                     .setGameMode(gameMode)
                     .setShouldRespawn(true);
             return;
@@ -97,7 +97,7 @@ public class WorldUtil {
         fallbackLimbo = factory.createLimbo(world)
                 .setName(name)
                 .setWorldTime(worldTime)
-                .setShouldRejoin(shouldJoin)
+                .setShouldRejoin(false)
                 .setGameMode(gameMode)
                 .setShouldRespawn(false);
     }
