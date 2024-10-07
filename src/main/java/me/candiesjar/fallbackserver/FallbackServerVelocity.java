@@ -46,7 +46,7 @@ import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 @Plugin(
         id = "fallbackservervelocity",
         name = "FallbackServerVelocity",
-        version = "3.5.0-Beta1",
+        version = "3.2.0-Beta3.5",
         url = "github.com/sasi2006166",
         authors = "CandiesJar",
         dependencies = {
