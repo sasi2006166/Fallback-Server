@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/your-repo-link) 
 [![Documentation](https://img.shields.io/badge/documentation-available-blue)](https://fallbackserver-wiki.gitbook.io/) 
-[![Java](https://img.shields.io/badge/Java-8+-orange)](https://www.oracle.com/java/technologies/javase-downloads.html)
+[![Java](https://img.shields.io/badge/Java-11+-orange)](https://www.oracle.com/java/technologies/javase-downloads.html)
 
 ## Overview
 
@@ -14,7 +14,6 @@ FallbackServer is a robust plugin designed to manage player redirection when ser
 - **Customizable Configurations**: Easily set up fallback groups, lobbies, and custom commands through the configuration file.
 - **Reconnect Mode**: Choose between fallback or reconnect modes for more flexible player routing.
 - **Extensive API**: Includes API methods for easy integration and customization.
-- **Multi-Proxy Support**: Works with different proxies, ensuring flexibility across server setups.
 
 ## Supported Proxies
 
