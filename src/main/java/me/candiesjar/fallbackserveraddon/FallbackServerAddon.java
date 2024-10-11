@@ -14,6 +14,7 @@ import me.candiesjar.fallbackserveraddon.listeners.standalone.MessageListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
 import me.candiesjar.fallbackserveraddon.utils.ProtocolLibUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
+import me.candiesjar.fallbackserveraddon.utils.UpdateUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import me.candiesjar.fallbackserveraddon.utils.tasks.GeneralTask;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -56,6 +57,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         loadDependencies();
         loadConfig();
+        checkVersion();
         schedule();
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
@@ -112,6 +114,16 @@ public final class FallbackServerAddon extends JavaPlugin {
         }
     }
 
+    private void checkVersion() {
+        if (getDescription().getVersion().contains("Beta")) {
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon]  ");
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7You're running a §c§lBETA VERSION §7of the plugin.");
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7If you find any bugs, please report them on discord.");
+            getServer().getConsoleSender().sendMessage("[FallbackServerAddon]  ");
+        }
+        UpdateUtil.checkForUpdates();
+    }
+
     @SneakyThrows
     private void updateConfig(File versionFile, YamlConfiguration version) {
         File configFile = new File(getDataFolder(), "config.yml");
@@ -146,6 +158,7 @@ public final class FallbackServerAddon extends JavaPlugin {
         getCommand("fallbackserveraddon").setExecutor(new FallbackAddonCommand(this));
         getCommand("fallbackserveraddon").setTabCompleter(new FallbackAddonCommand(this));
         String mode = getConfig().getString("settings.mode", "NONE");
+        UpdateUtil.sendUpdateMessage();
 
         switch (mode) {
             case "STANDALONE":
@@ -166,6 +179,7 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     public void executeReload(String oldValue) {
         String mode = getConfig().getString("settings.mode", "NONE");
+        UpdateUtil.sendUpdateMessage();
 
         switch (mode) {
             case "STANDALONE":
