@@ -10,7 +10,6 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.commands.FallbackAddonCommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
-import me.candiesjar.fallbackserveraddon.listeners.addon.packetevents.PacketHandler;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.MessageListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
 import me.candiesjar.fallbackserveraddon.utils.PacketEventsUtil;
@@ -104,19 +103,9 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .url("https://github.com/frafol/Config-Updater/releases/download/compile/ConfigUpdater-2.1-SNAPSHOT.jar")
                 .build();
 
-        Relocation packetRelocation = new Relocation("packetevent", "me{}candiesjar{}libs{}packetevent");
-        Library packetevents = Library.builder()
-                .groupId("com{}github{}retrooper")
-                .artifactId("packetevents-spigot")
-                .version("2.5.0")
-                .relocate(packetRelocation)
-                .repository("https://repo.codemc.io/repository/maven-releases/")
-                .build();
-
         bukkitLibraryManager.loadLibrary(scoreboard);
         bukkitLibraryManager.loadLibrary(scheduler);
         bukkitLibraryManager.loadLibrary(configUpdater);
-        bukkitLibraryManager.loadLibrary(packetevents);
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] PlaceholderAPI support enabled.");

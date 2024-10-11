@@ -6,7 +6,8 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.server.*;
+import com.github.retrooper.packetevents.wrapper.status.server.WrapperStatusServerResponse;
+import com.google.gson.JsonObject;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 
@@ -20,12 +21,12 @@ public class PacketHandler extends PacketListenerAbstract {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-        if (event.getPacketType() != PacketType.Play.Server.JOIN_GAME) {
+
+        if (event.getPacketType() != PacketType.Status.Server.RESPONSE) {
             return;
         }
 
-        WrapperPlayServerJoinGame response = new WrapperPlayServerJoinGame(event);
-        response.setMaxPlayers(-1);
+        WrapperStatusServerResponse response = new WrapperStatusServerResponse(event);
         if (finished) {
             return;
         }
@@ -34,7 +35,11 @@ public class PacketHandler extends PacketListenerAbstract {
             return;
         }
 
-        response.setMaxPlayers(plugin.getConfig().getInt("settings.addon.override_player_count_number", -1));
+        JsonObject serverInfo = response.getComponent();
+        JsonObject players = serverInfo.getAsJsonObject("players");
+        players.addProperty("max", plugin.getConfig().getInt("settings.addon.override_player_count_number", -1));
+        players.addProperty("online", players.get("online").getAsInt());
+        response.setComponent(serverInfo);
 
         if (received) {
             return;

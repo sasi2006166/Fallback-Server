@@ -23,6 +23,7 @@ public class Utils {
 
     public void unregisterEvent(PacketEventsAPI api) {
         api.getEventManager().unregisterAllListeners();
+        api.terminate();
     }
 
     public void reloadConfig() {
