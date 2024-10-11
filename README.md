@@ -12,7 +12,6 @@ FallbackServer is a robust plugin designed to manage player redirection when ser
 - **Customizable Configurations**: Easily set up fallback groups, lobbies, and custom commands through the configuration file.
 - **Reconnect Mode**: Choose between fallback or reconnect modes for more flexible player routing.
 - **Extensive API**: Includes API methods for easy integration and customization.
-- **Multi-Proxy Support**: Works with different proxies, ensuring flexibility across server setups.
 
 ## Supported Proxies
 
