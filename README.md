@@ -1,6 +1,8 @@
 # FallbackServer
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/your-repo-link)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/your-repo-link) 
+[![Documentation](https://img.shields.io/badge/documentation-available-blue)](https://fallbackserver-wiki.gitbook.io/) 
+[![Java](https://img.shields.io/badge/Java-8+-orange)](https://www.oracle.com/java/technologies/javase-downloads.html)
 
 ## Overview
 
