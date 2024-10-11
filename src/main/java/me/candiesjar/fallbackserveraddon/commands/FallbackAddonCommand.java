@@ -46,14 +46,14 @@ public class FallbackAddonCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage((plugin.getConfig().getString("settings.reload_message")).replace('&', '§')
+        sender.sendMessage(ChatUtil.color(plugin.getConfig().getString("settings.reload_message"))
                 .replace("%version%", plugin.getDescription().getVersion()));
         return true;
     }
 
     private void sendDefaultMessage(CommandSender sender) {
         if (!plugin.getConfig().getBoolean("settings.hide_command", false)) {
-            sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
+            sender.sendMessage(ChatUtil.color("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar")
                     .replace("version", plugin.getDescription().getVersion()));
         }
     }

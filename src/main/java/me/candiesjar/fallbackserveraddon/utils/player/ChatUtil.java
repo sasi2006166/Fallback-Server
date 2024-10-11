@@ -14,6 +14,10 @@ public class ChatUtil {
 
     private final FallbackServerAddon instance = FallbackServerAddon.getInstance();
 
+    public String color(String message) {
+        return convertHexColors(message).replace("&", "§");
+    }
+
     public String color(Player player, String message) {
         return convertHexColors(applyPlaceholder(player, message)).replace("&", "§");
     }

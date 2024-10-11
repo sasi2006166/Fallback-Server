@@ -26,18 +26,18 @@ public class ActionBarCreator {
             return;
         }
 
+        nmsVersion = instance.getServer().getClass().getPackage().getName();
+        nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
+
+        if (nmsVersion.startsWith("v1_7_")) {
+            return;
+        }
+
         if (instance.isPLib()) {
             ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
             PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SET_ACTION_BAR_TEXT);
             packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
             protocolManager.sendServerPacket(player, packet);
-            return;
-        }
-
-        nmsVersion = instance.getServer().getClass().getPackage().getName();
-        nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf(".") + 1);
-
-        if (nmsVersion.startsWith("v1_7_")) {
             return;
         }
 

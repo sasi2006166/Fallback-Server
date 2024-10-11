@@ -10,9 +10,10 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import me.candiesjar.fallbackserveraddon.commands.FallbackAddonCommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
+import me.candiesjar.fallbackserveraddon.listeners.addon.packetevents.PacketHandler;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.MessageListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
-import me.candiesjar.fallbackserveraddon.utils.ProtocolLibUtil;
+import me.candiesjar.fallbackserveraddon.utils.PacketEventsUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import me.candiesjar.fallbackserveraddon.utils.UpdateUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
@@ -34,6 +35,9 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     @Getter
     private boolean pLib = false;
+
+    @Getter
+    private boolean pEvents = false;
 
     @Getter
     private boolean allPluginsLoaded = true;
@@ -100,9 +104,19 @@ public final class FallbackServerAddon extends JavaPlugin {
                 .url("https://github.com/frafol/Config-Updater/releases/download/compile/ConfigUpdater-2.1-SNAPSHOT.jar")
                 .build();
 
+        Relocation packetRelocation = new Relocation("packetevent", "me{}candiesjar{}libs{}packetevent");
+        Library packetevents = Library.builder()
+                .groupId("com{}github{}retrooper")
+                .artifactId("packetevents-spigot")
+                .version("2.5.0")
+                .relocate(packetRelocation)
+                .repository("https://repo.codemc.io/repository/maven-releases/")
+                .build();
+
         bukkitLibraryManager.loadLibrary(scoreboard);
         bukkitLibraryManager.loadLibrary(scheduler);
         bukkitLibraryManager.loadLibrary(configUpdater);
+        bukkitLibraryManager.loadLibrary(packetevents);
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] PlaceholderAPI support enabled.");
@@ -111,6 +125,10 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
             pLib = true;
+        }
+
+        if (getServer().getPluginManager().getPlugin("PacketEvents") != null) {
+            pEvents = true;
         }
     }
 
@@ -151,10 +169,8 @@ public final class FallbackServerAddon extends JavaPlugin {
     }
 
     public void executeStart() {
-        if (!getConfig().getBoolean("settings.protocollib_support", true)) {
-            pLib = false;
-        }
-
+        if (!getConfig().getBoolean("settings.protocollib_support", true)) pLib = false;
+        if (!getConfig().getBoolean("settings.packetevents_support", true)) pEvents = false;
         getCommand("fallbackserveraddon").setExecutor(new FallbackAddonCommand(this));
         getCommand("fallbackserveraddon").setTabCompleter(new FallbackAddonCommand(this));
         String mode = getConfig().getString("settings.mode", "NONE");
@@ -185,7 +201,7 @@ public final class FallbackServerAddon extends JavaPlugin {
             case "STANDALONE":
                 if (oldValue.equalsIgnoreCase("ADDON")) {
                     Utils.unregisterEvent(new PingListener(this));
-                    Utils.unregisterEvent(ProtocolLibUtil.getProtocolManager(), ProtocolLibUtil.getPacketListener());
+                    PacketEventsUtil.terminate();
                 }
 
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
@@ -240,8 +256,8 @@ public final class FallbackServerAddon extends JavaPlugin {
     }
 
     private void registerPing() {
-        if (pLib) {
-            ProtocolLibUtil.start(this);
+        if (pEvents) {
+            PacketEventsUtil.registerHandler();
             return;
         }
         getServer().getPluginManager().registerEvents(new PingListener(this), this);
