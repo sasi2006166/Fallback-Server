@@ -1,7 +1,8 @@
 package me.candiesjar.fallbackserveraddon.commands;
 
+import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
-import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
+import me.candiesjar.fallbackserveraddon.utils.player.ChatUtil;
 import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,17 +13,13 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 import java.util.List;
 
-public class FSACommand implements CommandExecutor, TabCompleter {
+@RequiredArgsConstructor
+public class FallbackAddonCommand implements CommandExecutor, TabCompleter {
 
     private final FallbackServerAddon plugin;
 
-    public FSACommand(FallbackServerAddon plugin) {
-        this.plugin = plugin;
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-
         if (args.length != 1) {
             sender.sendMessage(("&8&l» &7Running &b&nFallback Server Addon version&r&7 by &b&nCandiesJar").replace('&', '§')
                     .replace("version", plugin.getDescription().getVersion()));
@@ -66,6 +63,7 @@ public class FSACommand implements CommandExecutor, TabCompleter {
         if (args.length != 1) {
             return Collections.emptyList();
         }
+
         return List.of("reload");
     }
 }

@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserveraddon.utils;
+package me.candiesjar.fallbackserveraddon.utils.player;
 
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
@@ -55,7 +55,7 @@ public class ChatUtil {
     }
 
     private String applyPlaceholder(OfflinePlayer player, String text) {
-        if (!instance.isPAPI()) {
+        if (!instance.isPlaceholderApi()) {
             return text;
         }
         return PlaceholderAPI.setPlaceholders(player, text);

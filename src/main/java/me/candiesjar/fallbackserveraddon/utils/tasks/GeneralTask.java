@@ -11,36 +11,48 @@ public class GeneralTask {
 
     private MyScheduledTask task;
     private int tries = 0;
+
     public void schedule(FallbackServerAddon instance, TaskScheduler scheduler) {
         task = scheduler.runTaskTimer(() -> {
-
             if (instance.isLocked()) {
                 task.cancel();
                 return;
             }
 
-            for (Plugin plugin : instance.getServer().getPluginManager().getPlugins()) {
-
-                if (plugin.isEnabled()) {
-                    continue;
-                }
-
-                if (tries >= 30) {
-                    instance.getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Not all plugins are loaded, time's up.");
-                    instance.setAllPluginsLoaded(true);
-                    continue;
-                }
-
+            if (!checkPlugins(instance)) {
                 instance.setAllPluginsLoaded(false);
                 tries++;
+            } else {
+                instance.setAllPluginsLoaded(true);
+            }
+
+            if (tries >= 30) {
+                notifyTimeUp(instance);
             }
 
             if (instance.isAllPluginsLoaded()) {
-                instance.setLocked(true);
-                instance.executeStart();
-                tries = 0;
-                task.cancel();
+                finalizeStartup(instance);
             }
         }, 20L, 40L);
+    }
+
+    private boolean checkPlugins(FallbackServerAddon instance) {
+        for (Plugin plugin : instance.getServer().getPluginManager().getPlugins()) {
+            if (!plugin.isEnabled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void notifyTimeUp(FallbackServerAddon instance) {
+        instance.getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Not all plugins are loaded, time's up.");
+    }
+
+    private void finalizeStartup(FallbackServerAddon instance) {
+        instance.setLocked(true);
+        instance.executeStart();
+        tries = 0;
+        task.cancel();
     }
 }

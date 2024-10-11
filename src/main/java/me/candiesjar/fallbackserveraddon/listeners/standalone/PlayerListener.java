@@ -2,9 +2,9 @@ package me.candiesjar.fallbackserveraddon.listeners.standalone;
 
 import io.papermc.lib.PaperLib;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
-import me.candiesjar.fallbackserveraddon.utils.ActionBarUtil;
-import me.candiesjar.fallbackserveraddon.utils.BossBarUtil;
-import me.candiesjar.fallbackserveraddon.utils.ChatUtil;
+import me.candiesjar.fallbackserveraddon.utils.player.ActionBarUtil;
+import me.candiesjar.fallbackserveraddon.utils.player.BossBarUtil;
+import me.candiesjar.fallbackserveraddon.utils.player.ChatUtil;
 import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -87,7 +87,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-
         Player player = event.getPlayer();
         BossBarUtil.removeBossBar(player);
         ActionBarUtil.stopActionBar(player);

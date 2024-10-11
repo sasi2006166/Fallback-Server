@@ -8,7 +8,7 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import me.candiesjar.fallbackserveraddon.commands.FSACommand;
+import me.candiesjar.fallbackserveraddon.commands.FallbackAddonCommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.MessageListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
@@ -29,10 +29,10 @@ public final class FallbackServerAddon extends JavaPlugin {
     public static FallbackServerAddon instance;
 
     @Getter
-    private boolean PAPI = false;
+    private boolean placeholderApi = false;
 
     @Getter
-    private boolean PLIB = false;
+    private boolean pLib = false;
 
     @Getter
     private boolean allPluginsLoaded = true;
@@ -63,11 +63,9 @@ public final class FallbackServerAddon extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Shutting down...");
         getCommand("fallbackserveraddon").unregister(Utils.getCommandMap(this));
         Utils.unregisterEvent(new PlayerListener(this));
         Utils.unregisterEvent(new PingListener(this));
-        instance = null;
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Un-Loaded.");
     }
 
@@ -75,12 +73,12 @@ public final class FallbackServerAddon extends JavaPlugin {
         BukkitLibraryManager bukkitLibraryManager = new BukkitLibraryManager(this);
         bukkitLibraryManager.addJitPack();
 
-        final Relocation scoreboardrelocation = new Relocation("scoreboard", "me{}candiesjar{}libs{}scoreboard");
+        Relocation scoreboardRelocation = new Relocation("scoreboard", "me{}candiesjar{}libs{}scoreboard");
         Library scoreboard = Library.builder()
                 .groupId("fr{}mrmicky")
                 .artifactId("FastBoard")
                 .version("2.1.3")
-                .relocate(scoreboardrelocation)
+                .relocate(scoreboardRelocation)
                 .build();
 
         Relocation schedulerRelocation = new Relocation("scheduler", "me{}candiesjar{}libs{}scheduler");
@@ -106,11 +104,11 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] PlaceholderAPI support enabled.");
-            PAPI = true;
+            placeholderApi = true;
         }
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
-            PLIB = true;
+            pLib = true;
         }
     }
 
@@ -141,13 +139,12 @@ public final class FallbackServerAddon extends JavaPlugin {
     }
 
     public void executeStart() {
-
         if (!getConfig().getBoolean("settings.protocollib_support", true)) {
-            PLIB = false;
+            pLib = false;
         }
 
-        getCommand("fallbackserveraddon").setExecutor(new FSACommand(this));
-        getCommand("fallbackserveraddon").setTabCompleter(new FSACommand(this));
+        getCommand("fallbackserveraddon").setExecutor(new FallbackAddonCommand(this));
+        getCommand("fallbackserveraddon").setTabCompleter(new FallbackAddonCommand(this));
         String mode = getConfig().getString("settings.mode", "NONE");
 
         switch (mode) {
@@ -172,7 +169,6 @@ public final class FallbackServerAddon extends JavaPlugin {
 
         switch (mode) {
             case "STANDALONE":
-
                 if (oldValue.equalsIgnoreCase("ADDON")) {
                     Utils.unregisterEvent(new PingListener(this));
                     Utils.unregisterEvent(ProtocolLibUtil.getProtocolManager(), ProtocolLibUtil.getPacketListener());
@@ -188,7 +184,6 @@ public final class FallbackServerAddon extends JavaPlugin {
                 break;
 
             case "ADDON":
-
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
                     Utils.unregisterEvent(new PlayerListener(this));
                 }
@@ -202,7 +197,6 @@ public final class FallbackServerAddon extends JavaPlugin {
                 break;
 
             default:
-
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
                     Utils.unregisterEvent(new PlayerListener(this));
                 }
@@ -232,7 +226,7 @@ public final class FallbackServerAddon extends JavaPlugin {
     }
 
     private void registerPing() {
-        if (PLIB) {
+        if (pLib) {
             ProtocolLibUtil.start(this);
             return;
         }

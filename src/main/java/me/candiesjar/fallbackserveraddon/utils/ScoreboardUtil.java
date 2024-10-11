@@ -2,23 +2,25 @@ package me.candiesjar.fallbackserveraddon.utils;
 
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import fr.mrmicky.fastboard.FastBoard;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
+import me.candiesjar.fallbackserveraddon.utils.player.ChatUtil;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class ScoreboardUtil {
 
-    private final HashMap<UUID, FastBoard> scoreboards = Maps.newHashMap();
-    private MyScheduledTask taskboard;
+    private final Map<UUID, FastBoard> scoreboards = Maps.newConcurrentMap();
     private final FallbackServerAddon instance = FallbackServerAddon.getInstance();
+    private MyScheduledTask taskBoard;
 
     public void createScoreboard(Player player) {
         UniversalScheduler.getScheduler(instance).runTaskLater(() -> {
@@ -33,29 +35,25 @@ public class ScoreboardUtil {
     }
 
     public void deleteScoreboard(Player player) {
-        if (scoreboards.get(player.getUniqueId()) != null) {
-            scoreboards.get(player.getUniqueId()).delete();
-            scoreboards.remove(player.getUniqueId());
-        }
+        Optional.ofNullable(scoreboards.remove(player.getUniqueId()))
+                .ifPresent(FastBoard::delete);
     }
 
     public void taskBoards() {
-        taskboard = UniversalScheduler.getScheduler(instance).runTaskTimer(
-                ScoreboardUtil::updateScoreboard,
+        taskBoard = UniversalScheduler.getScheduler(instance).runTaskTimer(
+                ScoreboardUtil::updateScoreboards,
                 20L,
                 instance.getConfig().getInt("settings.standalone.scoreboard.update_interval"));
     }
 
     public void reloadBoards() {
-        if (taskboard != null) {
-            taskboard.cancel();
-            taskBoards();
-            return;
+        if (taskBoard != null) {
+            taskBoard.cancel();
         }
         taskBoards();
     }
 
-    private void updateScoreboard() {
+    private void updateScoreboards() {
         instance.getServer().getOnlinePlayers().forEach(player -> {
             FastBoard board = scoreboards.get(player.getUniqueId());
 
@@ -63,16 +61,21 @@ public class ScoreboardUtil {
                 return;
             }
 
-            board.updateTitle(ChatUtil.color(player, instance.getConfig().getString("settings.standalone.scoreboard.title")));
-            board.updateLines(parsePlaceholders(player, instance.getConfig().getStringList("settings.standalone.scoreboard.lines")));
+            updateBoard(player, board);
         });
     }
 
+    private void updateBoard(Player player, FastBoard board) {
+        String title = ChatUtil.color(player, instance.getConfig().getString("settings.standalone.scoreboard.title"));
+        List<String> lines = parsePlaceholders(player, instance.getConfig().getStringList("settings.standalone.scoreboard.lines"));
+
+        board.updateTitle(title);
+        board.updateLines(lines);
+    }
+
     private List<String> parsePlaceholders(Player player, List<String> list) {
-        List<String> parsedList = Lists.newArrayList();
-        for (String s : list) {
-            parsedList.add(ChatUtil.color(player, s));
-        }
-        return parsedList;
+        return list.stream()
+                .map(s -> ChatUtil.color(player, s))
+                .collect(Collectors.toList());
     }
 }

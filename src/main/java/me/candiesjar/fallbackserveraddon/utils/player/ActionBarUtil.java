@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserveraddon.utils;
+package me.candiesjar.fallbackserveraddon.utils.player;
 
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;

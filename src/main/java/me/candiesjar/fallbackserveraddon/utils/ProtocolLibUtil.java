@@ -11,6 +11,12 @@ import me.candiesjar.fallbackserveraddon.listeners.addon.protocollib.PacketHandl
 @UtilityClass
 public class ProtocolLibUtil {
 
+    @Getter
+    private ProtocolManager protocolManager;
+
+    @Getter
+    private PacketListener packetListener;
+
     public void start(FallbackServerAddon plugin) {
         protocolManager = getDefaultProtocolManager();
         plugin.getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] ProtocolLib support enabled.");
@@ -18,13 +24,7 @@ public class ProtocolLibUtil {
         protocolManager.addPacketListener(packetListener);
     }
 
-    public ProtocolManager getDefaultProtocolManager() {
+    private ProtocolManager getDefaultProtocolManager() {
         return ProtocolLibrary.getProtocolManager();
     }
-
-    @Getter
-    private ProtocolManager protocolManager;
-
-    @Getter
-    private PacketListener packetListener;
 }

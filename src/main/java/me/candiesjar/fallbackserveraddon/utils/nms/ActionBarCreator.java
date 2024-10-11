@@ -22,12 +22,11 @@ public class ActionBarCreator {
 
     @SneakyThrows
     public static void sendActionBar(Player player, String message, FallbackServerAddon instance) {
-
         if (!player.isOnline()) {
             return;
         }
 
-        if (instance.isPLIB()) {
+        if (instance.isPLib()) {
             ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
             PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SET_ACTION_BAR_TEXT);
             packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
