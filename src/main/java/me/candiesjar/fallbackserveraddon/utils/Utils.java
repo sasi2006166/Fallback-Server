@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserveraddon.utils;
 
 import com.github.retrooper.packetevents.PacketEventsAPI;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
@@ -21,9 +22,8 @@ public class Utils {
         }
     }
 
-    public void unregisterEvent(PacketEventsAPI api) {
-        api.getEventManager().unregisterAllListeners();
-        api.terminate();
+    public void unregisterEvent(PacketEventsAPI api, PacketListenerCommon listener) {
+        api.getEventManager().unregisterListener(listener);
     }
 
     public void reloadConfig() {

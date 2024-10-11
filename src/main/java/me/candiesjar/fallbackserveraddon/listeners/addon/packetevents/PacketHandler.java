@@ -54,7 +54,7 @@ public class PacketHandler extends PacketListenerAbstract {
 
         scheduler.runTaskLater(() -> {
             finished = true;
-            Utils.unregisterEvent(PacketEvents.getAPI());
+            Utils.unregisterEvent(PacketEvents.getAPI(), this);
         }, plugin.getConfig().getInt("settings.addon.disable_after", 30) * 20L);
     }
 }
