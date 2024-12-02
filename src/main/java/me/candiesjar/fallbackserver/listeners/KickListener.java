@@ -7,7 +7,7 @@ import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -64,7 +64,7 @@ public class KickListener implements Listener {
         String kickedName = kickedFrom == null ? "ReconnectLimbo" : kickedFrom.getName();
         String group = ServerManager.getGroupByServer(kickedName) == null ? "default" : ServerManager.getGroupByServer(kickedName);
         boolean isEmpty = event.getReason() == null;
-        String reason = isEmpty ? "LOST_CONNECTION" : BaseComponent.toLegacyText(event.getReason()).trim();
+        String reason = isEmpty ? "Lost Connection" : BaseComponent.toLegacyText(event.getReason()).trim();
         ServerType serverType = serverTypeManager.get(group);
 
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
@@ -146,7 +146,7 @@ public class KickListener implements Listener {
 
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", serverInfo.getName()),
-                new Placeholder("reason", ChatUtil.color(reason)));
+                new Placeholder("reason", ChatUtil.formatColor(reason)));
     }
 
     private void handleReconnect(ServerKickEvent event, String reason, String serverName, ProxiedPlayer player) {
@@ -164,10 +164,10 @@ public class KickListener implements Listener {
 
         UserConnection userConnection = (UserConnection) player;
         ServerConnection serverConnection = userConnection.getServer();
-        ReconnectHandler task = plugin.getPlayerCacheManager().get(player.getUniqueId());
+        FallbackReconnectHandler task = plugin.getPlayerCacheManager().get(player.getUniqueId());
 
         if (task == null) {
-            plugin.getPlayerCacheManager().put(player.getUniqueId(), task = new ReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
+            plugin.getPlayerCacheManager().put(player.getUniqueId(), task = new FallbackReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
         }
 
         boolean clearTab = BungeeConfig.RECONNECT_CLEAR_TABLIST.getBoolean();
@@ -182,7 +182,7 @@ public class KickListener implements Listener {
             ChatUtil.clearChat(player);
         }
 
-        task.start();
+        task.onJoin();
 
         boolean usePhysicalServer = plugin.getReconnectServer() != null;
 

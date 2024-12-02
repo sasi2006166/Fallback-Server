@@ -12,32 +12,55 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 @UtilityClass
 public class TitleUtil {
 
-    private final Title createdTitle = ProxyServer.getInstance().createTitle();
+    private Title createNewTitle() {
+        return ProxyServer.getInstance().createTitle();
+    }
+
+    private void setTitleTiming(Title title, int fadeIn, int stay, int fadeOut) {
+        title.fadeIn(fadeIn * 20);
+        title.stay(stay * 20);
+        title.fadeOut(fadeOut * 20);
+    }
+
+    private void setTitleText(Title title, String formattedTitle, String formattedSubTitle) {
+        title.title(new TextComponent(formattedTitle));
+        title.subTitle(new TextComponent(formattedSubTitle));
+    }
 
     public void sendTitle(int fadeIn, int stay, int fadeOut, BungeeMessages title, BungeeMessages subTitle, ServerInfo serverInfo, ProxiedPlayer proxiedPlayer) {
-        createdTitle.fadeIn(fadeIn * 20);
-        createdTitle.stay(stay * 20);
-        createdTitle.fadeOut(fadeOut * 20);
+        Title createdTitle = createNewTitle();
+        setTitleTiming(createdTitle, fadeIn, stay, fadeOut);
 
-        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title)
+        String formattedTitle = ChatUtil.getFormattedString(title)
                 .replace("%server%", serverInfo.getName())
-                .replace("%dots%", Utils.getDots(0))));
-        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)
-                .replace("%server%", serverInfo.getName())
-                .replace("%dots%", Utils.getDots(0))));
+                .replace("%dots%", Utils.getDots(0));
 
+        String formattedSubTitle = ChatUtil.getFormattedString(subTitle)
+                .replace("%server%", serverInfo.getName())
+                .replace("%dots%", Utils.getDots(0));
+
+        setTitleText(createdTitle, formattedTitle, formattedSubTitle);
         createdTitle.send(proxiedPlayer);
     }
 
     public void sendReconnectingTitle(int fadeIn, int stay, int dots, BungeeMessages title, BungeeMessages subTitle, ProxiedPlayer proxiedPlayer) {
-        createdTitle.fadeIn(fadeIn);
-        createdTitle.stay(stay);
+        Title createdTitle = createNewTitle();
+        setTitleTiming(createdTitle, fadeIn, stay, 0);
 
-        createdTitle.title(new TextComponent(ChatUtil.getFormattedString(title)
-                .replace("%dots%", Utils.getDots(dots))));
-        createdTitle.subTitle(new TextComponent(ChatUtil.getFormattedString(subTitle)
-                .replace("%dots%", Utils.getDots(dots))));
+        String formattedTitle = ChatUtil.getFormattedString(title)
+                .replace("%dots%", Utils.getDots(dots));
 
+        String formattedSubTitle = ChatUtil.getFormattedString(subTitle)
+                .replace("%dots%", Utils.getDots(dots));
+
+        setTitleText(createdTitle, formattedTitle, formattedSubTitle);
+        createdTitle.send(proxiedPlayer);
+    }
+
+    public void clearPlayerTitle(ProxiedPlayer proxiedPlayer) {
+        Title createdTitle = createNewTitle();
+        createdTitle.reset();
+        createdTitle.clear();
         createdTitle.send(proxiedPlayer);
     }
 }

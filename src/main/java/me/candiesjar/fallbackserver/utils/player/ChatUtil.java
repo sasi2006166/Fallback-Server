@@ -9,7 +9,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,23 +16,24 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class ChatUtil {
+
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
-    private final TextComponent usableComponent = new TextComponent();
+    private final Pattern pattern = fallbackServerBungee.getPattern();
 
     public String getString(BungeeMessages bungeeMessages) {
         return fallbackServerBungee.getMessagesConfig().getString(bungeeMessages.getPath());
     }
 
     public String getString(BungeeMessages bungeeMessages, Placeholder... placeholders) {
-        return applyPlaceHolder(getString(bungeeMessages), placeholders);
+        return applyPlaceholders(getString(bungeeMessages), placeholders);
     }
 
     public String getFormattedString(BungeeMessages bungeeMessages) {
-        return color(getString(bungeeMessages));
+        return formatColor(getString(bungeeMessages));
     }
 
     public String getFormattedString(BungeeMessages bungeeMessages, Placeholder... placeholders) {
-        return color(getString(bungeeMessages, placeholders));
+        return formatColor(getString(bungeeMessages, placeholders));
     }
 
     public List<String> getStringList(BungeeMessages bungeeMessages) {
@@ -41,44 +41,38 @@ public class ChatUtil {
     }
 
     public List<String> getStringList(BungeeMessages bungeeMessages, Placeholder... placeholders) {
-        List<String> newList = new ArrayList<>();
-
-        for (String s : getStringList(bungeeMessages)) {
-            s = applyPlaceHolder(s, placeholders);
-            newList.add(s);
-        }
-
-        return newList;
+        return getStringList(bungeeMessages).stream()
+                .map(s -> applyPlaceholders(s, placeholders))
+                .collect(Collectors.toList());
     }
 
-    public String applyPlaceHolder(String s, Placeholder... placeholders) {
-        for (Placeholder placeHolder : placeholders) {
-            s = s.replace(placeHolder.getKey(), placeHolder.getValue());
+    public String applyPlaceholders(String s, Placeholder... placeholders) {
+        for (Placeholder placeholder : placeholders) {
+            s = s.replace(placeholder.getKey(), placeholder.getValue());
         }
         return s;
     }
 
-    public String color(String s) {
-        return colorHex(s);
+    public String formatColor(String s) {
+        return formatHexColor(s);
     }
 
-    public List<String> color(List<String> list) {
-        return list.stream().map(ChatUtil::color).collect(Collectors.toList());
+    public List<String> formatColor(List<String> list) {
+        return list.stream()
+                .map(ChatUtil::formatColor)
+                .collect(Collectors.toList());
     }
 
     public TextComponent asComponent(String s) {
-        usableComponent.setText(s);
-        return usableComponent;
+        return new TextComponent(s);
     }
 
     public void sendList(CommandSender commandSender, List<String> stringList) {
-        for (String message : stringList) {
-            commandSender.sendMessage(asComponent(message));
-        }
+        stringList.forEach(message -> commandSender.sendMessage(asComponent(message)));
     }
 
     public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, Placeholder... placeholders) {
-        sendList(commandSender, color(getStringList(bungeeMessages, placeholders)));
+        sendList(commandSender, formatColor(getStringList(bungeeMessages, placeholders)));
     }
 
     public void clearChat(ProxiedPlayer player) {
@@ -87,24 +81,32 @@ public class ChatUtil {
         }
     }
 
-    public String colorHex(String s) {
-        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-        for (Matcher matcher = pattern.matcher(s); matcher.find(); matcher = pattern.matcher(s)) {
-            String color = s.substring(matcher.start(), matcher.end());
-            s = s.replace(color, ChatColor.of(color) + "");
+    public String formatHexColor(String message) {
+        Matcher matcher = pattern.matcher(message);
+        String translated = ChatColor.translateAlternateColorCodes('&', message);
+
+        while (matcher.find()) {
+            String hexColor = matcher.group(1);
+            StringBuilder colorCode = new StringBuilder("§x");
+
+            for (char ch : hexColor.toCharArray()) {
+                colorCode.append("§").append(ch);
+            }
+
+            translated = translated.replace("&#" + hexColor, colorCode.toString());
         }
-        s = ChatColor.translateAlternateColorCodes('&', s);
-        return s;
+
+        return translated;
     }
 
     public boolean checkMessage(String message, String name) {
-        for (String text : fallbackServerBungee.getConfig().getStringList("settings.command_blocker_list." + name)) {
-            text = "/" + text;
-            if (text.equalsIgnoreCase(message)) {
-                return true;
-            }
-        }
-        return false;
-    }
+        List<String> blockedCommands = fallbackServerBungee.getConfig()
+                .getStringList("settings.command_blocker_list." + name)
+                .stream()
+                .map(cmd -> "/" + cmd)
+                .collect(Collectors.toList());
 
+        return blockedCommands.stream()
+                .anyMatch(blockedCmd -> blockedCmd.equalsIgnoreCase(message));
+    }
 }

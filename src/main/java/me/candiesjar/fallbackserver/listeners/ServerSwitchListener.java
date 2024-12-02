@@ -66,7 +66,6 @@ public class ServerSwitchListener implements Listener {
 
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);
         channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(fallbackBridge);
-
     }
 
     private void removeFromReconnect(ProxiedPlayer player) {

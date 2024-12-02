@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.2.0-Beta3</version>
+    <version>3.2.0-Beta3.5</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>
@@ -21,23 +21,27 @@
         <defaultGoal>clean install</defaultGoal>
         <plugins>
             <plugin>
-                <version>3.6.1</version>
+                <version>3.13.0</version>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.5.3</version>
                 <configuration>
                     <relocations>
                         <relocation>
                             <pattern>net.byteflux.libby</pattern>
                             <shadedPattern>me.candiesjar.fallbackserver.libs.net.byteflux.libby</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>me.candiesjar.pastebin</pattern>
+                            <shadedPattern>me.candiesjar.fallbackserver.libs.me.candiesjar.pastebin</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -71,6 +75,10 @@
             <id>AlessioDP</id>
             <url>https://repo.alessiodp.com/releases/</url>
         </repository>
+        <repository>
+            <id>CandiesJar</id>
+            <url>file://${project.basedir}/repository</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -86,6 +94,13 @@
             <artifactId>bungeecord-api</artifactId>
             <version>1.20-R0.2-SNAPSHOT</version>
             <type>javadoc</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.20-R0.2-SNAPSHOT</version>
+            <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -117,6 +132,11 @@
             <artifactId>maintenance-api-proxy</artifactId>
             <version>4.2.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.candiesjar.pastebin</groupId>
+            <artifactId>PastebinJava</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

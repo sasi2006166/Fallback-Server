@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.cache;
 
 import com.google.common.collect.Maps;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -21,17 +21,17 @@ public class PlayerCacheManager {
 
     }
 
-    private final HashMap<UUID, ReconnectHandler> reconnectMap = Maps.newHashMap();
+    private final HashMap<UUID, FallbackReconnectHandler> reconnectMap = Maps.newHashMap();
 
-    public ReconnectHandler get(UUID key) {
+    public FallbackReconnectHandler get(UUID key) {
         return reconnectMap.get(key);
     }
 
-    public ReconnectHandler remove(UUID key) {
+    public FallbackReconnectHandler remove(UUID key) {
         return reconnectMap.remove(key);
     }
 
-    public void put(UUID key, ReconnectHandler value) {
+    public void put(UUID key, FallbackReconnectHandler value) {
         reconnectMap.put(key, value);
     }
 

@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.*;
+import me.candiesjar.fallbackserver.commands.subcommands.DebugSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.ServersSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.StatusSubCommand;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -27,6 +30,7 @@ public class SubCommandManager extends Command implements TabExecutor {
 
         setPermissionMessage("§8§l» §7Running §b§nFallback Server §b" + plugin.getVersion() + " §7by §b§nCandiesJar §8§l«");
 
+        subCommands.put("debug", new DebugSubCommand(plugin));
         subCommands.put("reload", new ReloadSubCommand(plugin));
         subCommands.put("status", new StatusSubCommand(plugin));
         subCommands.put("servers", new ServersSubCommand(plugin));

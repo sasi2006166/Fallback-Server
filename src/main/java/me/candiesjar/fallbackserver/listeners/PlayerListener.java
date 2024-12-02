@@ -4,7 +4,7 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
@@ -52,9 +52,9 @@ public class PlayerListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        ReconnectHandler reconnectHandler = playerCacheManager.get(uuid);
+        FallbackReconnectHandler fallbackReconnectHandler = playerCacheManager.get(uuid);
 
-        if (reconnectHandler != null) {
+        if (fallbackReconnectHandler != null) {
             ReconnectUtil.cancelReconnect(uuid);
         }
     }

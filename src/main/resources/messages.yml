@@ -92,7 +92,7 @@ TITLES: # Everything under this configuration is in seconds.
     fade_in: 1 # Seconds for making title appear
     fade_out: 1  # Seconds for making title disappear
     stay: 3 # Stay time of the title
-    fallback_title: "&cServer crashed!"
+    fallback_title: "&c&lSERVER CRASHED!"
     fallback_sub_title: "&7You've been moved to lobby."
 
   # Reconnect title values are automatic.
@@ -108,7 +108,7 @@ TITLES: # Everything under this configuration is in seconds.
       fade_in: 1
       fade_out: 1
       stay: 2
-      title: "&a&lConnected!"
+      title: "&a&lCONNECTED!"
       sub_title: "&7You've been connected to &b%server%"
 
   lobby:

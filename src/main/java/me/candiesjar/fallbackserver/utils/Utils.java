@@ -63,8 +63,8 @@ public class Utils {
 
     public String getDots(int s) {
         switch (s % 4) {
-            case 0:
             default:
+            case 0:
                 return "";
             case 1:
                 return ".";

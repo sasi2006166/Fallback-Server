@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.UUID;
@@ -36,7 +36,7 @@ public class ReconnectUtil {
     }
 
     public void cancelReconnect(UUID uuid) {
-        ReconnectHandler task = playerCacheManager.remove(uuid);
+        FallbackReconnectHandler task = playerCacheManager.remove(uuid);
 
         if (task == null) {
             return;
@@ -51,7 +51,5 @@ public class ReconnectUtil {
         if (task.getConnectTask() != null) {
             task.getConnectTask().cancel();
         }
-
-        task.clear();
     }
 }

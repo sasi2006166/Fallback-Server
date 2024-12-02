@@ -27,6 +27,7 @@ import ru.vyarus.yaml.updater.util.FileUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class FallbackServerBungee extends Plugin {
 
@@ -49,12 +50,11 @@ public final class FallbackServerBungee extends Plugin {
     private OnlineLobbiesManager onlineLobbiesManager;
 
     @Getter
-    @Setter
-    private ServerInfo reconnectServer = null;
+    private Pattern pattern;
 
     @Getter
     @Setter
-    private boolean beta = false;
+    private ServerInfo reconnectServer = null;
 
     @Getter
     @Setter
@@ -78,6 +78,7 @@ public final class FallbackServerBungee extends Plugin {
         playerCacheManager = PlayerCacheManager.getInstance();
         serverTypeManager = ServerTypeManager.getInstance();
         onlineLobbiesManager = OnlineLobbiesManager.getInstance();
+        pattern = Pattern.compile("&#([a-fA-F0-9]{6})");
 
         getLogger().info("\n" +
                 "  _____     _ _ _                _     ____                           \n" +
@@ -232,13 +233,11 @@ public final class FallbackServerBungee extends Plugin {
 
     private void checkVersion() {
         if (version.contains("Beta")) {
-            setBeta(true);
             getLogger().warning(" ");
             getLogger().warning("§7You're running a §c§lBETA VERSION §7of the plugin.");
             getLogger().warning("§7Updater is disabled for debugging purposes.");
             getLogger().warning("§7If you find any bugs, please report them on discord.");
             getLogger().warning(" ");
-            return;
         }
         UpdateUtil.checkUpdates();
     }
