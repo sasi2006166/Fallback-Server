@@ -37,12 +37,11 @@ public class HubCommand implements SimpleCommand {
     public void execute(Invocation invocation) {
         CommandSource commandSource = invocation.source();
 
-        if (!(commandSource instanceof Player)) {
+        if (!(commandSource instanceof Player player)) {
             VelocityMessages.ONLY_PLAYER.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
-        Player player = (Player) commandSource;
         Optional<ServerConnection> optionalServerConnection = player.getCurrentServer();
 
         if (optionalServerConnection.isPresent() && isHub(optionalServerConnection.get())) {

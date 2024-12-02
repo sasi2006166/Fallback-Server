@@ -155,16 +155,12 @@ public class WorldUtil {
     }
 
     private GameMode getGameMode(String mode) {
-        switch (mode) {
-            case "CREATIVE":
-                return GameMode.CREATIVE;
-            case "ADVENTURE":
-                return GameMode.ADVENTURE;
-            case "SPECTATOR":
-                return GameMode.SPECTATOR;
-            default:
-                return GameMode.SURVIVAL;
-        }
+        return switch (mode) {
+            case "CREATIVE" -> GameMode.CREATIVE;
+            case "ADVENTURE" -> GameMode.ADVENTURE;
+            case "SPECTATOR" -> GameMode.SPECTATOR;
+            default -> GameMode.SURVIVAL;
+        };
     }
 }
 

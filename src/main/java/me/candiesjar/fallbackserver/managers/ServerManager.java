@@ -40,6 +40,13 @@ public class ServerManager {
         return null;
     }
 
+    public boolean checkIfGroupExists(String group) {
+        ConfigurationSection section = fallbackServerVelocity.getConfigTextFile().getConfig().getConfigurationSection("settings.fallback");
+        ConfigurationSection servers = fallbackServerVelocity.getServersTextFile().getConfig().getConfigurationSection("servers");
+
+        return section.getKeys(false).contains(group) || servers.getKeys(false).contains(group);
+    }
+
     public boolean checkMaintenance(RegisteredServer registeredServer) {
         if (!fallbackServerVelocity.isMaintenance()) {
             return false;

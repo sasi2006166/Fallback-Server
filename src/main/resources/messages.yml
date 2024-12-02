@@ -18,9 +18,11 @@ MESSAGES:
   reloaded: "%prefix% &7Configuration reloaded &bsuccessfully&7!"
   only_player: "%prefix% &cOnly players can execute this command!"
   already_in_hub: "%prefix% &cYou're already connected to a lobby."
-  moved: "&7You've been connected to &b%server%"
+  moved: "%prefix% &7You've been connected to &b%server%"
   disabled_command: "%prefix% &cSorry, this command is disabled."
   no_server: "%prefix% &cThere is no lobby available."
+  outdated: "%prefix% &cPlugin configurations are outdated. Please, update the plugin."
+
   reconnection_failed: "%prefix% &7Re-connection &c&lfailed&7!"
   exiting_reconnect: "%prefix% &7Exiting re-connection mode."
 
@@ -28,11 +30,10 @@ MESSAGES:
   server_is_added: "%prefix% &b%server% &7is already inside this list."
   server_removed: "%prefix% &b%server% &7has been removed from group &b%group%&7."
   server_not_added: "%prefix% &b%server% &7is not inside this &c%group%&7."
-  server_not_available: "%prefix% &b%server% &7doesn't exist inside BungeeCord."
+  server_not_available: "%prefix% &b%server% &7doesn't exist."
   server_added: "%prefix% &b%server% &7is now added to group &b%group%&7."
 
   moved_to_lobby:
-    - ""
     - "&7&m---------------------------------"
     - ""
     - "&7You've been moved to &b%server%"
@@ -86,9 +87,18 @@ MESSAGES:
       - ""
       - "&8&m------------------"
 
-  create_command:
-    parameters: "%prefix% &7Correct syntax: /fs create <group> <mode>" # Mode can be "fallback" or "reconnect"
+  group_command:
     group_exists: "%prefix% &7Group &b%group% &7already exists."
+    group_not_exists: "%prefix% &7Group &c%group% &7doesn't exist."
+    mode: "%prefix% &7Mode &c%mode% &7doesn't exist."
+    missing_confirm: "%prefix% &7Please, confirm the deletion using &b/fs group delete <group> confirm"
+    parameters:
+      - ""
+      - "&7&m---------------------------------"
+      - "&7Create group: &b/fs group create <group> <mode>"
+      - "&7Modes: &bFALLBACK, RECONNECT"
+      - "&7Group delete: &b/fs group delete <group> confirm"
+      - "&7&m---------------------------------"
     group_created:
       - ""
       - "&7&m---------------------------------"
@@ -97,7 +107,11 @@ MESSAGES:
       - "&7Add your servers using &b/fs add %group% <server>"
       - "&7And then run /fs reload"
       - "&7&m---------------------------------"
-    mode: "%prefix% &7Mode &c%mode% &7doesn't exist."
+    group_deleted:
+      - ""
+      - "&7&m---------------------------------"
+      - "&7Group &b%group% &7has been deleted."
+      - "&7&m---------------------------------"
 
 TITLES: # Everything under this configuration is in seconds.
   fallback:

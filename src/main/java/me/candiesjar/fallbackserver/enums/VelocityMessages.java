@@ -5,7 +5,7 @@ import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 @Getter
 public enum VelocityMessages {
@@ -23,6 +23,7 @@ public enum VelocityMessages {
     NO_PERMISSION("MESSAGES.no_permission"),
     NO_SERVER("MESSAGES.no_server"),
     EXITING_RECONNECT("MESSAGES.exiting_reconnect"),
+    OUTDATED("MESSAGES.outdated"),
 
     EMPTY_GROUP("MESSAGES.empty_group"),
     SERVER_CONTAINED("MESSAGES.server_is_added"),
@@ -42,10 +43,13 @@ public enum VelocityMessages {
     SERVERS_COMMAND_HEADER("MESSAGES.servers_command.header"),
     SERVERS_COMMAND_FOOTER("MESSAGES.servers_command.footer"),
 
-    CREATE_COMMAND_PARAMETERS("MESSAGES.create_command.parameters"),
-    CREATE_COMMAND_EXISTS("MESSAGES.create_command.group_exists"),
-    CREATE_COMMAND_CREATED("MESSAGES.create_command.group_created"),
-    CREATE_COMMAND_MODE("MESSAGES.create_command.mode"),
+    GROUP_COMMAND_PARAMETERS("MESSAGES.group_command.parameters"),
+    GROUP_ALREADY_EXISTS("MESSAGES.group_command.group_exists"),
+    GROUP_DOES_NOT_EXIST("MESSAGES.group_command.group_not_exists"),
+    GROUP_COMMAND_DONE("MESSAGES.group_command.group_created"),
+    GROUP_COMMAND_DELETED("MESSAGES.group_command.group_deleted"),
+    GROUP_COMMAND_MISSING_CONFIRM("MESSAGES.group_command.missing_confirm"),
+    GROUP_MODE_UNDEFINED("MESSAGES.group_command.mode"),
 
     USE_FALLBACK_TITLE("TITLES.fallback.enabled"),
     FALLBACK_DELAY("TITLES.fallback.delay"),
@@ -98,7 +102,7 @@ public enum VelocityMessages {
             return;
         }
 
-        commandSource.sendMessage(Component.text(ChatUtil.getFormattedString(this, placeholders)));
+        commandSource.sendMessage(LegacyComponentSerializer.legacy('§').deserialize(ChatUtil.getFormattedString(this, placeholders)));
     }
 
     public void sendList(CommandSource commandSource, Placeholder... placeHolder) {

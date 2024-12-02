@@ -10,7 +10,6 @@ import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 
 @RequiredArgsConstructor
 public class ReloadSubCommand implements SubCommand {
@@ -30,9 +29,6 @@ public class ReloadSubCommand implements SubCommand {
     public void perform(CommandSource commandSource, String[] args) {
 
         boolean wasCommandEnabled = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
-
-        PingTask.getScheduledTask().cancel();
-        plugin.reloadAll();
 
         boolean isCommandEnabled = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
@@ -56,11 +52,7 @@ public class ReloadSubCommand implements SubCommand {
 
         }
 
-        plugin.getServerTypeManager().clear();
-        plugin.getOnlineLobbiesManager().clear();
-
-        plugin.loadServers();
-        PingTask.reload();
+        plugin.reloadAll();
 
         VelocityMessages.RELOAD.send(commandSource, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
     }

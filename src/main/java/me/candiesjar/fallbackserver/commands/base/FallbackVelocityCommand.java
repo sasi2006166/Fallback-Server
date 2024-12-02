@@ -6,14 +6,11 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.ServersSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.StatusSubCommand;
+import me.candiesjar.fallbackserver.commands.subcommands.*;
 import me.candiesjar.fallbackserver.enums.VelocityConfig;
 import me.candiesjar.fallbackserver.enums.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import net.kyori.adventure.text.Component;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +29,8 @@ public class FallbackVelocityCommand implements SimpleCommand {
         subCommands.put("reload", new ReloadSubCommand(fallbackServerVelocity));
         subCommands.put("status", new StatusSubCommand(fallbackServerVelocity));
         subCommands.put("servers", new ServersSubCommand(fallbackServerVelocity));
+        subCommands.put("group", new GroupSubCommand(fallbackServerVelocity));
+        subCommands.put("add", new AddSubCommand(fallbackServerVelocity));
     }
 
     @Override
@@ -47,8 +46,10 @@ public class FallbackVelocityCommand implements SimpleCommand {
         }
 
         if (!commandSource.hasPermission(adminPermission)) {
-            commandSource.sendMessage(Component.text(ChatUtil.formatColor("&8&l» &7Running &b&nFallback Server version &7by &b&nCandiesJar"
-                    .replace("version", plugin.getVersion()))));
+            String messageTemplate = "<dark_gray>» <gray>Running <aqua><underlined>Fallback Server version</underlined> <gray>by <aqua><underlined>CandiesJar</underlined>";
+            String formattedMessage = messageTemplate.replace("version", plugin.getVersion());
+
+            commandSource.sendMessage(plugin.getMiniMessage().deserialize(formattedMessage));
             return;
         }
 

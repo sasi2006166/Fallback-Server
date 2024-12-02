@@ -13,13 +13,10 @@ public enum TitleMode {
     }
 
     public static TitleMode fromString(String value) {
-        switch (value) {
-            case "STATIC":
-                return STATIC;
-            case "PULSE":
-                return PULSE;
-            default:
-                return NORMAL;
-        }
+        return switch (value) {
+            case "STATIC" -> STATIC;
+            case "PULSE" -> PULSE;
+            default -> NORMAL;
+        };
     }
 }

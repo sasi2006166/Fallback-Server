@@ -183,8 +183,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         KickedFromServerEvent kickedFromServerEvent = new KickedFromServerEvent(player, registeredServer, reason, false, serverKickResult);
         fallbackServerVelocity.getServer().getEventManager().fireAndForget(kickedFromServerEvent);
 
-        if (kickedFromServerEvent.getResult() instanceof KickedFromServerEvent.RedirectPlayer) {
-            KickedFromServerEvent.RedirectPlayer redirectPlayer = (KickedFromServerEvent.RedirectPlayer) kickedFromServerEvent.getResult();
+        if (kickedFromServerEvent.getResult() instanceof KickedFromServerEvent.RedirectPlayer redirectPlayer) {
             registeredServer = redirectPlayer.getServer();
         }
 

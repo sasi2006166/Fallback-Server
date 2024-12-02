@@ -20,11 +20,10 @@ public class CommandListener {
 
     @Subscribe
     public void onPlayerChat(CommandExecuteEvent event) {
-        if (!(event.getCommandSource() instanceof Player)) {
+        if (!(event.getCommandSource() instanceof Player player)) {
             return;
         }
 
-        Player player = (Player) event.getCommandSource();
         Optional<ServerConnection> serverConnectionOptional = player.getCurrentServer();
 
         if (serverConnectionOptional.isEmpty()) {

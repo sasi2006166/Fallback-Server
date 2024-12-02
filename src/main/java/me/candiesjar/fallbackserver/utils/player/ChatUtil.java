@@ -47,7 +47,7 @@ public class ChatUtil {
 
     public String applyPlaceholders(String message, Placeholder... placeholders) {
         for (Placeholder placeholder : placeholders) {
-            message = message.replace(placeholder.getKey(), placeholder.getValue());
+            message = message.replace(placeholder.key(), placeholder.value());
         }
         return message;
     }
@@ -97,7 +97,7 @@ public class ChatUtil {
     public boolean checkMessage(String message, List<String> blockedMessages) {
         List<String> lowerCasedBlockedMessages = blockedMessages.stream()
                 .map(String::toLowerCase)
-                .collect(Collectors.toList());
+                .toList();
 
         return lowerCasedBlockedMessages.contains(message.toLowerCase());
     }

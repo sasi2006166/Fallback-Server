@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import org.simpleyaml.configuration.ConfigurationSection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,6 +46,10 @@ public class Utils {
         });
     }
 
+    public void printDebug(String s) {
+        fallbackServerVelocity.getComponentLogger().info("[INFO] {}", s);
+    }
+
     public void printDebug(String s, boolean exception) {
         if (exception) {
             fallbackServerVelocity.getComponentLogger().error("[ERROR] {}", s);
@@ -57,24 +60,12 @@ public class Utils {
     }
 
     public String getDots(int s) {
-        switch (s % 4) {
-            case 0:
-            default:
-                return "";
-            case 1:
-                return ".";
-            case 2:
-                return "..";
-            case 3:
-                return "...";
-        }
-    }
-
-    public boolean checkIfGroupExists(String group) {
-        ConfigurationSection section = fallbackServerVelocity.getConfigTextFile().getConfig().getConfigurationSection("settings.fallback");
-        ConfigurationSection servers = fallbackServerVelocity.getServersTextFile().getConfig().getConfigurationSection("servers");
-
-        return section.getKeys(false).contains(group) || servers.getKeys(false).contains(group);
+        return switch (s % 4) {
+            case 1 -> ".";
+            case 2 -> "..";
+            case 3 -> "...";
+            default -> "";
+        };
     }
 
     public void saveServers(List<String> servers) {

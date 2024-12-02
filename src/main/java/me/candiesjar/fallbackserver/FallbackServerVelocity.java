@@ -28,6 +28,7 @@ import me.candiesjar.fallbackserver.utils.LoaderUtil;
 import me.candiesjar.fallbackserver.utils.PluginUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.WorldUtil;
+import me.candiesjar.fallbackserver.utils.checks.OutdatedChecks;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 import net.byteflux.libby.Library;
 import net.byteflux.libby.VelocityLibraryManager;
@@ -64,7 +65,7 @@ public class FallbackServerVelocity {
     private TextFile configTextFile, messagesTextFile, serversTextFile, versionTextFile;
 
     @Getter
-    public final String version = "3.2.0-Beta3";
+    public final String version = "3.2.0-Beta3.5";
 
     @Setter
     private boolean limboApi = false;
@@ -82,6 +83,10 @@ public class FallbackServerVelocity {
     @Getter
     @Setter
     private boolean beta = false;
+
+    @Getter
+    @Setter
+    private boolean outdated = false;
 
     @Getter
     @Setter
@@ -130,13 +135,14 @@ public class FallbackServerVelocity {
         playerCacheManager = PlayerCacheManager.getInstance();
         pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
-        getComponentLogger().info("\n" +
-                "  _____     _ _ _                _     ____                           \n" +
-                " |  ___|_ _| | | |__   __ _  ___| | __/ ___|  ___ _ ____   _____ _ __ \n" +
-                " | |_ / _` | | | '_ \\ / _` |/ __| |/ /\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|\n" +
-                " |  _| (_| | | | |_) | (_| | (__|   <  ___) |  __/ |   \\ V /  __/ |   \n" +
-                " |_|  \\__,_|_|_|_.__/ \\__,_|\\___|_|\\_\\|____/ \\___|_|    \\_/ \\___|_|   \n" +
-                "                                                                      ");
+        getComponentLogger().info(getMiniMessage().deserialize("""
+                    <gradient:#00ffff:#0055ff>
+                      _____     _ _ _                _     ____                         \s
+                     |  ___|_ _| | | |__   __ _  ___| | __/ ___|  ___ _ ____   _____ _ __
+                     | |_ / _` | | | '_ \\ / _` |/ __| |/ /\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|
+                     |  _| (_| | | | |_) | (_| | (__|   <  ___) |  __/ |   \\ V /  __/ |  \s
+                     |_|  \\__,_|_|_|_.__/ \\__,_|\\___|_|\\_\\|____/ \\___|_|    \\_/ \\___|_| \s
+                    </gradient>"""));
 
         loadDependencies();
         loadConfiguration();
@@ -160,6 +166,8 @@ public class FallbackServerVelocity {
         checkUpdate();
 
         checkDebug();
+
+        checkOutdated();
     }
 
     @Subscribe
@@ -346,6 +354,20 @@ public class FallbackServerVelocity {
         }
     }
 
+    private void checkOutdated() {
+        OutdatedChecks.handle();
+
+        if (outdated) {
+            getComponentLogger().error(" ");
+            getComponentLogger().error("Your configuration is outdated!");
+            getComponentLogger().error("Please update your configuration");
+            getComponentLogger().error("by deleting the old one and restarting");
+            getComponentLogger().error("the server.");
+            getComponentLogger().error(" ");
+        }
+
+    }
+
     public void loadServers() {
         LoaderUtil.loadServers(getConfigTextFile().getConfig().getConfigurationSection("settings.fallback"));
         LoaderUtil.loadServers(getServersTextFile().getConfig().getConfigurationSection("servers"));
@@ -378,14 +400,20 @@ public class FallbackServerVelocity {
         server.getEventManager().register(this, new ServerSwitchListener(this));
         server.getEventManager().register(this, new ReconnectListener(this));
         boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+
         if (physical) server.getChannelRegistrar().register(reconnectIdentifier);
         setReconnect(true);
     }
 
     public void reloadAll() {
+        PingTask.getScheduledTask().cancel();
+        getServerTypeManager().clear();
+        getOnlineLobbiesManager().clear();
         configTextFile.reload();
         messagesTextFile.reload();
         serversTextFile.reload();
+        loadServers();
+        PingTask.reload();
     }
 
 }

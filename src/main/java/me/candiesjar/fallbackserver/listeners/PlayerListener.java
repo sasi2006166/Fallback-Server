@@ -29,6 +29,11 @@ public class PlayerListener {
             return;
         }
 
+        if (plugin.isOutdated()) {
+            VelocityMessages.OUTDATED.send(player);
+            return;
+        }
+
         if (plugin.isBeta()) {
             return;
         }
