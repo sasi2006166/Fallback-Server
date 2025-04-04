@@ -14,17 +14,12 @@ public class OutdatedChecks {
     private final Configuration config = getInstance().getConfigTextFile().getConfig();
 
     public void handle() {
-        if (config.getStringList("fallback_list") != null) {
-            setOutdated();
-            return;
-        }
+        boolean isOutdated =
+                config.getStringList("fallback_list") != null ||
+                        config.getString("settings.ping_mode") == null ||
+                        config.getStringList("fallback_mode") != null;
 
-        if (config.getString("settings.ping_mode") == null) {
-            setOutdated();
-            return;
-        }
-
-        if (config.getStringList("fallback_mode") != null) {
+        if (isOutdated) {
             setOutdated();
         }
     }

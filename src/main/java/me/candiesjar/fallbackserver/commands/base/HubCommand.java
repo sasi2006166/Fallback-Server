@@ -112,7 +112,7 @@ public class HubCommand implements SimpleCommand {
 
         String group = ServerManager.getGroupByServer(registeredServer.getServerInfo().getName());
 
-        if (group == null) {
+        if (group == null && plugin.isDebug()) {
             Utils.printDebug("The server " + registeredServer.getServerInfo().getName() + " does not exist!", true);
             Utils.printDebug("Seems that it isn't present inside the group list", true);
             Utils.printDebug("Please add it and run /fsv reload.", true);
