@@ -51,9 +51,9 @@ public class ServerSwitchListener implements Listener {
 
         if (playerCacheManager.containsKey(uuid)) {
             ServerInfo reconnectServer = plugin.getReconnectServer();
-            ServerInfo playerServer = user.getServer().getInfo();
+            ServerInfo actualServer = user.getServer().getInfo();
 
-            if (reconnectServer != playerServer) {
+            if (reconnectServer != actualServer) {
                 removeFromReconnect(user);
             }
         }
