@@ -147,7 +147,7 @@ public class FallbackServerVelocity {
         loadDependencies();
         loadConfiguration();
 
-        checkOutdated();
+        OutdatedChecks.handle();
         updateConfiguration();
 
         checkPlugins();
@@ -167,6 +167,7 @@ public class FallbackServerVelocity {
 
         checkUpdate();
 
+        sendOutdated();
         checkDebug();
     }
 
@@ -354,9 +355,7 @@ public class FallbackServerVelocity {
         }
     }
 
-    private void checkOutdated() {
-        OutdatedChecks.handle();
-
+    private void sendOutdated() {
         if (outdated) {
             getComponentLogger().error(" ");
             getComponentLogger().error("Your configuration is outdated!");
@@ -365,7 +364,6 @@ public class FallbackServerVelocity {
             getComponentLogger().error("the server.");
             getComponentLogger().error(" ");
         }
-
     }
 
     public void loadServers() {
