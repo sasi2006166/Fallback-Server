@@ -146,6 +146,8 @@ public class FallbackServerVelocity {
 
         loadDependencies();
         loadConfiguration();
+
+        checkOutdated();
         updateConfiguration();
 
         checkPlugins();
@@ -166,8 +168,6 @@ public class FallbackServerVelocity {
         checkUpdate();
 
         checkDebug();
-
-        checkOutdated();
     }
 
     @Subscribe
@@ -207,11 +207,11 @@ public class FallbackServerVelocity {
     }
 
     private void updateConfiguration() {
-        if (pluginContainer.getDescription().getVersion().isEmpty()) {
+        if (!outdated && pluginContainer.getDescription().getVersion().isEmpty()) {
             return;
         }
 
-        if (pluginContainer.getDescription().getVersion().get().equals(VelocityVersion.VERSION.getString())) {
+        if (!outdated && pluginContainer.getDescription().getVersion().get().equals(VelocityVersion.VERSION.getString())) {
             return;
         }
 
