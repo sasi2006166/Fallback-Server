@@ -4,6 +4,10 @@ import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import org.simpleyaml.configuration.Configuration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @UtilityClass
 public class OutdatedChecks {
 
@@ -15,9 +19,9 @@ public class OutdatedChecks {
 
     public void handle() {
         boolean isOutdated =
-                config.getStringList("fallback_list") != null ||
+                !config.getStringList("fallback_list").isEmpty() ||
                         config.getString("settings.ping_mode") == null ||
-                        config.getStringList("fallback_mode") != null;
+                        !config.getStringList("fallback_mode").isEmpty();
 
         if (isOutdated) {
             setOutdated();

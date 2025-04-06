@@ -12,6 +12,7 @@ import me.candiesjar.fallbackserver.handler.FallbackLimboHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class PlayerListener {
         }
 
         if (plugin.isOutdated()) {
-            VelocityMessages.OUTDATED.send(player);
+            VelocityMessages.OUTDATED.send(player, new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)));
             return;
         }
 
