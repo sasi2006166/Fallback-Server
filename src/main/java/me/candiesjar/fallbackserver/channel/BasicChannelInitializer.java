@@ -30,7 +30,7 @@ public class BasicChannelInitializer extends ChannelInitializer<Channel> {
                 .accept(channel);
 
         channel.pipeline().get(HandlerBoss.class)
-                .setHandler(new ServerConnector(proxyServer, userConnection, bungeeServerInfo));
+                .setHandler(new FallbackServerConnector(proxyServer, userConnection, bungeeServerInfo));
 
     }
 }

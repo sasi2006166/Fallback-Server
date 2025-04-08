@@ -12,6 +12,7 @@ import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ConditionUtil;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.ServerConnection;
@@ -66,6 +67,8 @@ public class KickListener implements Listener {
         boolean isEmpty = event.getReason() == null;
         String reason = isEmpty ? "Lost Connection" : BaseComponent.toLegacyText(event.getReason()).trim();
         ServerType serverType = serverTypeManager.get(group);
+
+        Utils.printDebug("Kicked because of " + reason, true);
 
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
             handleFallback(event, kickedFrom, player, reason, kickedName);
@@ -167,7 +170,7 @@ public class KickListener implements Listener {
         FallbackReconnectHandler task = plugin.getPlayerCacheManager().get(player.getUniqueId());
 
         if (task == null) {
-            plugin.getPlayerCacheManager().put(player.getUniqueId(), task = new FallbackReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
+            plugin.getPlayerCacheManager().addIfAbsent(player.getUniqueId(), task = new FallbackReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
         }
 
         boolean clearTab = BungeeConfig.RECONNECT_CLEAR_TABLIST.getBoolean();

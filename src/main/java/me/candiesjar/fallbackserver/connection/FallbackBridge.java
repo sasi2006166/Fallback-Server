@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.connection;
 
+import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
@@ -11,6 +12,7 @@ import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.packet.Kick;
+import net.md_5.bungee.protocol.packet.LoginSuccess;
 
 public class FallbackBridge extends DownstreamBridge {
 
@@ -68,6 +70,12 @@ public class FallbackBridge extends DownstreamBridge {
         if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
             userConnection.connect(serverKickEvent.getCancelServer());
         }
+    }
+
+    @Override
+    public void handle(LoginSuccess loginSuccess) throws Exception {
+        Utils.printDebug("Handling LoginSuccess packet", true);
+        super.handle(loginSuccess);
     }
 
     @Override

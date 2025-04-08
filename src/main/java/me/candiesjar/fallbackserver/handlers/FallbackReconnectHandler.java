@@ -25,7 +25,6 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import net.md_5.bungee.netty.PipelineUtils;
-import net.md_5.bungee.protocol.packet.KeepAlive;
 
 import java.net.InetSocketAddress;
 import java.util.Random;
@@ -69,7 +68,6 @@ public class FallbackReconnectHandler {
 
     private void startReconnect() {
         boolean maxTries = tries.incrementAndGet() == this.maxTries.get();
-        userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong()));
 
         if (maxTries) {
             boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
@@ -115,19 +113,22 @@ public class FallbackReconnectHandler {
         titleTask.cancel();
         TitleUtil.clearPlayerTitle(userConnection);
 
+        if (userConnection.getServer() != null) {
+            userConnection.getServer().disconnect("Reconnecting...");
+        }
+
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo);
         Bootstrap bootstrap = new Bootstrap()
                 .channel(PipelineUtils.getChannel(targetServerInfo.getAddress()))
-                .group(Utils.getUserChannelWrapper(userConnection).getHandle().eventLoop())
+                .group(serverConnection.getCh().getHandle().eventLoop())
                 .handler(initializer)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1500)
+                .option(ChannelOption.SO_KEEPALIVE, true)
                 .remoteAddress(targetServerInfo.getAddress());
 
-        if (userConnection.getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows()) {
+        if (userConnection.getPendingConnection().getListener().isSetLocalAddress() && userConnection.getPendingConnection().getListener().getSocketAddress() instanceof InetSocketAddress && !PlatformDependent.isWindows()) {
             bootstrap.localAddress(((InetSocketAddress) userConnection.getPendingConnection().getListener().getSocketAddress()).getHostString(), 0);
         }
-
-        bootstrap.connect().addListener(channelFuture -> ReconnectUtil.cancelReconnect(uuid));
 
         pingServer(targetServerInfo, (result, error) -> {
             if (error != null || result == null) {
@@ -135,9 +136,13 @@ public class FallbackReconnectHandler {
             }
         });
 
+        bootstrap.connect().addListener(channelFuture -> ReconnectUtil.cancelReconnect(uuid));
+
         if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
             ChatUtil.clearChat(userConnection);
         }
+
+        Utils.printDebug("Reconnected to " + targetServerInfo.getName() + " with " + tries.get() + " tries", true);
 
         sendConnectedTitle();
     }
