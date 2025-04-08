@@ -28,6 +28,7 @@ public class GeneralTask {
 
             if (tries >= 30) {
                 notifyTimeUp(instance);
+                finalizeStartup(instance);
             }
 
             if (instance.isAllPluginsLoaded()) {
@@ -47,6 +48,8 @@ public class GeneralTask {
 
     private void notifyTimeUp(FallbackServerAddon instance) {
         instance.getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Not all plugins are loaded, time's up.");
+        instance.getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] Some other plugins are having abnormal behavior.");
+        instance.getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§c!§7] The startup will be attempted anyway.");
     }
 
     private void finalizeStartup(FallbackServerAddon instance) {
