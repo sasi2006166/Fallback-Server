@@ -56,15 +56,12 @@ public class ActionBarCreator {
 
     private static Object createActionBarPacket(String message) throws Exception {
         Class<?> packetPlayOutChatClass = getNMSClass("PacketPlayOutChat");
-        Object packet;
 
         if (useOldMethods) {
-            packet = createOldActionBarPacket(message, packetPlayOutChatClass);
-        } else {
-            packet = createNewActionBarPacket(message, packetPlayOutChatClass);
+            return createOldActionBarPacket(message, packetPlayOutChatClass);
         }
 
-        return packet;
+        return createNewActionBarPacket(message, packetPlayOutChatClass);
     }
 
     private static Object createOldActionBarPacket(String message, Class<?> packetPlayOutChatClass) throws Exception {
@@ -121,7 +118,6 @@ public class ActionBarCreator {
         Object craftPlayer = craftPlayerClass.cast(player);
         Object craftPlayerHandle = getCraftPlayerHandle(craftPlayer);
         Object playerConnection = craftPlayerHandle.getClass().getDeclaredField("playerConnection").get(craftPlayerHandle);
-
         Method sendPacketMethod = playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet"));
         sendPacketMethod.invoke(playerConnection, packet);
     }
