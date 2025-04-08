@@ -25,8 +25,10 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import net.md_5.bungee.netty.PipelineUtils;
+import net.md_5.bungee.protocol.packet.KeepAlive;
 
 import java.net.InetSocketAddress;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,6 +43,7 @@ public class FallbackReconnectHandler {
     private final ProxyServer proxyServer = ProxyServer.getInstance();
     private final TaskScheduler taskScheduler = proxyServer.getScheduler();
     private final TextComponent lostConnection = new TextComponent(proxyServer.getTranslation("lost_connection"));
+    private final Random random = new Random();
 
     private final ServerConnection serverConnection;
     private final UserConnection userConnection;
@@ -66,6 +69,7 @@ public class FallbackReconnectHandler {
 
     private void startReconnect() {
         boolean maxTries = tries.incrementAndGet() == this.maxTries.get();
+        userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong()));
 
         if (maxTries) {
             boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
@@ -150,7 +154,8 @@ public class FallbackReconnectHandler {
     }
 
     private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
-        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(PipelineUtils.BASE).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000).remoteAddress(target.getAddress());
+        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo);
+        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000).remoteAddress(target.getAddress());
         bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }
 
