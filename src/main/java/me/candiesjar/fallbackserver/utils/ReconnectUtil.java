@@ -38,6 +38,10 @@ public class ReconnectUtil {
     public void cancelReconnect(UUID uuid) {
         FallbackReconnectHandler task = playerCacheManager.remove(uuid);
 
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("Cancelling reconnect task for player " + uuid, true);
+        }
+
         if (task == null) {
             return;
         }

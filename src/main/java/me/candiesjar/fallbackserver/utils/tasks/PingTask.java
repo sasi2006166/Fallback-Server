@@ -43,6 +43,12 @@ public class PingTask {
 
         int delay = BungeeConfig.PING_DELAY.getInt();
 
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("§7[§b!§7] Ping task started with mode: " + mode, true);
+            Utils.printDebug("§7[§b!§7] Ping task delay: " + delay + " seconds", true);
+            Utils.printDebug("§7[§b!§7] Ping task servers: " + lobbyServers.size(), true);
+        }
+
         switch (mode) {
             case "DEFAULT":
                 fallbackServerBungee.getLogger().info("§7[§b!§7] Using default ping mode.");

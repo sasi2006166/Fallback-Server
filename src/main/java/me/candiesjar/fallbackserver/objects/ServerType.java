@@ -19,4 +19,14 @@ public class ServerType {
         this.lobbies = lobbies;
         this.reconnect = reconnect;
     }
+
+    @Override
+    public String toString() {
+        return "ServerType{" +
+                "name='" + name + '\'' +
+                ", servers=" + servers +
+                ", lobbies=" + lobbies +
+                ", reconnect=" + reconnect +
+                '}';
+    }
 }

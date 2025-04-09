@@ -34,4 +34,13 @@ public class FallbackServerConnector extends ServerConnector {
     public void handle(LoginSuccess loginSuccess) throws Exception {
         super.handle(loginSuccess);
     }
+
+    @Override
+    public String toString() {
+        return "FallbackServerConnector{" +
+                "proxyServer=" + proxyServer +
+                ", userConnection=" + userConnection +
+                ", bungeeServerInfo=" + bungeeServerInfo +
+                '}';
+    }
 }

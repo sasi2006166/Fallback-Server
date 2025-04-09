@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.connection;
 
+import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -15,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Kick;
 import net.md_5.bungee.protocol.packet.LoginSuccess;
 
 public class FallbackBridge extends DownstreamBridge {
+
+    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
 
     private final UserConnection userConnection;
     private final ProxyServer proxyServer;
@@ -41,6 +44,10 @@ public class FallbackBridge extends DownstreamBridge {
 
         server.setObsolete(true);
 
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("Disconnected from server: " + server.getInfo().getName(), true);
+        }
+
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
         ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacy("Crashed"), nextServer, ServerKickEvent.State.CONNECTED));
 
@@ -64,6 +71,10 @@ public class FallbackBridge extends DownstreamBridge {
 
         server.setObsolete(true);
 
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("Exception on server: " + server.getInfo().getName(), true);
+        }
+
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
         ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacy(reason), nextServer, ServerKickEvent.State.CONNECTED));
 
@@ -74,7 +85,9 @@ public class FallbackBridge extends DownstreamBridge {
 
     @Override
     public void handle(LoginSuccess loginSuccess) throws Exception {
-        Utils.printDebug("Handling LoginSuccess packet", true);
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("Login success on server: " + server.getInfo().getName(), true);
+        }
         super.handle(loginSuccess);
     }
 
@@ -85,6 +98,10 @@ public class FallbackBridge extends DownstreamBridge {
 
         if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
             userConnection.connect(serverKickEvent.getCancelServer());
+        }
+
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("Kick from server: " + server.getInfo().getName(), true);
         }
 
         server.setObsolete(true);

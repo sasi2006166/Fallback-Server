@@ -7,6 +7,7 @@ import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -56,6 +57,11 @@ public class ServerSwitchListener implements Listener {
             if (reconnectServer != actualServer) {
                 removeFromReconnect(user);
             }
+
+            if (plugin.isDebug()) {
+                Utils.printDebug("Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), true);
+            }
+
         }
 
         boolean clearChat = BungeeConfig.CLEAR_CHAT_SERVER_SWITCH.getBoolean();

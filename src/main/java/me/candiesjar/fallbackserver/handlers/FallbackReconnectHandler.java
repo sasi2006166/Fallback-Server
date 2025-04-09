@@ -8,6 +8,7 @@ import io.netty.util.internal.PlatformDependent;
 import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
+import me.candiesjar.fallbackserver.channel.PingChannelInitializer;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.TitleMode;
@@ -25,6 +26,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import net.md_5.bungee.netty.PipelineUtils;
+import net.md_5.bungee.protocol.packet.KeepAlive;
 
 import java.net.InetSocketAddress;
 import java.util.Random;
@@ -136,13 +138,17 @@ public class FallbackReconnectHandler {
             }
         });
 
+        userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong()));
+
         bootstrap.connect().addListener(channelFuture -> ReconnectUtil.cancelReconnect(uuid));
 
         if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
             ChatUtil.clearChat(userConnection);
         }
 
-        Utils.printDebug("Reconnected to " + targetServerInfo.getName() + " with " + tries.get() + " tries", true);
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("Reconnected to " + targetServerInfo.getName() + " with " + tries.get() + " tries", true);
+        }
 
         sendConnectedTitle();
     }
@@ -159,7 +165,7 @@ public class FallbackReconnectHandler {
     }
 
     private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
-        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo);
+        ChannelInitializer<Channel> initializer = new PingChannelInitializer();
         Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000).remoteAddress(target.getAddress());
         bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }

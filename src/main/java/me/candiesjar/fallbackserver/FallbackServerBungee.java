@@ -9,6 +9,8 @@ import me.candiesjar.fallbackserver.commands.base.HubCommand;
 import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeVersion;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
@@ -92,9 +94,9 @@ public final class FallbackServerBungee extends Plugin {
         loadConfiguration();
         updateConfiguration();
 
-        loadServers();
-
         checkPlugins();
+
+        loadServers();
 
         loadListeners();
 
@@ -213,6 +215,7 @@ public final class FallbackServerBungee extends Plugin {
             List<String> aliases = BungeeConfig.LOBBY_ALIASES.getStringList();
 
             if (aliases.isEmpty()) {
+                ErrorHandler.add(Severity.WARNING, "Optional, but you have to set at least one alias for the lobby command");
                 getLogger().severe("§7[§c!§7] §cYou have to set at least one alias for the lobby command!");
                 getLogger().severe("§7[§c!§7] §cDisabling lobby command..");
                 return;

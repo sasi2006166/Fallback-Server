@@ -68,7 +68,9 @@ public class KickListener implements Listener {
         String reason = isEmpty ? "Lost Connection" : BaseComponent.toLegacyText(event.getReason()).trim();
         ServerType serverType = serverTypeManager.get(group);
 
-        Utils.printDebug("Kicked because of " + reason, true);
+        if (plugin.isDebug()) {
+            Utils.printDebug("Player " + player.getName() + " was kicked from " + kickedName + " for reason: " + reason, true);
+        }
 
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
             handleFallback(event, kickedFrom, player, reason, kickedName);

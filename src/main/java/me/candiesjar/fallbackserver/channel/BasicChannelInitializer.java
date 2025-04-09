@@ -4,7 +4,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.BungeeServerInfo;
-import net.md_5.bungee.ServerConnector;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.netty.HandlerBoss;
@@ -31,6 +30,5 @@ public class BasicChannelInitializer extends ChannelInitializer<Channel> {
 
         channel.pipeline().get(HandlerBoss.class)
                 .setHandler(new FallbackServerConnector(proxyServer, userConnection, bungeeServerInfo));
-
     }
 }

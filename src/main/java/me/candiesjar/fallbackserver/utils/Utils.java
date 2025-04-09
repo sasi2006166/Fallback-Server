@@ -3,14 +3,11 @@ package me.candiesjar.fallbackserver.utils;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.netty.ChannelWrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -25,17 +22,6 @@ public class Utils {
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
     private final ProxyServer proxyServer = ProxyServer.getInstance();
-    private Field userChannelWrapperField = null;
-
-    static {
-        for (Field field : UserConnection.class.getDeclaredFields()) {
-            if (ChannelWrapper.class.isAssignableFrom(field.getType())) {
-                userChannelWrapperField = field;
-                userChannelWrapperField.setAccessible(true);
-                break;
-            }
-        }
-    }
 
     public void checkUpdates() {
         proxyServer.getScheduler().runAsync(fallbackServerBungee, () -> {
@@ -79,17 +65,6 @@ public class Utils {
         fallbackServerBungee.getServersTextFile().getConfig().set("servers", servers);
         fallbackServerBungee.getServersTextFile().save();
         fallbackServerBungee.getServersTextFile().reload();
-    }
-
-    public ChannelWrapper getUserChannelWrapper(UserConnection user) {
-        if (user != null) {
-            try {
-                return (ChannelWrapper) userChannelWrapperField.get(user);
-            } catch (ClassCastException | IllegalArgumentException | IllegalAccessException e) {
-                printDebug("Cannot get user channel wrapper for " + user.getName(), true);
-            }
-        }
-        return null;
     }
 
     public void printDebug(String s, boolean exception) {
