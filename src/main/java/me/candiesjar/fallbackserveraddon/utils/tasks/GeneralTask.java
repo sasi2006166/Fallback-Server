@@ -26,7 +26,7 @@ public class GeneralTask {
                 instance.setAllPluginsLoaded(true);
             }
 
-            if (tries >= 30) {
+            if (tries >= instance.getConfig().getInt("settings.addon.max_start_tries")) {
                 notifyTimeUp(instance);
                 finalizeStartup(instance);
             }

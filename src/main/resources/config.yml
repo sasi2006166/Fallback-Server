@@ -48,6 +48,12 @@ settings:
     override_player_count_number: -1
 
     # NOTE: This shouldn't be changed unless you know what you're doing.
+    # The plugin will try to establish a secure connection with the Proxy only when all plugins are loaded into the server.
+    # This value indicates the maximum number of checks to be performed to check whether the plugins are all started.
+    # After that, the plugin will try to work anyway.
+    max_start_tries: 3
+
+    # NOTE: This shouldn't be changed unless you know what you're doing.
     # This changes the time (in seconds) to disable the addon after the server is started.
     # If you are having problems with fallbackserver (in reconnect), you could increase this value.
     disable_after: 30
