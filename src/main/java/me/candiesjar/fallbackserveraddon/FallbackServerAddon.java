@@ -8,12 +8,14 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.commands.FallbackAddonCommand;
 import me.candiesjar.fallbackserveraddon.listeners.addon.PingListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.MessageListener;
 import me.candiesjar.fallbackserveraddon.listeners.standalone.PlayerListener;
-import me.candiesjar.fallbackserveraddon.utils.*;
+import me.candiesjar.fallbackserveraddon.utils.PacketEventsUtil;
+import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
+import me.candiesjar.fallbackserveraddon.utils.UpdateUtil;
+import me.candiesjar.fallbackserveraddon.utils.Utils;
 import me.candiesjar.fallbackserveraddon.utils.tasks.GeneralTask;
 import me.candiesjar.fallbackserveraddon.utils.tasks.ThreadTask;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -61,7 +63,6 @@ public final class FallbackServerAddon extends JavaPlugin {
         loadConfig();
         checkVersion();
         schedule();
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§a!§7] Loaded successfully.");
     }

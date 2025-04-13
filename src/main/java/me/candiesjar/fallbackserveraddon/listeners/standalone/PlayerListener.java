@@ -2,10 +2,10 @@ package me.candiesjar.fallbackserveraddon.listeners.standalone;
 
 import io.papermc.lib.PaperLib;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
+import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import me.candiesjar.fallbackserveraddon.utils.player.ActionBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.player.BossBarUtil;
 import me.candiesjar.fallbackserveraddon.utils.player.ChatUtil;
-import me.candiesjar.fallbackserveraddon.utils.ScoreboardUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
