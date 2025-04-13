@@ -34,7 +34,7 @@ public class DebugSubCommand implements SubCommand {
     @Override
     public void perform(CommandSender sender, String[] arguments) {
         if (arguments.length < 2) {
-            Utils.printDebug("§cNo arguments provided!", false);
+            sender.sendMessage(new TextComponent("§cNo argument provided!"));
             return;
         }
 
@@ -45,7 +45,7 @@ public class DebugSubCommand implements SubCommand {
                 handleHelp(sender);
                 break;
             case "ping":
-                handlePing(arguments);
+                handlePing(arguments, sender);
                 break;
             case "file":
                 handleFile(sender);
@@ -64,7 +64,7 @@ public class DebugSubCommand implements SubCommand {
                 continue;
             }
 
-            builder.append(name).append(" ");
+            builder.append(name).append(", ");
         }
 
         String proxyVersion = plugin.getProxy().getVersion();
@@ -86,9 +86,9 @@ public class DebugSubCommand implements SubCommand {
         sender.sendMessage(new TextComponent("§a" + response));
     }
 
-    private void handlePing(String[] arguments) {
+    private void handlePing(String[] arguments, CommandSender sender) {
         if (arguments.length < 3) {
-            Utils.printDebug("§cNo server provided!", true);
+            sender.sendMessage(new TextComponent("§cNo server name provided!"));
             return;
         }
 
@@ -96,28 +96,31 @@ public class DebugSubCommand implements SubCommand {
         ServerInfo serverInfo = plugin.getProxy().getServerInfo(serverName);
 
         if (serverInfo == null) {
-            Utils.printDebug("§cServer not found!", true);
+            sender.sendMessage(new TextComponent("§cServer not found!"));
             return;
         }
 
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
-                Utils.printDebug("§cError while pinging server!", true);
+                sender.sendMessage(new TextComponent("§cFailed to ping server!"));
                 return;
             }
 
-            Utils.printDebug("§7Server pinged §asuccessfully!", false);
+            sender.sendMessage(new TextComponent("§aPing successful!"));
 
             int players = result.getPlayers().getOnline();
             int max = result.getPlayers().getMax();
 
-            Utils.printDebug("§7Players: §a" + players + "§7/§c" + max, false);
+            sender.sendMessage(new TextComponent("§7Players: §a" + players + "§7/§c" + max));
         });
     }
 
     private void handleFile(CommandSender sender) {
-        if (ErrorHandler.getSize() == 0) {
-            sender.sendMessage(new TextComponent("§cNo errors found!"));
+
+        Utils.printDebug("Size: " + ErrorHandler.getDiagnostics().size(), true);
+
+        if (ErrorHandler.getDiagnostics().size() == 0) {
+            sender.sendMessage(new TextComponent("§cNo errors found! ;)"));
             return;
         }
 

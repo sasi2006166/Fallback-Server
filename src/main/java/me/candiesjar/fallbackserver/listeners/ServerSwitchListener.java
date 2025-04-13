@@ -57,17 +57,16 @@ public class ServerSwitchListener implements Listener {
             if (reconnectServer != actualServer) {
                 removeFromReconnect(user);
             }
-
-            if (plugin.isDebug()) {
-                Utils.printDebug("Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), true);
-            }
-
         }
 
         boolean clearChat = BungeeConfig.CLEAR_CHAT_SERVER_SWITCH.getBoolean();
 
         if (clearChat) {
             ChatUtil.clearChat(user);
+        }
+
+        if (plugin.isDebug()) {
+            Utils.printDebug("Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), false);
         }
 
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);

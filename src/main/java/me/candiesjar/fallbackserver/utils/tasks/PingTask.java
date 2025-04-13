@@ -8,6 +8,8 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
@@ -44,14 +46,13 @@ public class PingTask {
         int delay = BungeeConfig.PING_DELAY.getInt();
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("§7[§b!§7] Ping task started with mode: " + mode, true);
-            Utils.printDebug("§7[§b!§7] Ping task delay: " + delay + " seconds", true);
-            Utils.printDebug("§7[§b!§7] Ping task servers: " + lobbyServers.size(), true);
+            Utils.printDebug("§7[PING] Ping task started with mode: " + mode, false);
+            Utils.printDebug("§7[PING] Ping task delay: " + delay + " seconds", false);
+            Utils.printDebug("§7[PING] Ping task servers: " + lobbyServers.size(), false);
         }
 
         switch (mode) {
             case "DEFAULT":
-                fallbackServerBungee.getLogger().info("§7[§b!§7] Using default ping mode.");
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(false), 2, delay, TimeUnit.SECONDS);
                 break;
             case "SOCKET":
@@ -59,7 +60,7 @@ public class PingTask {
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(true), 2, delay, TimeUnit.SECONDS);
                 break;
             default:
-                fallbackServerBungee.getLogger().severe("§7[§c!§7] Configuration error, using default ping mode.");
+                ErrorHandler.add(Severity.WARNING, "§7[PING] Invalid ping mode: " + mode);
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(false), 2, delay, TimeUnit.SECONDS);
                 break;
         }
@@ -77,6 +78,7 @@ public class PingTask {
     private void ping(ServerInfo serverInfo) {
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
+                ErrorHandler.add(Severity.INFO, "§7[PING] " + serverInfo.getName() + " is offline.");
                 updateFallingServer(serverInfo, true);
                 return;
             }
@@ -109,10 +111,8 @@ public class PingTask {
 
             socket.close();
         } catch (IOException exception) {
+            ErrorHandler.add(Severity.INFO, "§7[PING] " + serverInfo.getName() + " is offline.");
             updateFallingServer(serverInfo, true);
-            if (fallbackServerBungee.isDebug()) {
-                Utils.printDebug("§7[§c!§7] Error while pinging server: " + serverInfo.getName(), true);
-            }
         }
     }
 
@@ -166,7 +166,7 @@ public class PingTask {
     }
 
     public void reload() {
-        String mode = BungeeConfig.PING_MODE.getString();
+        String mode = BungeeConfig.PING_STRATEGY.getString();
         task.cancel();
         start(mode);
     }

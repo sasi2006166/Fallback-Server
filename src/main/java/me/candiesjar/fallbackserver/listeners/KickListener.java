@@ -7,11 +7,12 @@ import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
-import me.candiesjar.fallbackserver.utils.ConditionUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
@@ -69,7 +70,10 @@ public class KickListener implements Listener {
         ServerType serverType = serverTypeManager.get(group);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player " + player.getName() + " was kicked from " + kickedName + " for reason: " + reason, true);
+            Utils.printDebug("Player " + player.getName() + " was kicked from " + kickedName + " for reason: " + reason, false);
+            Utils.printDebug("Player's group: " + group, false);
+            Utils.printDebug("Server type: " + serverType, false);
+            Utils.printDebug("State: " + state, false);
         }
 
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
@@ -100,10 +104,10 @@ public class KickListener implements Listener {
             return;
         }
 
-        event.setCancelled(true);
-
         String group = ServerManager.getGroupByServer(serverName) == null ? "default" : ServerManager.getGroupByServer(serverName);
+
         List<ServerInfo> lobbies = Lists.newArrayList(onlineLobbiesManager.get(group));
+
         lobbies.removeIf(Objects::isNull);
         lobbies.remove(kickedFrom);
 
@@ -114,6 +118,7 @@ public class KickListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
+            ErrorHandler.add(Severity.ERROR, "[FALLBACK] Null lobbies for player " + player.getName() + " in group " + group);
             if (reason.isEmpty()) {
                 player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
                 return;
@@ -121,6 +126,8 @@ public class KickListener implements Listener {
             player.disconnect(new TextComponent(reason));
             return;
         }
+
+        event.setCancelled(true);
 
         lobbies.sort(Comparator.comparingInt(server -> server.getPlayers().size() + getPendingConnections(server.getName())));
         ServerInfo serverInfo = lobbies.get(0);
@@ -217,6 +224,17 @@ public class KickListener implements Listener {
     }
 
     private boolean shouldIgnore(String reason, List<String> ignoredReasons) {
-        return ConditionUtil.checkReason(ignoredReasons, reason);
+        if (reason == null || ignoredReasons == null) {
+            return false;
+        }
+
+        for (String word : ignoredReasons) {
+
+            if (reason.contains(word)) {
+                return true;
+            }
+
+        }
+        return false;
     }
 }

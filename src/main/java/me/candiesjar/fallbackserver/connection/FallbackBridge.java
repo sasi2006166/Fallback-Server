@@ -12,6 +12,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.netty.ChannelWrapper;
+import net.md_5.bungee.protocol.packet.KeepAlive;
 import net.md_5.bungee.protocol.packet.Kick;
 import net.md_5.bungee.protocol.packet.LoginSuccess;
 
@@ -45,7 +46,7 @@ public class FallbackBridge extends DownstreamBridge {
         server.setObsolete(true);
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Disconnected from server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Disconnected from server: " + server.getInfo().getName(), true);
         }
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
@@ -72,7 +73,7 @@ public class FallbackBridge extends DownstreamBridge {
         server.setObsolete(true);
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Exception on server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Exception on server: " + server.getInfo().getName(), true);
         }
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
@@ -86,9 +87,14 @@ public class FallbackBridge extends DownstreamBridge {
     @Override
     public void handle(LoginSuccess loginSuccess) throws Exception {
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Login success on server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Login success on server: " + server.getInfo().getName(), true);
         }
         super.handle(loginSuccess);
+    }
+
+    @Override
+    public void handle(KeepAlive alive) throws Exception {
+        super.handle(alive);
     }
 
     @Override
@@ -101,7 +107,7 @@ public class FallbackBridge extends DownstreamBridge {
         }
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Kick from server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Kick from server: " + server.getInfo().getName(), true);
         }
 
         server.setObsolete(true);

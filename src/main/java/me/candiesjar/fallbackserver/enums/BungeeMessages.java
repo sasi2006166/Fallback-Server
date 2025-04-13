@@ -22,6 +22,7 @@ public enum BungeeMessages {
     NO_PERMISSION("MESSAGES.no_permission"),
     NO_SERVER("MESSAGES.no_server"),
     EXITING_RECONNECT("MESSAGES.exiting_reconnect"),
+    ERRORS_FOUND("MESSAGES.errors_found"),
 
     EMPTY_SERVER("MESSAGES.empty_server"),
     SERVER_CONTAINED("MESSAGES.server_is_added"),

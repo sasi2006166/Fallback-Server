@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.handlers;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.Severity;
@@ -21,24 +22,17 @@ public class ErrorHandler {
         return fallbackServerBungee.getLogger();
     }
 
+    @Getter
     private final List<Diagnostic> diagnostics = Lists.newArrayList();
 
     public void add(Severity severity, String message) {
         diagnostics.add(new Diagnostic(severity, message));
     }
 
-    public int getSize() {
-        return diagnostics.size();
-    }
-
     public void handle() {
         if (diagnostics.isEmpty()) {
-            getLogger().info("§aNo problems found.");
             return;
         }
-
-        getLogger().info("§eDiagnostic errors :" + diagnostics.size());
-
         writeToFile();
     }
 
@@ -49,7 +43,7 @@ public class ErrorHandler {
         File logFile = new File(logDir, "diagnostics.txt");
 
         try (FileWriter writer = new FileWriter(logFile, false)) {
-            writer.write("[FallbackServer] Diagnostic errors :\n");
+            writer.write("==== FALLBACKSERVER DIAGNOSTIC ====\n");
             for (Diagnostic diagnostic : diagnostics) {
                 writer.write("[" + diagnostic.getSeverity() + "] " + diagnostic.getMessage() + "\n");
             }

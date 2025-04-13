@@ -27,6 +27,7 @@ MESSAGES:
   server_not_added: "%prefix% &b%server% &7is not inside this &c%group%&7."
   server_not_available: "%prefix% &b%server% &7doesn't exist inside BungeeCord."
   server_added: "%prefix% &b%server% &7is now added to group &b%group%&7."
+  errors_found: "%prefix% &cErrors found, check /plugins/Fallbackserver/logs folder."
   connection_failed: "%prefix% &7Re-connection &c&lfailed&7! Moving to fallback."
   exiting_reconnect: "%prefix% &7Exiting re-connection mode."
 

@@ -64,15 +64,15 @@ public class SubCommandManager extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        String permission = BungeeConfig.ADMIN_PERMISSION.getString();
-
-        if (!sender.hasPermission(permission)) {
-            return Collections.emptyList();
-        }
-
         boolean tabComplete = BungeeConfig.TAB_COMPLETE.getBoolean();
 
         if (!tabComplete) {
+            return Collections.emptyList();
+        }
+
+        String permission = BungeeConfig.ADMIN_PERMISSION.getString();
+
+        if (!sender.hasPermission(permission)) {
             return Collections.emptyList();
         }
 

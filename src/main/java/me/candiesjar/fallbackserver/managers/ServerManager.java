@@ -14,11 +14,11 @@ import java.util.List;
 public class ServerManager {
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
-    private final Configuration list = fallbackServerBungee.getConfig().getSection("settings.fallback");
+    private final Configuration serversList = fallbackServerBungee.getConfig().getSection("settings.fallback");
 
     public String getGroupByServer(String name) {
-        for (String s : list.getKeys()) {
-            List<String> servers = list.getStringList(s + ".servers");
+        for (String s : serversList.getKeys()) {
+            List<String> servers = serversList.getStringList(s + ".servers");
             if (!servers.contains(name)) {
                 continue;
             }
@@ -29,7 +29,7 @@ public class ServerManager {
     }
 
     public String getGroupByName(String name) {
-        for (String s : list.getKeys()) {
+        for (String s : serversList.getKeys()) {
             if (!s.equalsIgnoreCase(name)) {
                 continue;
             }

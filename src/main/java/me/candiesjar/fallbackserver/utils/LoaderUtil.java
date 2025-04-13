@@ -46,7 +46,7 @@ public class LoaderUtil {
                 List<String> servers = section.getStringList(key + ".servers");
 
                 if (servers.isEmpty()) {
-                    ErrorHandler.add(Severity.ERROR, "Lobbies are missing");
+                    ErrorHandler.add(Severity.ERROR, "[LOADER] Default lobbies are missing");
                     Utils.printDebug("§7[§c!§7] There are no default lobbies", true);
                     Utils.printDebug("§7[§c!§7] Please add some servers to the 'default' section", true);
                     break;
@@ -62,7 +62,6 @@ public class LoaderUtil {
 
             if (servers.isEmpty()) {
                 ErrorHandler.add(Severity.ERROR, "Group " + key + " is missing servers");
-                Utils.printDebug("§7[§c!§7] There are no servers", true);
                 Utils.printDebug("§7[§c!§7] Please add some servers to the '" + key + "' section", true);
                 continue;
             }

@@ -27,6 +27,10 @@ public class OnlineLobbiesManager {
     private final HashMap<String, List<ServerInfo>> onlineLobbies = Maps.newHashMap();
 
     public List<ServerInfo> get(String key) {
+        if (!onlineLobbies.containsKey(key)) {
+            onlineLobbies.put(key, Lists.newArrayList());
+        }
+
         return onlineLobbies.get(key);
     }
 

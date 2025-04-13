@@ -11,6 +11,7 @@ import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
 import me.candiesjar.fallbackserver.channel.PingChannelInitializer;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.enums.TitleMode;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
@@ -134,6 +135,7 @@ public class FallbackReconnectHandler {
 
         pingServer(targetServerInfo, (result, error) -> {
             if (error != null || result == null) {
+                ErrorHandler.add(Severity.ERROR, "[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName() + " - " + error.getMessage());
                 handleFallback();
             }
         });

@@ -106,10 +106,10 @@ public final class FallbackServerBungee extends Plugin {
 
         checkVersion();
 
-        startPinging();
-
         getLogger().info("§7[§b!§7] Plugin loaded successfully");
         checkDebug();
+
+        startPinging();
     }
 
     public void onDisable() {
@@ -216,8 +216,6 @@ public final class FallbackServerBungee extends Plugin {
 
             if (aliases.isEmpty()) {
                 ErrorHandler.add(Severity.WARNING, "Optional, but you have to set at least one alias for the lobby command");
-                getLogger().severe("§7[§c!§7] §cYou have to set at least one alias for the lobby command!");
-                getLogger().severe("§7[§c!§7] §cDisabling lobby command..");
                 return;
             }
 
@@ -235,19 +233,12 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     private void checkVersion() {
-        if (version.contains("Beta")) {
-            getLogger().warning(" ");
-            getLogger().warning("§7You're running a §c§lBETA VERSION §7of the plugin.");
-            getLogger().warning("§7Updater is disabled for debugging purposes.");
-            getLogger().warning("§7If you find any bugs, please report them on discord.");
-            getLogger().warning(" ");
-        }
         UpdateUtil.checkUpdates();
     }
 
     private void startPinging() {
-        String mode = BungeeConfig.PING_MODE.getString();
-        PingTask.start(mode);
+        String strategy = BungeeConfig.PING_STRATEGY.getString();
+        PingTask.start(strategy);
     }
 
     private void checkDebug() {
@@ -269,10 +260,6 @@ public final class FallbackServerBungee extends Plugin {
         LoaderUtil.loadServers(getServersConfig().getSection("servers"));
     }
 
-    public void reloadTask() {
-        PingTask.reload();
-    }
-
     public Configuration getConfig() {
         return configTextFile.getConfig();
     }
@@ -287,6 +274,10 @@ public final class FallbackServerBungee extends Plugin {
 
     public Configuration getVersionConfig() {
         return versionTextFile.getConfig();
+    }
+
+    public void reloadTask() {
+        PingTask.reload();
     }
 
 }

@@ -4,6 +4,7 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
@@ -37,6 +38,10 @@ public class PlayerListener implements Listener {
 
         if (!event.getReason().equals(ServerConnectEvent.Reason.JOIN_PROXY)) {
             return;
+        }
+
+        if (ErrorHandler.getDiagnostics().size() > 0) {
+            BungeeMessages.ERRORS_FOUND.send(player);
         }
 
         if (Utils.isUpdateAvailable()) {

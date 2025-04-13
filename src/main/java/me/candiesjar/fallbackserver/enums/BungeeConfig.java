@@ -7,7 +7,7 @@ import java.util.List;
 public enum BungeeConfig {
 
     TAB_COMPLETE("settings.command_tab_complete"),
-    PING_MODE("settings.ping_mode"),
+    PING_STRATEGY("settings.ping_mode"),
     CLEAR_CHAT_RECONNECT("settings.clear_chat.reconnect"),
     CLEAR_CHAT_SERVER_SWITCH("settings.clear_chat.server_switch"),
     CLEAR_CHAT_FALLBACK("settings.clear_chat.fallback"),
