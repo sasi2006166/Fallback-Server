@@ -112,11 +112,11 @@ public final class FallbackServerAddon extends JavaPlugin {
             placeholderApi = true;
         }
 
-        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+        if (getConfig().getBoolean("settings.protocollib_support") && getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
             pLib = true;
         }
 
-        if (getServer().getPluginManager().getPlugin("PacketEvents") != null) {
+        if (getConfig().getBoolean("settings.packetevents_support") && getServer().getPluginManager().getPlugin("PacketEvents") != null) {
             pEvents = true;
         }
     }
