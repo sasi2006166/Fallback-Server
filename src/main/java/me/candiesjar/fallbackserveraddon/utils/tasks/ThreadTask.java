@@ -39,7 +39,6 @@ public class ThreadTask {
             }
 
             if (threadLag < 2) {
-                System.out.println(threadLag);
                 threadLag++;
                 return;
             }
