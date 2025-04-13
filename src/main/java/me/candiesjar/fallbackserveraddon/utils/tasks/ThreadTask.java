@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserveraddon.utils.tasks;
 
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
@@ -10,18 +11,15 @@ import me.candiesjar.fallbackserveraddon.utils.ProtocolLibUtil;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @UtilityClass
 public class ThreadTask {
 
     private final FallbackServerAddon plugin = FallbackServerAddon.getInstance();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private MyScheduledTask task = null;
 
-    private final long MONITOR_INTERVAL = 11;
+    private final long MONITOR_INTERVAL = 5 * 20L;
     private final long THREAD_TIMEOUT = 5;
 
     private boolean locked;
@@ -29,7 +27,7 @@ public class ThreadTask {
 
     @SneakyThrows
     public void monitorMainThread() {
-        scheduler.scheduleAtFixedRate(() -> {
+        task = UniversalScheduler.getScheduler(plugin).runTaskTimerAsynchronously(() -> {
 
             if (isMainThreadResponsive()) {
                 if (locked) {
@@ -41,6 +39,7 @@ public class ThreadTask {
             }
 
             if (threadLag < 2) {
+                System.out.println(threadLag);
                 threadLag++;
                 return;
             }
@@ -54,11 +53,11 @@ public class ThreadTask {
                 if (!plugin.isPLib() && !plugin.isPEvents())
                     plugin.getLogger().warning("Reconnect feature won't work if you don't have ProtocolLib or PacketEvents integration.");
             }
-        }, 0, MONITOR_INTERVAL, TimeUnit.SECONDS);
+        }, 1L, MONITOR_INTERVAL);
     }
 
     public void stopMonitoring() {
-        scheduler.shutdownNow();
+        if (task != null) task.cancel();
     }
 
     private boolean isMainThreadResponsive() {

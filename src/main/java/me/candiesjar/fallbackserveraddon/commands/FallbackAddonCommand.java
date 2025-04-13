@@ -2,8 +2,8 @@ package me.candiesjar.fallbackserveraddon.commands;
 
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserveraddon.FallbackServerAddon;
-import me.candiesjar.fallbackserveraddon.utils.Utils;
 import me.candiesjar.fallbackserveraddon.utils.player.ChatUtil;
+import me.candiesjar.fallbackserveraddon.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
