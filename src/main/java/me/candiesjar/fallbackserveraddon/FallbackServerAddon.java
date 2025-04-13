@@ -192,6 +192,7 @@ public final class FallbackServerAddon extends JavaPlugin {
                 if (oldValue.equalsIgnoreCase("ADDON")) {
                     Utils.unregisterEvent(new PingListener(this));
                     PacketEventsUtil.terminate();
+                    ThreadTask.stopMonitoring();
                 }
 
                 if (oldValue.equalsIgnoreCase("STANDALONE")) {
@@ -213,6 +214,7 @@ public final class FallbackServerAddon extends JavaPlugin {
                 }
 
                 registerPing();
+                ThreadTask.monitorMainThread();
                 getServer().getConsoleSender().sendMessage("[FallbackServerAddon] §7[§b!§7] Detected addon mode, start completed.");
                 break;
 
