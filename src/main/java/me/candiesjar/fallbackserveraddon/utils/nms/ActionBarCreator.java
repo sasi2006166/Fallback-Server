@@ -22,6 +22,7 @@ public class ActionBarCreator {
 
     @SneakyThrows
     public static void sendActionBar(Player player, String message, FallbackServerAddon instance) {
+
         if (!player.isOnline()) {
             return;
         }

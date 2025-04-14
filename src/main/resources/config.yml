@@ -26,14 +26,17 @@ settings:
   # false: Everyone will be able to see the simple "running fallbackserver" message.
   hide_command: false
 
-  # Support for faster addon method using ProtocolLib.
+  # Support for faster addon methods using ProtocolLib.
   # If you enable this, the plugin will use ProtocolLib for some features.
+  # The plugin will use ProtocolLib to handle server crashes (without it, you can't save your players from crashes).
   # Requires ProtocolLib to be installed.
-  protocollib_support: false
+  protocollib_support: true
 
-  # Support for faster addon method using PacketEvents.
+  # Support for faster addon methods using PacketEvents.
   # If you enable this, the plugin will use PacketEvents to send ping packets.
-  packetevents_support: false
+  # The plugin will use PacketEvents to handle server crashes (without it, you can't save your players from crashes).
+  # Requires PacketEvents to be installed.
+  packetevents_support: true
 
   # NOTE: This will work only if you set up the mode to 'ADDON'.
   addon:
