@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @UtilityClass
 public class PingTask {
@@ -66,13 +67,9 @@ public class PingTask {
         }
     }
 
-    @SneakyThrows
     private void pingServers(boolean sockets) {
-        if (!sockets) {
-            lobbyServers.forEach(PingTask::ping);
-            return;
-        }
-        lobbyServers.forEach(PingTask::socketPing);
+        Consumer<ServerInfo> pingMethod = sockets ? PingTask::socketPing : PingTask::ping;
+        lobbyServers.forEach(pingMethod);
     }
 
     private void ping(ServerInfo serverInfo) {
@@ -87,33 +84,35 @@ public class PingTask {
             int max = result.getPlayers().getMax();
 
             if (players == max) {
+                ErrorHandler.add(Severity.INFO, "§7[PING] " + serverInfo.getName() + " is full.");
                 updateFallingServer(serverInfo, true);
                 return;
             }
+
+            Utils.printDebug("§7[PING] " + serverInfo.getName() + " is online with " + players + "/" + max + " players.", false);
 
             updateFallingServer(serverInfo, false);
         });
     }
 
+    @SneakyThrows
     private void socketPing(ServerInfo serverInfo) {
         SocketAddress socketAddress = serverInfo.getSocketAddress();
         InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
         int port = inetSocketAddress.getPort();
         String address = inetSocketAddress.getAddress().getHostAddress();
+        InetAddress inetAddress = InetAddress.getByName(address);
 
-        try {
-            InetAddress inetAddress = InetAddress.getByName(address);
-            Socket socket = new Socket(inetAddress, port);
-
+        try (Socket socket = new Socket(inetAddress, port)) {
             if (socket.isConnected()) {
+                Utils.printDebug("§7[SOCKET] " + serverInfo.getName() + " is online.", false);
                 updateFallingServer(serverInfo, false);
             }
-
-            socket.close();
-        } catch (IOException exception) {
-            ErrorHandler.add(Severity.INFO, "§7[PING] " + serverInfo.getName() + " is offline.");
+        } catch (IOException e) {
+            ErrorHandler.add(Severity.INFO, "§7[SOCKET PING] " + serverInfo.getName() + " is offline.");
             updateFallingServer(serverInfo, true);
         }
+
     }
 
     private void updateFallingServer(ServerInfo serverInfo, boolean remove) {
@@ -146,22 +145,13 @@ public class PingTask {
     }
 
     private void loadServerList(List<String> serverList) {
-        if (serverList.isEmpty()) {
-            return;
-        }
+        if (serverList.isEmpty()) return;
 
         for (String serverName : serverList) {
             ServerInfo serverInfo = proxyServer.getServerInfo(serverName);
-
-            if (serverInfo == null) {
-                continue;
+            if (serverInfo != null && !lobbyServers.contains(serverInfo)) {
+                lobbyServers.add(serverInfo);
             }
-
-            if (lobbyServers.contains(serverInfo)) {
-                continue;
-            }
-
-            lobbyServers.add(serverInfo);
         }
     }
 

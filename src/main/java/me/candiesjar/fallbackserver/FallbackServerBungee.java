@@ -166,7 +166,6 @@ public final class FallbackServerBungee extends Plugin {
         }
 
         if (getProxy().getPluginManager().getPlugin("Maintenance") != null) {
-
             String author = getProxy().getPluginManager().getPlugin("Maintenance").getDescription().getAuthor();
 
             if (!author.equals("kennytv")) {
