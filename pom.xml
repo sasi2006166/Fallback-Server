@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.2.0-DeveloperPreview_2</version>
+    <version>3.2.0-Dev_4</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>
@@ -92,9 +92,10 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-bootstrap</artifactId>
-            <version>master-SNAPSHOT-e5835333</version>
+            <version>1.21-R0.3-SNAPSHOT</version>
             <type>jar</type>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/bungeecord-1.21-R0.3-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>

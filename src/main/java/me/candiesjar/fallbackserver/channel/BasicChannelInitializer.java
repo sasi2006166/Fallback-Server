@@ -13,11 +13,13 @@ public class BasicChannelInitializer extends ChannelInitializer<Channel> {
     private final ProxyServer proxyServer;
     private final UserConnection userConnection;
     private final BungeeServerInfo bungeeServerInfo;
+    private final boolean ping;
 
-    public BasicChannelInitializer(ProxyServer proxyServer, UserConnection userConnection, BungeeServerInfo bungeeServerInfo) {
+    public BasicChannelInitializer(ProxyServer proxyServer, UserConnection userConnection, BungeeServerInfo bungeeServerInfo, boolean ping) {
         this.proxyServer = proxyServer;
         this.userConnection = userConnection;
         this.bungeeServerInfo = bungeeServerInfo;
+        this.ping = ping;
     }
 
     @Override
@@ -28,7 +30,9 @@ public class BasicChannelInitializer extends ChannelInitializer<Channel> {
                 .getChannelAcceptor()
                 .accept(channel);
 
-        channel.pipeline().get(HandlerBoss.class)
-                .setHandler(new FallbackServerConnector(proxyServer, userConnection, bungeeServerInfo));
+        if (!ping) {
+            channel.pipeline().get(HandlerBoss.class)
+                    .setHandler(new FallbackServerConnector(proxyServer, userConnection, bungeeServerInfo));
+        }
     }
 }

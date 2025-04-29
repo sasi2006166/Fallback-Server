@@ -89,8 +89,6 @@ public class PingTask {
                 return;
             }
 
-            Utils.printDebug("§7[PING] " + serverInfo.getName() + " is online with " + players + "/" + max + " players.", false);
-
             updateFallingServer(serverInfo, false);
         });
     }
@@ -124,7 +122,7 @@ public class PingTask {
                 continue;
             }
 
-            group = serverType.getName();
+            group = serverType.getGroupName();
             boolean containsValue = onlineLobbiesManager.containsValue(group, serverInfo);
 
             if (remove) {

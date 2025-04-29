@@ -31,13 +31,8 @@ public class TitleUtil {
         Title createdTitle = createNewTitle();
         setTitleTiming(createdTitle, fadeIn, stay, fadeOut);
 
-        String formattedTitle = ChatUtil.getFormattedString(title)
-                .replace("%server%", serverInfo.getName())
-                .replace("%dots%", Utils.getDots(0));
-
-        String formattedSubTitle = ChatUtil.getFormattedString(subTitle)
-                .replace("%server%", serverInfo.getName())
-                .replace("%dots%", Utils.getDots(0));
+        String formattedTitle = formatMessage(title, serverInfo, 0);
+        String formattedSubTitle = formatMessage(subTitle, serverInfo, 0);
 
         setTitleText(createdTitle, formattedTitle, formattedSubTitle);
         createdTitle.send(proxiedPlayer);
@@ -47,14 +42,20 @@ public class TitleUtil {
         Title createdTitle = createNewTitle();
         setTitleTiming(createdTitle, fadeIn, stay, 0);
 
-        String formattedTitle = ChatUtil.getFormattedString(title)
-                .replace("%dots%", Utils.getDots(dots));
-
-        String formattedSubTitle = ChatUtil.getFormattedString(subTitle)
-                .replace("%dots%", Utils.getDots(dots));
+        String formattedTitle = formatMessage(title, null, dots);
+        String formattedSubTitle = formatMessage(subTitle, null, dots);
 
         setTitleText(createdTitle, formattedTitle, formattedSubTitle);
         createdTitle.send(proxiedPlayer);
+    }
+
+    private String formatMessage(BungeeMessages message, ServerInfo serverInfo, int dots) {
+        String formatted = ChatUtil.getFormattedString(message)
+                .replace("%dots%", Utils.getDots(dots));
+        if (serverInfo != null) {
+            formatted = formatted.replace("%server%", serverInfo.getName());
+        }
+        return formatted;
     }
 
     public void clearPlayerTitle(ProxiedPlayer proxiedPlayer) {

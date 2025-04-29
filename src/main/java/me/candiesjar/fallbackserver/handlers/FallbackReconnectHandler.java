@@ -8,7 +8,6 @@ import io.netty.util.internal.PlatformDependent;
 import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
-import me.candiesjar.fallbackserver.channel.PingChannelInitializer;
 import me.candiesjar.fallbackserver.enums.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
@@ -94,7 +93,6 @@ public class FallbackReconnectHandler {
             int connectedPlayers = result.getPlayers().getOnline();
             int check = BungeeConfig.RECONNECT_PLAYER_COUNT_CHECK.getInt();
 
-
             if (connectedPlayers == maxPlayers) {
                 tries.set(this.maxTries.get());
                 return;
@@ -120,7 +118,7 @@ public class FallbackReconnectHandler {
             userConnection.getServer().disconnect("Reconnecting...");
         }
 
-        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo);
+        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, false);
         Bootstrap bootstrap = new Bootstrap()
                 .channel(PipelineUtils.getChannel(targetServerInfo.getAddress()))
                 .group(serverConnection.getCh().getHandle().eventLoop())
@@ -135,14 +133,15 @@ public class FallbackReconnectHandler {
 
         pingServer(targetServerInfo, (result, error) -> {
             if (error != null || result == null) {
-                ErrorHandler.add(Severity.ERROR, "[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName() + " - " + error.getMessage());
+                ErrorHandler.add(Severity.ERROR, "[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName());
                 handleFallback();
             }
         });
 
-        userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong()));
-
-        bootstrap.connect().addListener(channelFuture -> ReconnectUtil.cancelReconnect(uuid));
+        bootstrap.connect().addListener(channelFuture -> {
+            userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong()));
+            ReconnectUtil.cancelReconnect(uuid);
+        });
 
         if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
             ChatUtil.clearChat(userConnection);
@@ -167,7 +166,7 @@ public class FallbackReconnectHandler {
     }
 
     private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
-        ChannelInitializer<Channel> initializer = new PingChannelInitializer();
+        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, true);
         Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000).remoteAddress(target.getAddress());
         bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }

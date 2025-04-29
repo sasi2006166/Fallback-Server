@@ -18,8 +18,8 @@
 settings:
 
   # Debug mode, useful for bug reports.
-  # IMPORTANT: This (may) spam your console with useless messages, use it only if you're reporting a bug.
-  # DISABLED.
+  # Will enable the use for /fs debug command and some
+  # additional logs inside the console.
   debug: false
 
   # Player with admin permission only will be able to use /fs tab complete.

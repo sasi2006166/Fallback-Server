@@ -7,14 +7,14 @@ import java.util.List;
 @Getter
 public class ServerType {
 
-    private final String name;
+    private final String groupName;
     private final List<String> servers;
     // TODO: Online lobbies here, preserving ram usage.
     private final List<String> lobbies;
     private final boolean reconnect;
 
     public ServerType(String name, List<String> servers, List<String> lobbies, boolean reconnect) {
-        this.name = name;
+        this.groupName = name;
         this.servers = servers;
         this.lobbies = lobbies;
         this.reconnect = reconnect;
@@ -23,7 +23,7 @@ public class ServerType {
     @Override
     public String toString() {
         return "ServerType{" +
-                "name='" + name + '\'' +
+                "name='" + groupName + '\'' +
                 ", servers=" + servers +
                 ", lobbies=" + lobbies +
                 ", reconnect=" + reconnect +

@@ -105,7 +105,6 @@ public class KickListener implements Listener {
         }
 
         String group = ServerManager.getGroupByServer(serverName) == null ? "default" : ServerManager.getGroupByServer(serverName);
-
         List<ServerInfo> lobbies = Lists.newArrayList(onlineLobbiesManager.get(group));
 
         lobbies.removeIf(Objects::isNull);
