@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.ServerType;
@@ -103,7 +103,6 @@ public class PingTask {
 
         try (Socket socket = new Socket(inetAddress, port)) {
             if (socket.isConnected()) {
-                Utils.printDebug("§7[SOCKET] " + serverInfo.getName() + " is online.", false);
                 updateFallingServer(serverInfo, false);
             }
         } catch (IOException e) {

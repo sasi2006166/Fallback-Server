@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.utils;
 
 import lombok.experimental.UtilityClass;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
 
 @UtilityClass
 public class UpdateUtil {

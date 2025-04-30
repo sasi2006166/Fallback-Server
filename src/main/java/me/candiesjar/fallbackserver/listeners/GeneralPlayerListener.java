@@ -2,8 +2,8 @@ package me.candiesjar.fallbackserver.listeners;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -18,12 +18,12 @@ import net.md_5.bungee.event.EventPriority;
 
 import java.util.UUID;
 
-public class PlayerListener implements Listener {
+public class GeneralPlayerListener implements Listener {
 
     private final FallbackServerBungee plugin;
     private final PlayerCacheManager playerCacheManager;
 
-    public PlayerListener(FallbackServerBungee plugin) {
+    public GeneralPlayerListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
         this.playerCacheManager = plugin.getPlayerCacheManager();
     }
@@ -40,7 +40,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (ErrorHandler.getDiagnostics().size() > 0) {
+        if (!ErrorHandler.getDiagnostics().isEmpty()) {
             BungeeMessages.ERRORS_FOUND.send(player);
         }
 

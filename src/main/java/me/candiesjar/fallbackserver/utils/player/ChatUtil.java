@@ -2,7 +2,7 @@ package me.candiesjar.fallbackserver.utils.player;
 
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

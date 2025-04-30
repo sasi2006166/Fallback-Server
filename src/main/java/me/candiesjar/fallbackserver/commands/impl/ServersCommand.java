@@ -1,10 +1,10 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.CommandSender;
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class ServersSubCommand implements SubCommand {
+public class ServersCommand implements ISubCommand {
 
     private final OnlineLobbiesManager onlineLobbiesManager;
 
-    public ServersSubCommand(FallbackServerBungee plugin) {
+    public ServersCommand(FallbackServerBungee plugin) {
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
     }
 

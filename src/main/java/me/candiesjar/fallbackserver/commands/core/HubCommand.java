@@ -1,11 +1,11 @@
-package me.candiesjar.fallbackserver.commands.base;
+package me.candiesjar.fallbackserver.commands.core;
 
 import com.google.common.collect.Lists;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;

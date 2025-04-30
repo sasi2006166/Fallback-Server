@@ -1,8 +1,8 @@
-package me.candiesjar.fallbackserver.commands.interfaces;
+package me.candiesjar.fallbackserver.commands.api;
 
 import net.md_5.bungee.api.CommandSender;
 
-public interface SubCommand {
+public interface ISubCommand {
 
     String getPermission();
 

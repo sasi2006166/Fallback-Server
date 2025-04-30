@@ -5,17 +5,17 @@ import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.commands.base.HubCommand;
-import me.candiesjar.fallbackserver.commands.base.SubCommandManager;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeVersion;
+import me.candiesjar.fallbackserver.commands.core.HubCommand;
+import me.candiesjar.fallbackserver.commands.core.SubCommandManager;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeVersion;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.utils.FilesUtils;
-import me.candiesjar.fallbackserver.utils.LoaderUtil;
+import me.candiesjar.fallbackserver.utils.FallbackGroupsLoader;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.UpdateUtil;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
@@ -181,7 +181,7 @@ public final class FallbackServerBungee extends Plugin {
         getLogger().info("§7[§b!§7] Starting all listeners..");
 
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
-        getProxy().getPluginManager().registerListener(this, new KickListener(this));
+        getProxy().getPluginManager().registerListener(this, new ServerKickListener(this));
 
         ServerInfo serverInfo = ReconnectUtil.checkForPhysicalServer();
         setReconnectServer(serverInfo);
@@ -191,15 +191,15 @@ public final class FallbackServerBungee extends Plugin {
         boolean joinSorting = BungeeConfig.JOIN_BALANCING.getBoolean();
 
         if (disabledServers) {
-            getProxy().getPluginManager().registerListener(this, new ChatListener());
+            getProxy().getPluginManager().registerListener(this, new ChatEventListener());
         }
 
         if (checkUpdates) {
-            getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
+            getProxy().getPluginManager().registerListener(this, new GeneralPlayerListener(this));
         }
 
         if (joinSorting) {
-            getProxy().getPluginManager().registerListener(this, new JoinListener(this));
+            getProxy().getPluginManager().registerListener(this, new PlayerJoinListener(this));
         }
 
     }
@@ -255,8 +255,10 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     public void loadServers() {
-        LoaderUtil.loadServers(getConfig().getSection("settings.fallback"));
-        LoaderUtil.loadServers(getServersConfig().getSection("servers"));
+        Configuration defaultFallback = getConfig().getSection("settings.fallback");
+        new FallbackGroupsLoader(serverTypeManager, onlineLobbiesManager).loadServers(defaultFallback);
+        Configuration additionalServers = getServersConfig().getSection("servers");
+        new FallbackGroupsLoader(serverTypeManager, onlineLobbiesManager).loadServers(additionalServers);
     }
 
     public Configuration getConfig() {

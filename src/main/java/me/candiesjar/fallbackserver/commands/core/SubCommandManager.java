@@ -1,15 +1,15 @@
-package me.candiesjar.fallbackserver.commands.base;
+package me.candiesjar.fallbackserver.commands.core;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.DebugSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.ReloadSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.ServersSubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.StatusSubCommand;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.commands.impl.DebugCommand;
+import me.candiesjar.fallbackserver.commands.impl.ReloadCommand;
+import me.candiesjar.fallbackserver.commands.impl.ServersCommand;
+import me.candiesjar.fallbackserver.commands.impl.StatusCommand;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -22,7 +22,7 @@ import java.util.List;
 public class SubCommandManager extends Command implements TabExecutor {
 
     private final FallbackServerBungee plugin;
-    private final HashMap<String, SubCommand> subCommands = Maps.newHashMap();
+    private final HashMap<String, ISubCommand> subCommands = Maps.newHashMap();
 
     public SubCommandManager(FallbackServerBungee plugin) {
         super("fs", BungeeConfig.ADMIN_PERMISSION.getString(), "fallbackserverbungee");
@@ -30,10 +30,10 @@ public class SubCommandManager extends Command implements TabExecutor {
 
         setPermissionMessage("§8§l» §7Running §b§nFallback Server §b" + plugin.getVersion() + " §7by §b§nCandiesJar §8§l«");
 
-        subCommands.put("debug", new DebugSubCommand(plugin));
-        subCommands.put("reload", new ReloadSubCommand(plugin));
-        subCommands.put("status", new StatusSubCommand(plugin));
-        subCommands.put("servers", new ServersSubCommand(plugin));
+        subCommands.put("debug", new DebugCommand(plugin));
+        subCommands.put("reload", new ReloadCommand(plugin));
+        subCommands.put("status", new StatusCommand(plugin));
+        subCommands.put("servers", new ServersCommand(plugin));
     }
 
     @Override
@@ -48,18 +48,18 @@ public class SubCommandManager extends Command implements TabExecutor {
             return;
         }
 
-        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+        ISubCommand ISubCommand = subCommands.get(args[0].toLowerCase());
 
-        if (!subCommand.isEnabled()) {
+        if (!ISubCommand.isEnabled()) {
             return;
         }
 
-        if (!sender.hasPermission(subCommand.getPermission())) {
-            BungeeMessages.NO_PERMISSION.send(sender, new Placeholder("permission", subCommand.getPermission()));
+        if (!sender.hasPermission(ISubCommand.getPermission())) {
+            BungeeMessages.NO_PERMISSION.send(sender, new Placeholder("permission", ISubCommand.getPermission()));
             return;
         }
 
-        subCommand.perform(sender, args);
+        ISubCommand.perform(sender, args);
     }
 
     @Override

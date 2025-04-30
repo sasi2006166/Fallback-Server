@@ -4,8 +4,8 @@ import lombok.SneakyThrows;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.connection.FallbackBridge;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -66,7 +66,7 @@ public class ServerSwitchListener implements Listener {
         }
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), false);
+            Utils.printDebug("[SWITCH] Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), false);
         }
 
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);

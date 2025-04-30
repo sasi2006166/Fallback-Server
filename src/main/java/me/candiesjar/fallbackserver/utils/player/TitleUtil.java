@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.utils.player;
 
 import lombok.experimental.UtilityClass;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;

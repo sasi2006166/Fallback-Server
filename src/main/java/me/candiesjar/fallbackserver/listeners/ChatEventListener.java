@@ -1,7 +1,7 @@
 package me.candiesjar.fallbackserver.listeners;
 
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -9,7 +9,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-public class ChatListener implements Listener {
+public class ChatEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(ChatEvent event) {

@@ -1,11 +1,11 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.commands.base.HubCommand;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.commands.core.HubCommand;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
@@ -13,7 +13,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 
 @RequiredArgsConstructor
-public class ReloadSubCommand implements SubCommand {
+public class ReloadCommand implements ISubCommand {
 
     private final FallbackServerBungee plugin;
 

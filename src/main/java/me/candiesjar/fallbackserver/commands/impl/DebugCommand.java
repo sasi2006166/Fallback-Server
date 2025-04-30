@@ -1,8 +1,8 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.pastebin.builders.Pastebin;
@@ -13,11 +13,11 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.Collections;
 
-public class DebugSubCommand implements SubCommand {
+public class DebugCommand implements ISubCommand {
 
     private final FallbackServerBungee plugin;
 
-    public DebugSubCommand(FallbackServerBungee plugin) {
+    public DebugCommand(FallbackServerBungee plugin) {
         this.plugin = plugin;
     }
 

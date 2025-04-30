@@ -3,9 +3,10 @@ package me.candiesjar.fallbackserver.listeners;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -19,13 +20,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class JoinListener implements Listener {
+public class PlayerJoinListener implements Listener {
 
     private final FallbackServerBungee plugin;
     private final OnlineLobbiesManager onlineLobbiesManager;
     private final ServerTypeManager serverTypeManager;
 
-    public JoinListener(FallbackServerBungee plugin) {
+    public PlayerJoinListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
         this.serverTypeManager = plugin.getServerTypeManager();
@@ -58,6 +59,10 @@ public class JoinListener implements Listener {
 
         lobbies.sort(Comparator.comparingInt(server -> server.getPlayers().size()));
         ServerInfo serverInfo = lobbies.get(0);
+
+        if (plugin.isDebug()) {
+            Utils.printDebug("[JOIN SORTING] Player " + player.getName() + " is being sent to " + serverInfo.getName(), false);
+        }
 
         event.setTarget(serverInfo);
     }

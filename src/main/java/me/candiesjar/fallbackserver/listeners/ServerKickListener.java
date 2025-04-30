@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
@@ -27,21 +27,18 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-public class KickListener implements Listener {
+public class ServerKickListener implements Listener {
 
     private final FallbackServerBungee plugin;
     private final ServerTypeManager serverTypeManager;
     private final OnlineLobbiesManager onlineLobbiesManager;
     private final Map<String, LongAdder> pendingConnections;
 
-    public KickListener(FallbackServerBungee plugin) {
+    public ServerKickListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
         this.serverTypeManager = plugin.getServerTypeManager();
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
@@ -50,30 +47,23 @@ public class KickListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerKick(ServerKickEvent event) {
+        if (!shouldHandle(event)) {
+            return;
+        }
+
         ProxiedPlayer player = event.getPlayer();
-
-        if (!player.isConnected()) {
-            return;
-        }
-
-        ServerKickEvent.State state = event.getState();
-
-        if (state != ServerKickEvent.State.CONNECTED) {
-            return;
-        }
-
         ServerInfo kickedFrom = event.getKickedFrom();
         String kickedName = kickedFrom == null ? "ReconnectLimbo" : kickedFrom.getName();
-        String group = ServerManager.getGroupByServer(kickedName) == null ? "default" : ServerManager.getGroupByServer(kickedName);
+        String group = Optional.ofNullable(ServerManager.getGroupByServer(kickedName)).orElse("default");
         boolean isEmpty = event.getReason() == null;
         String reason = isEmpty ? "Lost Connection" : BaseComponent.toLegacyText(event.getReason()).trim();
         ServerType serverType = serverTypeManager.get(group);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player " + player.getName() + " was kicked from " + kickedName + " for reason: " + reason, false);
+            Utils.printDebug("Player " + player.getName() + " was kicked from " + kickedName, false);
+            Utils.printDebug("Reason: " + reason, false);
             Utils.printDebug("Player's group: " + group, false);
             Utils.printDebug("Server type: " + serverType, false);
-            Utils.printDebug("State: " + state, false);
         }
 
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
@@ -117,7 +107,7 @@ public class KickListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
-            ErrorHandler.add(Severity.ERROR, "[FALLBACK] Null lobbies for player " + player.getName() + " in group " + group);
+            ErrorHandler.add(Severity.ERROR, "[FALLBACK] No lobbies for player " + player.getName() + " in group " + group);
             if (reason.isEmpty()) {
                 player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
                 return;
@@ -220,6 +210,10 @@ public class KickListener implements Listener {
         if (adder != null) {
             adder.decrement();
         }
+    }
+
+    private boolean shouldHandle(ServerKickEvent event) {
+        return event.getPlayer().isConnected() && event.getState() == ServerKickEvent.State.CONNECTED;
     }
 
     private boolean shouldIgnore(String reason, List<String> ignoredReasons) {

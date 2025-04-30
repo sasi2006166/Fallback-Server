@@ -8,10 +8,10 @@ import io.netty.util.internal.PlatformDependent;
 import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
-import me.candiesjar.fallbackserver.enums.BungeeConfig;
-import me.candiesjar.fallbackserver.enums.BungeeMessages;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
-import me.candiesjar.fallbackserver.enums.TitleMode;
+import me.candiesjar.fallbackserver.enums.TitleDisplayMode;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -62,9 +62,9 @@ public class FallbackReconnectHandler {
     }
 
     public void onJoin() {
-        TitleMode titleMode = TitleMode.fromString(BungeeConfig.RECONNECT_TITLE_MODE.getString());
+        TitleDisplayMode titleDisplayMode = TitleDisplayMode.fromString(BungeeConfig.RECONNECT_TITLE_MODE.getString());
 
-        titleTask = scheduleTask(() -> sendTitles(BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE), 0, titleMode.getPeriod());
+        titleTask = scheduleTask(() -> sendTitles(BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE), 0, titleDisplayMode.getPeriod());
         reconnectTask = scheduleTask(this::startReconnect, 0, BungeeConfig.RECONNECT_DELAY.getInt());
     }
 
@@ -185,9 +185,9 @@ public class FallbackReconnectHandler {
     private void sendTitles(BungeeMessages title, BungeeMessages subTitle) {
         int currentDots = dots.incrementAndGet() % 5;
 
-        TitleMode titleMode = TitleMode.fromString(BungeeConfig.RECONNECT_TITLE_MODE.getString());
+        TitleDisplayMode titleDisplayMode = TitleDisplayMode.fromString(BungeeConfig.RECONNECT_TITLE_MODE.getString());
 
-        switch (titleMode) {
+        switch (titleDisplayMode) {
             case NORMAL:
                 TitleUtil.sendReconnectingTitle(0, 1 + 20, currentDots, title, subTitle, userConnection);
                 break;
