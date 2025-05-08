@@ -56,7 +56,7 @@ public enum BungeeMessages {
     CONNECTING_SUB_TITLE("TITLES.reconnect.connecting_sub_title"),
     CONNECTED_TITLE("TITLES.reconnect.connected.title"),
     CONNECTED_SUB_TITLE("TITLES.reconnect.connected.sub_title"),
-    RECONNECT_TITLE_BEAT("TITLES.reconnect.title_beat"),
+    RECONNECT_TITLE_PULSE("TITLES.reconnect.title_beat"),
     CONNECTED_DELAY("TITLES.reconnect.connected.delay"),
     CONNECTED_FADE_IN("TITLES.reconnect.connected.fade_in"),
     CONNECTED_FADE_OUT("TITLES.reconnect.connected.fade_out"),

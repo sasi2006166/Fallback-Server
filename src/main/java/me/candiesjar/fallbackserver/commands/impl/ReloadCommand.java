@@ -6,6 +6,8 @@ import me.candiesjar.fallbackserver.commands.core.HubCommand;
 import me.candiesjar.fallbackserver.commands.api.ISubCommand;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
@@ -39,6 +41,8 @@ public class ReloadCommand implements ISubCommand {
         if (wasCommandEnabled != isCommandEnabled) {
             HubCommand hubCommand = new HubCommand(plugin);
 
+            ErrorHandler.add(Severity.INFO, "Hub command status has changed to " + isCommandEnabled);
+
             if (isCommandEnabled) {
                 plugin.getProxy().getPluginManager().registerCommand(plugin, hubCommand);
             } else {
@@ -51,6 +55,7 @@ public class ReloadCommand implements ISubCommand {
 
         plugin.getServerTypeManager().clear();
         plugin.getOnlineLobbiesManager().clear();
+        ErrorHandler.getDiagnostics().clear();
 
         plugin.loadServers();
         plugin.reloadTask();

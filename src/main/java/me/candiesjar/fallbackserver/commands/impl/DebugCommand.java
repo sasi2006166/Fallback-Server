@@ -116,14 +116,12 @@ public class DebugCommand implements ISubCommand {
     }
 
     private void handleFile(CommandSender sender) {
-
-        Utils.printDebug("Size: " + ErrorHandler.getDiagnostics().size(), true);
-
-        if (ErrorHandler.getDiagnostics().size() == 0) {
+        if (ErrorHandler.getDiagnostics().isEmpty()) {
             sender.sendMessage(new TextComponent("§cNo errors found! ;)"));
             return;
         }
 
         ErrorHandler.handle();
+        sender.sendMessage(new TextComponent("Saved to diagnostics.txt"));
     }
 }

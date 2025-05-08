@@ -28,7 +28,7 @@ public class OnlineLobbiesManager {
 
     public List<ServerInfo> get(String key) {
         if (!onlineLobbies.containsKey(key)) {
-            onlineLobbies.put(key, Lists.newArrayList());
+            return Lists.newArrayList();
         }
 
         return onlineLobbies.get(key);

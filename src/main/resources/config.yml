@@ -103,12 +103,12 @@ settings:
   # Remember that your group has to be set on RECONNECT mode.
   auto_reconnect:
     # Tries before disconnecting or moving player to lobbies.
-    max_tries: 5
+    max_tries: 8
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
-    # Recommended value is around 10 seconds.
-    ping_delay: 10
+    # Recommended value is around 20 seconds.
+    ping_delay: 20
 
     # This option is used by the addon ping system
     # for checking if the spigot instance is fully started up.
@@ -141,7 +141,7 @@ settings:
     # the actual reconnection, useful for preventing
     # backend replying to my plugin ping request on
     # server stop (like /restart).
-    task_delay: 10
+    task_delay: 15
 
     # Choose if you want to clear the tab-list when
     # a player enters the "limbo" while reconnecting.
@@ -178,7 +178,6 @@ settings:
 
     # Title can be customized into messages configuration.
     # Available in messages.yml
-    # DISABLED.
     title:
       enable: true
       # NORMAL: The normal animated title with dots
@@ -263,3 +262,7 @@ sub_commands:
   servers:
     enabled: true
     permission: "fallback.admin.servers"
+
+  stop:
+    enabled: false
+    permission: "fallback.admin.stop"

@@ -19,7 +19,8 @@ public class FallbackGroupsLoader {
         this.onlineLobbiesManager = onlineLobbiesManager;
     }
 
-    public void loadServers(Configuration section) {
+    @SuppressWarnings("t")
+    public void loadServers(Configuration section, boolean bypass) {
         if (section == null) {
             ErrorHandler.add(Severity.ERROR, "[LOADER] Fallback section is either missing or empty");
             Utils.printDebug("[LOADER] There is an error in your configuration", true);
@@ -27,10 +28,10 @@ public class FallbackGroupsLoader {
             return;
         }
 
-        if (!section.contains("default")) {
+        if (!section.contains("default") && bypass) {
             ErrorHandler.add(Severity.ERROR, "[LOADER] Lobbies section is missing");
             Utils.printDebug("[LOADER] There is an error in your configuration", true);
-            Utils.printDebug("[LOADER] Please check the 'settings.fallback' section", true);
+            Utils.printDebug("[LOADER] Please check the 'settings.fallback.default' section", true);
             return;
         }
 

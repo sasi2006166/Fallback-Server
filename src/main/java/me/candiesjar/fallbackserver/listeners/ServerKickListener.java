@@ -148,6 +148,11 @@ public class ServerKickListener implements Listener {
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", serverInfo.getName()),
                 new Placeholder("reason", ChatUtil.formatColor(reason)));
+
+        if (plugin.isDebug()) {
+            Utils.printDebug("Player: " + player.getName(), false);
+            Utils.printDebug("All check passed, moved to " + serverInfo.getName(), false);
+        }
     }
 
     private void handleReconnect(ServerKickEvent event, String reason, String serverName, ProxiedPlayer player) {

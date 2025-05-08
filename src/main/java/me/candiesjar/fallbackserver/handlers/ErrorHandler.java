@@ -3,21 +3,38 @@ package me.candiesjar.fallbackserver.handlers;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.objects.text.Diagnostic;
 import me.candiesjar.fallbackserver.utils.Utils;
+import net.md_5.bungee.api.ProxyServer;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @UtilityClass
 public class ErrorHandler {
 
+    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
+    private final ProxyServer proxyServer = fallbackServerBungee.getProxy();
+
     @Getter
     private final List<Diagnostic> diagnostics = Lists.newArrayList();
+
+    public void deleteLogFile() {
+        File logDir = new File("plugins/FallbackServer/logs");
+
+        if (!logDir.exists()) return;
+
+        File logFile = new File(logDir, "diagnostics.txt");
+        if (logFile.exists()) {
+            logFile.delete();
+        }
+    }
 
     public void add(Severity severity, String message) {
         Calendar calendar = Calendar.getInstance();
@@ -32,6 +49,16 @@ public class ErrorHandler {
             return;
         }
         writeToFile();
+    }
+
+    public void schedule() {
+        proxyServer.getScheduler().schedule(fallbackServerBungee, () -> {
+            if (diagnostics.isEmpty()) {
+                return;
+            }
+            writeToFile();
+            diagnostics.clear();
+        }, 0, 2, TimeUnit.HOURS);
     }
 
     private void writeToFile() {

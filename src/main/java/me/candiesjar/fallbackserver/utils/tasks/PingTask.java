@@ -46,6 +46,11 @@ public class PingTask {
 
         int delay = BungeeConfig.PING_DELAY.getInt();
 
+        if (delay < 1) {
+            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 5 seconds.");
+            delay = 5;
+        }
+
         if (fallbackServerBungee.isDebug()) {
             Utils.printDebug("§7[PING] Ping task started with mode: " + mode, false);
             Utils.printDebug("§7[PING] Ping task delay: " + delay + " seconds", false);
@@ -61,7 +66,7 @@ public class PingTask {
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(true), 2, delay, TimeUnit.SECONDS);
                 break;
             default:
-                ErrorHandler.add(Severity.WARNING, "§7[PING] Invalid ping mode: " + mode);
+                ErrorHandler.add(Severity.WARNING, "[PING] Invalid ping mode: " + mode);
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(false), 2, delay, TimeUnit.SECONDS);
                 break;
         }
@@ -75,7 +80,6 @@ public class PingTask {
     private void ping(ServerInfo serverInfo) {
         serverInfo.ping((result, error) -> {
             if (error != null || result == null) {
-                ErrorHandler.add(Severity.INFO, "§7[PING] " + serverInfo.getName() + " is offline.");
                 updateFallingServer(serverInfo, true);
                 return;
             }
@@ -84,7 +88,6 @@ public class PingTask {
             int max = result.getPlayers().getMax();
 
             if (players == max) {
-                ErrorHandler.add(Severity.INFO, "§7[PING] " + serverInfo.getName() + " is full.");
                 updateFallingServer(serverInfo, true);
                 return;
             }
@@ -106,7 +109,6 @@ public class PingTask {
                 updateFallingServer(serverInfo, false);
             }
         } catch (IOException e) {
-            ErrorHandler.add(Severity.INFO, "§7[SOCKET PING] " + serverInfo.getName() + " is offline.");
             updateFallingServer(serverInfo, true);
         }
 
@@ -129,6 +131,8 @@ public class PingTask {
                     continue;
                 }
 
+                ErrorHandler.add(Severity.INFO, "[PING] " + serverInfo.getName() + " is either offline or full.");
+
                 onlineLobbiesManager.remove(group, serverInfo);
                 continue;
             }
@@ -146,15 +150,21 @@ public class PingTask {
 
         for (String serverName : serverList) {
             ServerInfo serverInfo = proxyServer.getServerInfo(serverName);
-            if (serverInfo != null && !lobbyServers.contains(serverInfo)) {
+
+            if (serverInfo == null) {
+                ErrorHandler.add(Severity.WARNING, "[PING] Server " + serverName + " not found.");
+                continue;
+            }
+
+            if (!lobbyServers.contains(serverInfo)) {
                 lobbyServers.add(serverInfo);
             }
         }
     }
 
     public void reload() {
-        String mode = BungeeConfig.PING_STRATEGY.getString();
         task.cancel();
+        String mode = BungeeConfig.PING_STRATEGY.getString();
         start(mode);
     }
 }

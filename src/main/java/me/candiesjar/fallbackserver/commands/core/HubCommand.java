@@ -97,10 +97,13 @@ public class HubCommand extends Command {
     private boolean isHub(ServerInfo server) {
         String group = ServerManager.getGroupByServer(server.getName());
 
-        if (group == null && fallbackServerBungee.isDebug()) {
-            Utils.printDebug("The server " + server.getName() + " does not exist!", true);
-            Utils.printDebug("Seems that it isn't present inside the group list", true);
-            Utils.printDebug("Please add it and run /fs reload.", true);
+        if (group == null) {
+
+            if (fallbackServerBungee.isDebug()) {
+                Utils.printDebug("[HUB COMMAND] The server " + server.getName() + " does not exist!", true);
+                Utils.printDebug("[HUB COMMAND] Please add it to default lobbies and run /fs reload.", true);
+            }
+
             return false;
         }
 

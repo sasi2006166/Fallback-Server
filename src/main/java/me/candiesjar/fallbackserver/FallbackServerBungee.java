@@ -109,6 +109,8 @@ public final class FallbackServerBungee extends Plugin {
         getLogger().info("§7[§b!§7] Plugin loaded successfully");
         checkDebug();
 
+        ErrorHandler.deleteLogFile();
+
         startPinging();
     }
 
@@ -256,9 +258,9 @@ public final class FallbackServerBungee extends Plugin {
 
     public void loadServers() {
         Configuration defaultFallback = getConfig().getSection("settings.fallback");
-        new FallbackGroupsLoader(serverTypeManager, onlineLobbiesManager).loadServers(defaultFallback);
+        new FallbackGroupsLoader(serverTypeManager, onlineLobbiesManager).loadServers(defaultFallback, true);
         Configuration additionalServers = getServersConfig().getSection("servers");
-        new FallbackGroupsLoader(serverTypeManager, onlineLobbiesManager).loadServers(additionalServers);
+        new FallbackGroupsLoader(serverTypeManager, onlineLobbiesManager).loadServers(additionalServers, false);
     }
 
     public Configuration getConfig() {

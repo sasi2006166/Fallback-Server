@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.enums;
 
 import lombok.Getter;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 
 @Getter
 public enum TitleDisplayMode {
@@ -18,7 +19,10 @@ public enum TitleDisplayMode {
                 return STATIC;
             case "PULSE":
                 return PULSE;
+            case "NORMAL:":
+                return NORMAL;
             default:
+                ErrorHandler.add(Severity.WARNING, "[RECONNECT TITLE] Invalid title display mode: " + value);
                 return NORMAL;
         }
     }

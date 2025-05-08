@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.2.0-Dev_4</version>
+    <version>3.2.0-Dev_5</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.6.0</version>
                 <configuration>
                     <relocations>
                         <relocation>
@@ -67,10 +67,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>bungeecord-gitlab</id>
-            <url>https://gitlab.com/api/v4/projects/67403727/packages/maven</url>
-        </repository>
         <repository>
             <id>AlessioDP</id>
             <url>https://repo.alessiodp.com/releases/</url>
