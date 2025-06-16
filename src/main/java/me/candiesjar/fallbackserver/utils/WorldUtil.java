@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
 import net.elytrium.limboapi.api.Limbo;
 import net.elytrium.limboapi.api.LimboFactory;
 import net.elytrium.limboapi.api.chunk.Dimension;
@@ -126,20 +126,19 @@ public class WorldUtil {
         WorldFile worldFile;
         switch (fileExtension) {
             case "SCHEMATIC":
-                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a SCHEMATIC file"));
+                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading as a SCHEMATIC file"));
                 worldFile = factory.openWorldFile(BuiltInWorldFileType.SCHEMATIC, path);
                 break;
             case "SCHEM":
-                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a WORLDEDIT_SCHEM file"));
+                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading as a WORLDEDIT_SCHEM file"));
                 worldFile = factory.openWorldFile(BuiltInWorldFileType.WORLDEDIT_SCHEM, path);
                 break;
             case "STRUCTURE":
-                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading schematic as a STRUCTURE file"));
+                fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading as a STRUCTURE file"));
                 worldFile = factory.openWorldFile(BuiltInWorldFileType.STRUCTURE, path);
                 break;
             default:
-                Utils.printDebug("Invalid schematic file", true);
-                Utils.printDebug("Please add a valid schematic file", true);
+                fallbackServerVelocity.getComponentLogger().error("Invalid schematic file, check if corrupted", true);
                 worldFile = null;
                 break;
         }

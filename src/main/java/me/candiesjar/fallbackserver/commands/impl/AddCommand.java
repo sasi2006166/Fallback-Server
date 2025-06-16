@@ -1,12 +1,12 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.utils.Utils;
@@ -15,7 +15,7 @@ import org.simpleyaml.configuration.ConfigurationSection;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class AddSubCommand implements SubCommand {
+public class AddCommand implements ISubCommand {
 
     private final FallbackServerVelocity plugin;
 

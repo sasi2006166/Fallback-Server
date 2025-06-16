@@ -3,7 +3,7 @@ package me.candiesjar.fallbackserver.utils.player;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.experimental.UtilityClass;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;

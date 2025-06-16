@@ -17,13 +17,13 @@ import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.commands.base.FallbackVelocityCommand;
-import me.candiesjar.fallbackserver.commands.base.HubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityVersion;
+import me.candiesjar.fallbackserver.commands.core.FallbackVelocityCommand;
+import me.candiesjar.fallbackserver.commands.core.HubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityVersion;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
-import me.candiesjar.fallbackserver.stats.VelocityMetrics;
+import me.candiesjar.fallbackserver.metrics.VelocityMetrics;
 import me.candiesjar.fallbackserver.utils.LoaderUtil;
 import me.candiesjar.fallbackserver.utils.PluginUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
@@ -47,7 +47,7 @@ import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 @Plugin(
         id = "fallbackservervelocity",
         name = "FallbackServerVelocity",
-        version = "3.2.0-Beta3.5",
+        version = "3.2.0-Dev_1",
         url = "github.com/sasi2006166",
         authors = "CandiesJar",
         dependencies = {
@@ -65,7 +65,7 @@ public class FallbackServerVelocity {
     private TextFile configTextFile, messagesTextFile, serversTextFile, versionTextFile;
 
     @Getter
-    public final String version = "3.2.0-Beta3.5";
+    public final String version = "3.2.0-Dev_1";
 
     @Setter
     private boolean limboApi = false;
@@ -163,7 +163,6 @@ public class FallbackServerVelocity {
         loadTask();
 
         getComponentLogger().info(getMiniMessage().deserialize("<gray>[<aqua>!<gray>] <aqua>FallbackServer <gray>loaded successfully"));
-        checkBeta();
 
         checkUpdate();
 
@@ -217,10 +216,10 @@ public class FallbackServerVelocity {
         }
 
         getComponentLogger().info(getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Updating configuration..."));
-        YamlUpdater.create(new File(getPath() + "/config.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/main/src/main/resources/config.yml"))
+        YamlUpdater.create(new File(getPath() + "/config.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/velocity/src/main/resources/config.yml"))
                 .backup(true)
                 .update();
-        YamlUpdater.create(new File(getPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/main/src/main/resources/messages.yml"))
+        YamlUpdater.create(new File(getPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/velocity/src/main/resources/messages.yml"))
                 .backup(true)
                 .update();
         versionTextFile.getConfig().set("version", pluginContainer.getDescription().getVersion().get());
@@ -317,17 +316,6 @@ public class FallbackServerVelocity {
         PingTask.start(mode);
     }
 
-    private void checkBeta() {
-        if (getVersion().contains("Beta")) {
-            setBeta(true);
-            getComponentLogger().warn(" ");
-            getComponentLogger().warn(getMiniMessage().deserialize("<gray>You're running a <red><bold>BETA VERSION <gray>of the plugin."));
-            getComponentLogger().warn(getMiniMessage().deserialize("<gray>Updater is disabled for debugging purposes."));
-            getComponentLogger().warn(getMiniMessage().deserialize("<gray>If you find any bugs, please report them on discord."));
-            getComponentLogger().warn(" ");
-        }
-    }
-
     private void checkUpdate() {
         Utils.getUpdates().whenComplete((result, throwable) -> {
             if (throwable != null) {
@@ -389,9 +377,9 @@ public class FallbackServerVelocity {
         int coreCount = Runtime.getRuntime().availableProcessors();
 
         if (coreCount < 2) {
-            getComponentLogger().error("You're using a single core for your proxy.");
-            getComponentLogger().error("There is no issue with this, but in long term ");
-            getComponentLogger().error("it may cause performance issues.");
+            getComponentLogger().warn("You're using a single core for your proxy.");
+            getComponentLogger().warn("There is no issue with this, but in long term ");
+            getComponentLogger().warn("it may cause performance issues.");
         }
 
         WorldUtil.createLimbo();
@@ -404,9 +392,6 @@ public class FallbackServerVelocity {
     }
 
     public void reloadAll() {
-        PingTask.getScheduledTask().cancel();
-        getServerTypeManager().clear();
-        getOnlineLobbiesManager().clear();
         configTextFile.reload();
         messagesTextFile.reload();
         serversTextFile.reload();

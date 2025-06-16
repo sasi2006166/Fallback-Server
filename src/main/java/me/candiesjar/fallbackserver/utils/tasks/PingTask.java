@@ -12,7 +12,7 @@ import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.utils.Utils;
 
@@ -179,6 +179,9 @@ public class PingTask {
     }
 
     public void reload() {
+        if (scheduledTask != null) {
+            scheduledTask.cancel();
+        }
         String mode = VelocityConfig.PING_MODE.get(String.class);
         start(mode);
     }

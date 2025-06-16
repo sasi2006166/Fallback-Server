@@ -1,18 +1,18 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.commands.base.HubCommand;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.commands.core.HubCommand;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 
 @RequiredArgsConstructor
-public class ReloadSubCommand implements SubCommand {
+public class ReloadCommand implements ISubCommand {
     private final FallbackServerVelocity plugin;
 
     @Override
@@ -51,6 +51,9 @@ public class ReloadSubCommand implements SubCommand {
             }
 
         }
+
+        plugin.getServerTypeManager().clear();
+        plugin.getOnlineLobbiesManager().clear();
 
         plugin.reloadAll();
 

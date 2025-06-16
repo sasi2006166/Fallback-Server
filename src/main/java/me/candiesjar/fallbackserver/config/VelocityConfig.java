@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.enums;
+package me.candiesjar.fallbackserver.config;
 
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 

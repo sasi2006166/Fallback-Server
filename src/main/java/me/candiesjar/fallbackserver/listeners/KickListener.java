@@ -9,12 +9,13 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ConditionUtil;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.kyori.adventure.text.Component;
@@ -55,6 +56,8 @@ public class KickListener {
         String group = ServerManager.getGroupByServer(kickedName) == null ? "default" : ServerManager.getGroupByServer(kickedName);
         ServerType serverType = serverTypeManager.get(group);
 
+        Utils.printDebug("Player " + player.getUsername() + " was kicked from " + kickedName + " for reason: " + kickReasonString, false);
+
         if (kickedName.equalsIgnoreCase("FallbackLimbo")) {
             handleFallback(event, kickedFrom, player, kickReasonString, kickedName, true);
             return;
@@ -67,6 +70,7 @@ public class KickListener {
         }
 
         if (serverType == null) {
+            Utils.printDebug("Server type is null for server: " + kickedName, false);
             handleFallback(event, kickedFrom, player, kickReasonString, kickedName, false);
             return;
         }
@@ -83,6 +87,8 @@ public class KickListener {
     private void handleFallback(KickedFromServerEvent event, RegisteredServer kickedFrom, Player player, String kickReasonString, String kickedName, boolean reconnect) {
         List<String> ignoredReasons = VelocityConfig.IGNORED_REASONS.getStringList();
 
+        Utils.printDebug("Ignored reasons", false);
+
         if (shouldIgnore(kickReasonString, ignoredReasons)) {
             event.setResult(KickedFromServerEvent.DisconnectPlayer.create(Component.text(ChatUtil.formatColor(kickReasonString))));
             return;
@@ -95,10 +101,16 @@ public class KickListener {
             return;
         }
 
+        Utils.printDebug("Ignored server", false);
+
         String group = ServerManager.getGroupByServer(kickedName) == null ? "default" : ServerManager.getGroupByServer(kickedName);
         List<RegisteredServer> lobbies = Lists.newArrayList(onlineLobbiesManager.get(group));
+
         lobbies.removeIf(Objects::isNull);
         lobbies.remove(kickedFrom);
+
+        Utils.printDebug("Found lobbies", false);
+        Utils.printDebug("Lobbies: " + lobbies, false);
 
         boolean useMaintenance = plugin.isMaintenance();
 
@@ -116,10 +128,13 @@ public class KickListener {
             return;
         }
 
+        Utils.printDebug("Sorting", false);
+
         lobbies.sort(Comparator.comparingInt(server -> server.getPlayersConnected().size() + getPendingConnections(server.getServerInfo().getName())));
         RegisteredServer registeredServer = lobbies.get(0);
 
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(registeredServer));
+        Utils.printDebug("Connected", false);
         incrementPendingConnections(registeredServer.getServerInfo().getName());
 
         plugin.getServer().getScheduler().buildTask(plugin, () -> decrementPendingConnections(registeredServer.getServerInfo().getName()))

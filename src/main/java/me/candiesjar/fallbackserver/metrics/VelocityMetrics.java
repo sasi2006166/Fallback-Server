@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.stats;
+package me.candiesjar.fallbackserver.metrics;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.PluginContainer;

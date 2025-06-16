@@ -1,8 +1,8 @@
-package me.candiesjar.fallbackserver.commands.interfaces;
+package me.candiesjar.fallbackserver.commands.api;
 
 import com.velocitypowered.api.command.CommandSource;
 
-public interface SubCommand {
+public interface ISubCommand {
 
     String getPermission();
 

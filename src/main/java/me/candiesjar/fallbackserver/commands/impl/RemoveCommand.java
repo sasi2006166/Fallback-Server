@@ -1,12 +1,12 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import com.velocitypowered.api.command.CommandSource;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
-import me.candiesjar.fallbackserver.enums.VelocityServers;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
+import me.candiesjar.fallbackserver.config.VelocityServers;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -14,7 +14,7 @@ import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class RemoveSubCommand implements SubCommand {
+public class RemoveCommand implements ISubCommand {
 
     private final FallbackServerVelocity plugin;
 

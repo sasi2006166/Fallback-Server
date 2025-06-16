@@ -1,12 +1,12 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class ServersSubCommand implements SubCommand {
+public class ServersCommand implements ISubCommand {
 
     private final OnlineLobbiesManager onlineLobbiesManager;
 
-    public ServersSubCommand(FallbackServerVelocity plugin) {
+    public ServersCommand(FallbackServerVelocity plugin) {
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
     }
 

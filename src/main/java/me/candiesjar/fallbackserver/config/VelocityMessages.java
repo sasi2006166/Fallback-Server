@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.enums;
+package me.candiesjar.fallbackserver.config;
 
 import com.velocitypowered.api.command.CommandSource;
 import lombok.Getter;

@@ -1,14 +1,14 @@
-package me.candiesjar.fallbackserver.commands.base;
+package me.candiesjar.fallbackserver.commands.core;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.commands.subcommands.*;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.commands.impl.*;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 
@@ -21,16 +21,16 @@ import java.util.concurrent.CompletableFuture;
 public class FallbackVelocityCommand implements SimpleCommand {
 
     private final FallbackServerVelocity plugin;
-    private final HashMap<String, SubCommand> subCommands = Maps.newHashMap();
+    private final HashMap<String, ISubCommand> subCommands = Maps.newHashMap();
 
     public FallbackVelocityCommand(FallbackServerVelocity fallbackServerVelocity, FallbackServerVelocity plugin) {
         this.plugin = plugin;
 
-        subCommands.put("reload", new ReloadSubCommand(fallbackServerVelocity));
-        subCommands.put("status", new StatusSubCommand(fallbackServerVelocity));
-        subCommands.put("servers", new ServersSubCommand(fallbackServerVelocity));
-        subCommands.put("group", new GroupSubCommand(fallbackServerVelocity));
-        subCommands.put("add", new AddSubCommand(fallbackServerVelocity));
+        subCommands.put("reload", new ReloadCommand(fallbackServerVelocity));
+        subCommands.put("status", new StatusCommand(fallbackServerVelocity));
+        subCommands.put("servers", new ServersCommand(fallbackServerVelocity));
+        subCommands.put("group", new GroupCommand(fallbackServerVelocity));
+        subCommands.put("add", new AddCommand(fallbackServerVelocity));
     }
 
     @Override
@@ -63,20 +63,20 @@ public class FallbackVelocityCommand implements SimpleCommand {
             return;
         }
 
-        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+        ISubCommand ISubCommand = subCommands.get(args[0].toLowerCase());
 
-        if (!subCommand.isEnabled()) {
+        if (!ISubCommand.isEnabled()) {
             return;
         }
 
-        if (!commandSource.hasPermission(subCommand.getPermission())) {
+        if (!commandSource.hasPermission(ISubCommand.getPermission())) {
             VelocityMessages.NO_PERMISSION.send(commandSource,
                     new Placeholder("prefix", ChatUtil.getFormattedString(VelocityMessages.PREFIX)),
-                    new Placeholder("permission", subCommand.getPermission()));
+                    new Placeholder("permission", ISubCommand.getPermission()));
             return;
         }
 
-        subCommand.perform(commandSource, args);
+        ISubCommand.perform(commandSource, args);
     }
 
     @Override

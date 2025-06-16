@@ -1,10 +1,10 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import com.velocitypowered.api.command.CommandSource;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -12,12 +12,12 @@ import org.simpleyaml.configuration.ConfigurationSection;
 
 import java.util.List;
 
-public class GroupSubCommand implements SubCommand {
+public class GroupCommand implements ISubCommand {
 
     private final FallbackServerVelocity plugin;
     private final ConfigurationSection section;
 
-    public GroupSubCommand(FallbackServerVelocity plugin) {
+    public GroupCommand(FallbackServerVelocity plugin) {
         this.plugin = plugin;
         this.section = plugin.getServersTextFile().getConfig().getConfigurationSection("servers");
     }

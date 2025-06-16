@@ -1,19 +1,20 @@
-package me.candiesjar.fallbackserver.commands.subcommands;
+package me.candiesjar.fallbackserver.commands.impl;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.commands.interfaces.SubCommand;
-import me.candiesjar.fallbackserver.enums.VelocityConfig;
+import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.config.VelocityConfig;
 import me.candiesjar.fallbackserver.handler.DebugLimboHandler;
+import me.candiesjar.fallbackserver.handler.ErrorHandler;
 import me.candiesjar.fallbackserver.utils.WorldUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
 
 @RequiredArgsConstructor
-public class DebugSubCommand implements SubCommand {
+public class DebugCommand implements ISubCommand {
 
     private final FallbackServerVelocity plugin;
 
@@ -36,9 +37,13 @@ public class DebugSubCommand implements SubCommand {
 
         String command = args[1];
 
-        if (command.equalsIgnoreCase("spawn")) {
-            Player player = (Player) commandSource;
-            WorldUtil.getFallbackLimbo().spawnPlayer(player, new DebugLimboHandler());
+        switch (command) {
+            case "spawn":
+                handleSpawn(commandSource);
+                break;
+            case "file":
+                handleFile(commandSource);
+                break;
         }
 
         if (command.equalsIgnoreCase("ping")) {
@@ -66,5 +71,20 @@ public class DebugSubCommand implements SubCommand {
             });
         }
 
+    }
+
+    private void handleSpawn(CommandSource commandSource) {
+        Player player = (Player) commandSource;
+        WorldUtil.getFallbackLimbo().spawnPlayer(player, new DebugLimboHandler());
+    }
+
+    private void handleFile(CommandSource commandSource) {
+        if (ErrorHandler.getDiagnostics().isEmpty()) {
+            commandSource.sendMessage(Component.text(ChatUtil.formatColor("&cNo errors found!")));
+            return;
+        }
+
+        ErrorHandler.handle();
+        commandSource.sendMessage(Component.text(ChatUtil.formatColor("&aDiagnostics file created!")));
     }
 }

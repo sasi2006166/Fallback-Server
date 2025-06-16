@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.commands.base;
+package me.candiesjar.fallbackserver.commands.core;
 
 import com.google.common.collect.Lists;
 import com.velocitypowered.api.command.CommandSource;
@@ -9,7 +9,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.enums.VelocityMessages;
+import me.candiesjar.fallbackserver.config.VelocityMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
@@ -112,10 +112,13 @@ public class HubCommand implements SimpleCommand {
 
         String group = ServerManager.getGroupByServer(registeredServer.getServerInfo().getName());
 
-        if (group == null && plugin.isDebug()) {
-            Utils.printDebug("The server " + registeredServer.getServerInfo().getName() + " does not exist!", true);
-            Utils.printDebug("Seems that it isn't present inside the group list", true);
-            Utils.printDebug("Please add it and run /fsv reload.", true);
+        if (group == null) {
+            if (plugin.isDebug()) { // TODO: ErrorHandler
+                Utils.printDebug("The server " + registeredServer.getServerInfo().getName() + " does not exist!", true);
+                Utils.printDebug("Seems that it isn't present inside the group list", true);
+                Utils.printDebug("Please add it and run /fsv reload.", true);
+            }
+
             return false;
         }
 
