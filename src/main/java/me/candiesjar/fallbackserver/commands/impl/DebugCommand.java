@@ -122,6 +122,6 @@ public class DebugCommand implements ISubCommand {
         }
 
         ErrorHandler.handle();
-        sender.sendMessage(new TextComponent("Saved to diagnostics.txt"));
+        sender.sendMessage(new TextComponent("§aDiagnostics file created!"));
     }
 }

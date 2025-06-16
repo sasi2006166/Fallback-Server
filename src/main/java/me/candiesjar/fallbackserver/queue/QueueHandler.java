@@ -1,16 +1,25 @@
 package me.candiesjar.fallbackserver.queue;
 
-import net.md_5.bungee.BungeeServerInfo;
-import net.md_5.bungee.UserConnection;
+import com.google.common.collect.Maps;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 public class QueueHandler {
 
-    private final UserConnection userConnection;
-    private final BungeeServerInfo target;
+    private final HashMap<UUID, ServerInfo> serverInfoMap = Maps.newHashMap();
 
-    public QueueHandler(UserConnection userConnection, BungeeServerInfo target) {
-        this.userConnection = userConnection;
-        this.target = target;
+    public QueueHandler(ProxiedPlayer player, ServerInfo targetServer) {
+        if (serverInfoMap.containsKey(player.getUniqueId())) {
+            return;
+        }
+
+        addToQueue(player.getUniqueId(), targetServer);
     }
 
+    public void addToQueue(UUID uuid, ServerInfo targetServer) {
+        serverInfoMap.put(uuid, targetServer);
+    }
 }

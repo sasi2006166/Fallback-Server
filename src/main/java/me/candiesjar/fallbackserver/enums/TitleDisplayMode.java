@@ -19,7 +19,7 @@ public enum TitleDisplayMode {
                 return STATIC;
             case "PULSE":
                 return PULSE;
-            case "NORMAL:":
+            case "NORMAL":
                 return NORMAL;
             default:
                 ErrorHandler.add(Severity.WARNING, "[RECONNECT TITLE] Invalid title display mode: " + value);
