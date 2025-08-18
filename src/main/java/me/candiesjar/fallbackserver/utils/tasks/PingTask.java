@@ -13,6 +13,8 @@ import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.config.VelocityConfig;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handler.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.utils.Utils;
 
@@ -46,18 +48,32 @@ public class PingTask {
         long timeout = VelocityConfig.PING_TIMEOUT.get(Integer.class);
         Duration duration = Duration.ofSeconds(timeout);
         PingOptions pingOptions = PingOptions.builder().timeout(duration).build();
-        int taskDelay = VelocityConfig.PING_DELAY.get(Integer.class);
+        int delay = VelocityConfig.PING_DELAY.get(Integer.class);
+
+        if (delay < 1) {
+            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 8 seconds.");
+            delay = 8;
+        }
+
+        if (fallbackServerVelocity.isDebug()) {
+            Utils.printDebug("§7[PING] Ping task started with mode: " + mode, false);
+            Utils.printDebug("§7[PING] Ping task delay: " + delay + " seconds", false);
+            Utils.printDebug("§7[PING] Ping task servers: " + lobbyServers.size(), false);
+        }
 
         switch (mode) {
             case "DEFAULT":
-                scheduledTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> pingServers(false, pingOptions)).repeat(taskDelay, TimeUnit.SECONDS).schedule();
+                ErrorHandler.add(Severity.INFO, "[PING] Using default ping mode.");
+                scheduledTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> pingServers(false, pingOptions)).repeat(delay, TimeUnit.SECONDS).schedule();
                 break;
             case "SOCKET":
-                scheduledTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> pingServers(true, pingOptions)).repeat(taskDelay, TimeUnit.SECONDS).schedule();
+                ErrorHandler.add(Severity.INFO, "[PING] Using socket ping mode.");
+                fallbackServerVelocity.getLogger().info("§7[§b!§7] Using socket ping mode, this mode will not check the player count.");
+                scheduledTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> pingServers(true, pingOptions)).repeat(delay, TimeUnit.SECONDS).schedule();
                 break;
             default:
-                fallbackServerVelocity.getLogger().error("[!] Configuration error, using default ping mode.");
-                scheduledTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> pingServers(false, pingOptions)).repeat(taskDelay, TimeUnit.SECONDS).schedule();
+                ErrorHandler.add(Severity.WARNING, "[PING] Invalid ping mode: " + mode);
+                scheduledTask = fallbackServerVelocity.getServer().getScheduler().buildTask(fallbackServerVelocity, () -> pingServers(false, pingOptions)).repeat(delay, TimeUnit.SECONDS).schedule();
                 break;
         }
     }
@@ -89,6 +105,7 @@ public class PingTask {
             ServerPing.Players players = playersOptional.get();
 
             if (players.getOnline() == players.getMax()) {
+                ErrorHandler.add(Severity.INFO, "[PING] " + registeredServer.getServerInfo().getName() + " is full.");
                 updateFallingServer(registeredServer, true);
                 return;
             }
@@ -97,25 +114,20 @@ public class PingTask {
         }));
     }
 
+    @SneakyThrows
     private void socketPing(RegisteredServer registeredServer) {
         InetSocketAddress socketAddress = registeredServer.getServerInfo().getAddress();
         int port = socketAddress.getPort();
         String address = socketAddress.getAddress().getHostAddress();
+        InetAddress inetAddress = InetAddress.getByName(address);
 
-        try {
-            InetAddress inetAddress = InetAddress.getByName(address);
-            Socket socket = new Socket(inetAddress, port);
-
+        try (Socket socket = new Socket(inetAddress, port)) {
             if (socket.isConnected()) {
                 updateFallingServer(registeredServer, false);
             }
-
-            socket.close();
         } catch (IOException exception) {
+            ErrorHandler.add(Severity.INFO, "[SOCKET PING] " + registeredServer.getServerInfo().getName() + " is either offline or full.");
             updateFallingServer(registeredServer, true);
-            if (fallbackServerVelocity.isDebug()) {
-                Utils.printDebug("§7[§c!§7] Error while pinging server: " + registeredServer.getServerInfo().getName(), true);
-            }
         }
     }
 
@@ -136,6 +148,8 @@ public class PingTask {
                     continue;
                 }
 
+                ErrorHandler.add(Severity.INFO, "[PING] " + registeredServer.getServerInfo().getName() + " is either offline or full.");
+
                 onlineLobbiesManager.remove(group, registeredServer);
                 continue;
             }
@@ -149,28 +163,26 @@ public class PingTask {
     }
 
     private void loadServerList(List<String> serverList) {
-        if (serverList == null) {
-            return;
-        }
+        if (serverList == null) return;
 
         for (String serverName : serverList) {
             RegisteredServer server = fallbackServerVelocity.getServer().getServer(serverName).orElse(null);
 
             if (server == null) {
+                ErrorHandler.add(Severity.ERROR, "[PING] Server " + serverName + " not found.");
                 continue;
             }
 
             ServerInfo serverInfo = getServerInfo(serverName);
 
             if (serverInfo == null) {
+                ErrorHandler.add(Severity.ERROR, "[PING] ServerInfo for " + serverName + " not found.");
                 continue;
             }
 
-            if (lobbyServers.contains(server)) {
-                continue;
+            if (!lobbyServers.contains(server)) {
+                lobbyServers.add(server);
             }
-
-            lobbyServers.add(server);
         }
     }
 
@@ -182,7 +194,7 @@ public class PingTask {
         if (scheduledTask != null) {
             scheduledTask.cancel();
         }
-        String mode = VelocityConfig.PING_MODE.get(String.class);
+        String mode = VelocityConfig.PING_STRATEGY.get(String.class);
         start(mode);
     }
 

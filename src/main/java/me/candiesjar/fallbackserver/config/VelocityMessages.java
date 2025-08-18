@@ -24,6 +24,7 @@ public enum VelocityMessages {
     NO_SERVER("MESSAGES.no_server"),
     EXITING_RECONNECT("MESSAGES.exiting_reconnect"),
     OUTDATED("MESSAGES.outdated"),
+    ERRORS_FOUND("MESSAGES.errors_found"),
 
     EMPTY_GROUP("MESSAGES.empty_group"),
     SERVER_CONTAINED("MESSAGES.server_is_added"),

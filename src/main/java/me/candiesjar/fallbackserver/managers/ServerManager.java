@@ -15,11 +15,11 @@ import java.util.List;
 public class ServerManager {
 
     private final FallbackServerVelocity fallbackServerVelocity = FallbackServerVelocity.getInstance();
-    private final ConfigurationSection list = fallbackServerVelocity.getConfigTextFile().getConfig().getConfigurationSection("settings.fallback");
+    private final ConfigurationSection serversList = fallbackServerVelocity.getConfigTextFile().getConfig().getConfigurationSection("settings.fallback");
 
     public String getGroupByServer(String name) {
-        for (String s : list.getKeys(false)) {
-            List<String> servers = list.getStringList(s + ".servers");
+        for (String s : serversList.getKeys(false)) {
+            List<String> servers = serversList.getStringList(s + ".servers");
             if (!servers.contains(name)) {
                 continue;
             }
@@ -30,7 +30,7 @@ public class ServerManager {
     }
 
     public String getGroupByName(String name) {
-        for (String s : list.getKeys(false)) {
+        for (String s : serversList.getKeys(false)) {
             if (!s.equalsIgnoreCase(name)) {
                 continue;
             }

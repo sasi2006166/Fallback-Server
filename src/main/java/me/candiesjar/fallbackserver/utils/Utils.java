@@ -22,11 +22,6 @@ public class Utils {
 
     @SneakyThrows(Exception.class)
     public CompletableFuture<Boolean> getUpdates() {
-
-        if (fallbackServerVelocity.isBeta()) {
-            return CompletableFuture.supplyAsync(() -> false);
-        }
-
         return CompletableFuture.supplyAsync(() -> {
             boolean isUpdateAvailable;
             URLConnection connection;

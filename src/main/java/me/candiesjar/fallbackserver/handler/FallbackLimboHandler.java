@@ -10,9 +10,9 @@ import com.velocitypowered.api.scheduler.Scheduler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
-import me.candiesjar.fallbackserver.enums.TitleMode;
 import me.candiesjar.fallbackserver.config.VelocityConfig;
 import me.candiesjar.fallbackserver.config.VelocityMessages;
+import me.candiesjar.fallbackserver.enums.TitleDisplayMode;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -55,15 +55,16 @@ public class FallbackLimboHandler implements LimboSessionHandler {
     public void onSpawn(Limbo server, LimboPlayer limboPlayer) {
         this.limboPlayer = limboPlayer;
         limboPlayer.disableFalling();
-        TitleMode titleMode = TitleMode.fromString(VelocityConfig.RECONNECT_TITLE_MODE.get(String.class));
+        TitleDisplayMode titleDisplayMode = TitleDisplayMode.fromString(VelocityConfig.RECONNECT_TITLE_MODE.get(String.class));
 
         titleTask = scheduleTask(() -> sendTitles(VelocityMessages.RECONNECT_TITLE, VelocityMessages.RECONNECT_SUB_TITLE),
-                getTitleDelay(player), titleMode.getPeriod());
+                getTitleDelay(player), titleDisplayMode.getPeriod());
 
         reconnectTask = scheduleTask(() -> startReconnect(limboPlayer),
-                0, VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class));
+                VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class), VelocityConfig.RECONNECT_PING_DELAY.get(Integer.class));
 
         boolean physical = VelocityConfig.RECONNECT_USE_PHYSICAL.get(Boolean.class);
+
         if (physical) {
             String physicalServerName = VelocityConfig.RECONNECT_PHYSICAL_SERVER.get(String.class);
             RegisteredServer physicalServer = fallbackServerVelocity.getServer().getServer(physicalServerName).orElse(null);
@@ -92,9 +93,9 @@ public class FallbackLimboHandler implements LimboSessionHandler {
     }
 
     private void startReconnect(LimboPlayer limboPlayer) {
-        boolean maxTries = tries.getAndIncrement() == this.maxTries;
+        boolean hasReachedMaxTries = tries.getAndIncrement() == maxTries;
 
-        if (maxTries) {
+        if (hasReachedMaxTries) {
             boolean fallback = VelocityConfig.RECONNECT_USE_FALLBACK.get(Boolean.class);
 
             if (fallback) {
@@ -124,7 +125,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
             int check = VelocityConfig.RECONNECT_PLAYER_COUNT_CHECK.get(Integer.class);
 
             if (connectedPlayers == maxPlayers) {
-                tries.set(this.maxTries);
+                tries.set(maxTries);
                 return;
             }
 
@@ -143,7 +144,7 @@ public class FallbackLimboHandler implements LimboSessionHandler {
                     }
                 });
                 handleConnection(limboPlayer);
-            }, VelocityConfig.RECONNECT_TASK_DELAY.get(Integer.class) + 2, 0);
+            }, VelocityConfig.RECONNECT_PING_DELAY.get(Integer.class) + 2, 0);
         });
     }
 
@@ -172,8 +173,8 @@ public class FallbackLimboHandler implements LimboSessionHandler {
         limboPlayer.flushPackets();
 
         /*
-            This server always exist and has been loaded by the plugin
-            on the startup, it's a fake empty server used for
+            This server always exists and has been loaded by the plugin
+            on the startup; it's a fake empty server used for
             bypassing the @NotNull reason provided by Velocity API.
         */
 
@@ -221,9 +222,9 @@ public class FallbackLimboHandler implements LimboSessionHandler {
 
     private void sendTitles(VelocityMessages title, VelocityMessages subTitle) {
         int currentDots = dots.incrementAndGet() % 5;
-        TitleMode titleMode = TitleMode.fromString(VelocityConfig.RECONNECT_TITLE_MODE.get(String.class));
+        TitleDisplayMode titleDisplayMode = TitleDisplayMode.fromString(VelocityConfig.RECONNECT_TITLE_MODE.get(String.class));
 
-        switch (titleMode) {
+        switch (titleDisplayMode) {
             case NORMAL:
                 TitleUtil.sendReconnectingTitle(0, 20, currentDots, title, subTitle, player);
                 break;

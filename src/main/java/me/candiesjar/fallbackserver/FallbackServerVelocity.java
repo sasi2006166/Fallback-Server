@@ -17,18 +17,18 @@ import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
-import me.candiesjar.fallbackserver.commands.core.FallbackVelocityCommand;
 import me.candiesjar.fallbackserver.commands.core.HubCommand;
+import me.candiesjar.fallbackserver.commands.core.SubCommandManager;
 import me.candiesjar.fallbackserver.config.VelocityConfig;
 import me.candiesjar.fallbackserver.config.VelocityVersion;
+import me.candiesjar.fallbackserver.handler.ErrorHandler;
 import me.candiesjar.fallbackserver.listeners.*;
-import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.metrics.VelocityMetrics;
+import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.utils.LoaderUtil;
 import me.candiesjar.fallbackserver.utils.PluginUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.WorldUtil;
-import me.candiesjar.fallbackserver.utils.checks.OutdatedChecks;
 import me.candiesjar.fallbackserver.utils.tasks.PingTask;
 import net.byteflux.libby.Library;
 import net.byteflux.libby.VelocityLibraryManager;
@@ -44,16 +44,7 @@ import java.util.regex.Pattern;
 
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
-@Plugin(
-        id = "fallbackservervelocity",
-        name = "FallbackServerVelocity",
-        version = "3.2.0-Dev_1",
-        url = "github.com/sasi2006166",
-        authors = "CandiesJar",
-        dependencies = {
-                @Dependency(id = "limboapi", optional = true)
-        }
-)
+@Plugin(id = "fallbackservervelocity", name = "FallbackServerVelocity", version = "3.2.0", url = "github.com/sasi2006166", authors = "CandiesJar", dependencies = {@Dependency(id = "limboapi", optional = true)})
 
 @Getter
 public class FallbackServerVelocity {
@@ -65,7 +56,7 @@ public class FallbackServerVelocity {
     private TextFile configTextFile, messagesTextFile, serversTextFile, versionTextFile;
 
     @Getter
-    public final String version = "3.2.0-Dev_1";
+    public final String version = "3.2.0";
 
     @Setter
     private boolean limboApi = false;
@@ -79,10 +70,6 @@ public class FallbackServerVelocity {
     @Getter
     @Setter
     private boolean reconnect = false;
-
-    @Getter
-    @Setter
-    private boolean beta = false;
 
     @Getter
     @Setter
@@ -136,18 +123,17 @@ public class FallbackServerVelocity {
         pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
         getComponentLogger().info(getMiniMessage().deserialize("""
-                    <gradient:#00ffff:#0055ff>
-                      _____     _ _ _                _     ____                         \s
-                     |  ___|_ _| | | |__   __ _  ___| | __/ ___|  ___ _ ____   _____ _ __
-                     | |_ / _` | | | '_ \\ / _` |/ __| |/ /\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|
-                     |  _| (_| | | | |_) | (_| | (__|   <  ___) |  __/ |   \\ V /  __/ |  \s
-                     |_|  \\__,_|_|_|_.__/ \\__,_|\\___|_|\\_\\|____/ \\___|_|    \\_/ \\___|_| \s
-                    </gradient>"""));
+                <gradient:#00ffff:#0055ff>
+                  _____     _ _ _                _     ____                         \s
+                 |  ___|_ _| | | |__   __ _  ___| | __/ ___|  ___ _ ____   _____ _ __
+                 | |_ / _` | | | '_ \\ / _` |/ __| |/ /\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|
+                 |  _| (_| | | | |_) | (_| | (__|   <  ___) |  __/ |   \\ V /  __/ |  \s
+                 |_|  \\__,_|_|_|_.__/ \\__,_|\\___|_|\\_\\|____/ \\___|_|    \\_/ \\___|_| \s
+                </gradient>"""));
 
         loadDependencies();
         loadConfiguration();
 
-        OutdatedChecks.handle();
         updateConfiguration();
 
         checkPlugins();
@@ -168,6 +154,9 @@ public class FallbackServerVelocity {
 
         sendOutdated();
         checkDebug();
+
+        ErrorHandler.deleteLogFile();
+        ErrorHandler.schedule();
     }
 
     @Subscribe
@@ -176,22 +165,11 @@ public class FallbackServerVelocity {
     }
 
     private void loadDependencies() {
-        VelocityLibraryManager<FallbackServerVelocity> libraryManager = new VelocityLibraryManager<>(getComponentLogger(),
-                getPath(),
-                getServer().getPluginManager(),
-                this);
+        VelocityLibraryManager<FallbackServerVelocity> libraryManager = new VelocityLibraryManager<>(getComponentLogger(), getPath(), getServer().getPluginManager(), this);
 
-        Library library = Library.builder()
-                .groupId("me{}carleslc{}Simple-YAML")
-                .artifactId("Simple-Yaml")
-                .version("1.8.4")
-                .build();
+        Library library = Library.builder().groupId("me{}carleslc{}Simple-YAML").artifactId("Simple-Yaml").version("1.8.4").build();
 
-        Library updater = Library.builder()
-                .groupId("ru{}vyarus")
-                .artifactId("yaml-config-updater")
-                .version("1.4.2")
-                .build();
+        Library updater = Library.builder().groupId("ru{}vyarus").artifactId("yaml-config-updater").version("1.4.2").build();
 
         libraryManager.addJitPack();
         libraryManager.addMavenCentral();
@@ -216,12 +194,8 @@ public class FallbackServerVelocity {
         }
 
         getComponentLogger().info(getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Updating configuration..."));
-        YamlUpdater.create(new File(getPath() + "/config.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/velocity/src/main/resources/config.yml"))
-                .backup(true)
-                .update();
-        YamlUpdater.create(new File(getPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/velocity/src/main/resources/messages.yml"))
-                .backup(true)
-                .update();
+        YamlUpdater.create(new File(getPath() + "/config.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/velocity/src/main/resources/config.yml")).backup(true).update();
+        YamlUpdater.create(new File(getPath() + "/messages.yml"), FileUtils.findFile("https://raw.githubusercontent.com/sasi2006166/Fallback-Server/velocity/src/main/resources/messages.yml")).backup(true).update();
         versionTextFile.getConfig().set("version", pluginContainer.getDescription().getVersion().get());
         versionTextFile.save();
         loadConfiguration();
@@ -230,11 +204,9 @@ public class FallbackServerVelocity {
     private void loadCommands() {
         getComponentLogger().info(getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading commands..."));
 
-        CommandMeta meta = server.getCommandManager().metaBuilder("fallbackserver")
-                .aliases("fsv", "fallback", "fs")
-                .build();
+        CommandMeta meta = server.getCommandManager().metaBuilder("fallbackserver").aliases("fsv", "fallback", "fs").build();
 
-        server.getCommandManager().register(meta, new FallbackVelocityCommand(this, this));
+        server.getCommandManager().register(meta, new SubCommandManager(this, this));
 
         boolean isLobbyCommandEnabled = VelocityConfig.LOBBY_COMMAND.get(Boolean.class);
 
@@ -247,10 +219,7 @@ public class FallbackServerVelocity {
                 aliases = new String[]{"hub"};
             }
 
-            CommandMeta commandMeta = server.getCommandManager()
-                    .metaBuilder(VelocityConfig.LOBBY_ALIASES.getStringList().get(0))
-                    .aliases(aliases)
-                    .build();
+            CommandMeta commandMeta = server.getCommandManager().metaBuilder(VelocityConfig.LOBBY_ALIASES.getStringList().get(0)).aliases(aliases).build();
 
             server.getCommandManager().register(commandMeta, new HubCommand(this));
         }
@@ -283,22 +252,22 @@ public class FallbackServerVelocity {
 
     private void loadListeners() {
         getComponentLogger().info(getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Preparing events..."));
-        server.getEventManager().register(this, new KickListener(this));
+        server.getEventManager().register(this, new ServerKickListener(this));
 
         boolean updateChecker = VelocityConfig.UPDATER.get(Boolean.class);
         boolean disabledServers = VelocityConfig.USE_COMMAND_BLOCKER.get(Boolean.class);
         boolean joinSorting = VelocityConfig.JOIN_BALANCING.get(Boolean.class);
 
         if (updateChecker) {
-            server.getEventManager().register(this, new PlayerListener(this));
+            server.getEventManager().register(this, new GeneralPlayerListener(this));
         }
 
         if (disabledServers) {
-            server.getEventManager().register(this, new CommandListener(this));
+            server.getEventManager().register(this, new ChatEventListener(this));
         }
 
         if (joinSorting) {
-            server.getEventManager().register(this, new JoinListener(this));
+            server.getEventManager().register(this, new PlayerJoinListener(this));
         }
     }
 
@@ -311,7 +280,7 @@ public class FallbackServerVelocity {
     }
 
     private void loadTask() {
-        String mode = VelocityConfig.PING_MODE.get(String.class);
+        String mode = VelocityConfig.PING_STRATEGY.get(String.class);
         getComponentLogger().info(getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Using <aqua>" + mode + " <gray>mode for pinging"));
         PingTask.start(mode);
     }
@@ -397,6 +366,7 @@ public class FallbackServerVelocity {
         serversTextFile.reload();
         loadServers();
         PingTask.reload();
+        ErrorHandler.clear();
     }
 
 }

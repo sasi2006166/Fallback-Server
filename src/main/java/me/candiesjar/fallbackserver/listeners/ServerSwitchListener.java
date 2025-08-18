@@ -87,7 +87,6 @@ public class ServerSwitchListener {
     private void requestKick(Player player) {
         ByteArrayDataOutput buf = ByteStreams.newDataOutput();
         buf.writeUTF(player.getUniqueId().toString());
-        player.getCurrentServer().ifPresent(sv ->
-                sv.sendPluginMessage(plugin.getReconnectIdentifier(), buf.toByteArray()));
+        player.getCurrentServer().ifPresent(sv -> sv.sendPluginMessage(plugin.getReconnectIdentifier(), buf.toByteArray()));
     }
 }

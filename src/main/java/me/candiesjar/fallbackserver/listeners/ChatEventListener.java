@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class CommandListener {
+public class ChatEventListener {
     private final FallbackServerVelocity fallbackServerVelocity;
 
     @Subscribe

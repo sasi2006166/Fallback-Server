@@ -22,6 +22,7 @@ MESSAGES:
   disabled_command: "%prefix% &cSorry, this command is disabled."
   no_server: "%prefix% &cThere is no lobby available."
   outdated: "%prefix% &cPlugin configurations are outdated. Please, update the plugin."
+  errors_found: "%prefix% &cErrors found, check /plugins/fallbackservervelocity/logs folder."
 
   reconnection_failed: "%prefix% &7Re-connection &c&lfailed&7!"
   exiting_reconnect: "%prefix% &7Exiting re-connection mode."

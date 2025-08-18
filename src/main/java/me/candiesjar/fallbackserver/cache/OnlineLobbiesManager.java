@@ -28,6 +28,9 @@ public class OnlineLobbiesManager {
     private final HashMap<String, List<RegisteredServer>> onlineLobbies = Maps.newHashMap();
 
     public List<RegisteredServer> get(String key) {
+        if (!onlineLobbies.containsKey(key)) {
+            onlineLobbies.put(key, Lists.newArrayList());
+        }
         return onlineLobbies.get(key);
     }
 

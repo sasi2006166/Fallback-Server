@@ -11,15 +11,14 @@
 # Made by CandiesJar | Github: github.com/sasi2006166 | Discord: https://discord.gg/dJ8DG2cSzt | Telegram: @CandiesJar
 # Velocity configuration file
 
-# IMPORTANT WARNING: Before reporting any issue on discord, READ carefully the comments!
+# IMPORTANT WARNING: Before reporting any issue on discord, carefully READ the comments!
 # Some features are DISABLED since they're under development, don't report any bugs on them.
 # Thanks for understanding.
 
 settings:
 
   # Debug mode, useful for bug reports.
-  # IMPORTANT: This (may) spam your console with useless messages, use it only if you're reporting a bug.
-  # DISABLED.
+  # Will enable the use for /fs debug command and some
   debug: false
 
   # Player with admin permission only will be able to use /fs tab complete.
@@ -33,8 +32,8 @@ settings:
   ping_mode: DEFAULT
 
   # In seconds, will check your lobbies every X seconds, defined under here.
-  # On first start / reboot, let the plugin settle down for X seconds (defined under here) before start using fallback.
-  # Recommended to use 5 if your server is in beta or have not stable spigot instances.
+  # On first start / reboot, let the plugin settle down for X seconds (defined under here) before starting using fallback.
+  # Recommended to use 5 if your server is in beta or has no stable spigot instances.
   ping_delay: 5
 
   # In seconds, determines the timeout phase
@@ -85,8 +84,8 @@ settings:
     - "afk"
     - "maintenance"
 
-  # If you want to use the reconnect mode, fallback_mode must be set to RECONNECT.
-  # Those values will clear the chat on reconnect (after success) or when players
+  # If you want to use reconnect mode, fallback_mode must be set to RECONNECT.
+  # Those values will clear the chat on reconnecting (after success) or when players
   # get fallback-ed to another server.
   clear_chat:
     fallback: true
@@ -95,7 +94,7 @@ settings:
     reconnect_join: true
 
   # Default is on false to prevent any issues with the first join.
-  # True: the plugin will automatically choose best lobby when connecting and balance all players.
+  # True: the plugin will automatically choose the best lobby when connecting and balance all players.
   # WARNING: Join will TOTALLY stop working if you didn't set up the balancing group and the groups under it.
   # WARNING 2: I'll NOT provide any support if you didn't properly configure the plugin.
   join_balancing: false
@@ -104,17 +103,18 @@ settings:
   # You can find it under the "fallback" section.
   join_balancing_group: "default"
 
-  # Those are the values for reconnect mode.
+  # Those are the values for reconnected mode.
   # Customize titles, delays, and other values here.
   # Remember that your group has to be set on RECONNECT mode.
+
   auto_reconnect:
-    # Tries before disconnecting or moving player to lobbies.
-    max_tries: 5
+    # Tries before disconnecting or moving player to the lobby.
+    max_tries: 8
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
-    # Recommended value is around 10 seconds.
-    ping_delay: 10
+    # The Recommended value is around 10 seconds.
+    ping_delay: 20
 
     # This option is used by the addon ping system
     # for checking if the spigot instance is fully started up.
@@ -139,8 +139,8 @@ settings:
     # WARNING: Will work only if "join_limbo" is set on true.
     limbo_settings:
       name: "FallbackLimbo" # Name of the limbo server, can anything.
-      dimension: "OVERWORLD" # Dimension of the limbo server, can be "NETHER" or "THE_END".
-      gamemode: "ADVENTURE" # Gamemode of the limbo server, can be "SURVIVAL", "CREATIVE", "ADVENTURE", or "SPECTATOR".
+      dimension: "OVERWORLD" # The Dimension of the limbo server can be "NETHER" or "THE_END".
+      gamemode: "ADVENTURE" # GameMode of the limbo server can be "SURVIVAL", "CREATIVE", "ADVENTURE", or "SPECTATOR".
       schematic:
         enabled: false
         name: "limbo.schematic" # Only works if it's enabled.
@@ -155,14 +155,14 @@ settings:
       pitch: 0
 
     # Time for time-outing the server on ping.
-    # In Milliseconds, 2000 for example = 2 seconds.
+    # In Milliseconds, 2000, for example = 2 seconds.
     ping_timeout: 2000
 
     # This option will trigger normal FallbackServer kicking procedure.
     # Sorting players in various lobbies.
     player_sort: true
 
-    # Time before starting the server pinging on reconnect.
+    # Time before starting the server pinging on reconnecting.
     # Don't put values under 1, they will NOT work.
     # In seconds.
     first_delay: 3
@@ -173,7 +173,7 @@ settings:
     clear_tab-list: true
 
     # Ignored reasons for reconnecting.
-    # If players gets kicked for one of those reasons
+    # If players get kicked for one of those reasons
     # they will not be reconnected, instead they will be
     # disconnected from the proxy itself.
     ignored_reasons:
@@ -190,7 +190,7 @@ settings:
       - "maintenance"
 
     # Ignored servers for reconnecting.
-    # If players gets kicked from one of those servers
+    # If players get kicked from one of those servers,
     # they will not be reconnected, instead they will be
     # moved to a fallback lobby.
     # Add event servers, such as mini-games, here.
@@ -199,8 +199,7 @@ settings:
       - lobby2
       - lobby3
 
-    # Title can be customized into messages configuration.
-    # Available in messages.yml
+    # Title can be customized into messages.yml
     title:
       enable: true
       # NORMAL: The normal animated title with dots
@@ -213,9 +212,9 @@ settings:
   # False: Everyone will be able to see the simple "running fallbackserver" message.
   hide_command: false
 
-  # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
-  # By default this setting is set on "true" to help me improve the plugin.
-  # Obviously you can disable it if you want, feel free to do so.
+  # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817,
+  # By default, this setting is set on "true" to help me improve the plugin.
+  # You can disable it if you want, feel free to do so.
   telemetry: true
 
   # Administrator will be notified which server goes down and the complete reason of shutdown.

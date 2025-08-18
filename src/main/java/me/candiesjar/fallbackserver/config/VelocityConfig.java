@@ -7,7 +7,7 @@ import java.util.List;
 public enum VelocityConfig {
     DEBUG("settings.debug"),
     TAB_COMPLETE("settings.command_tab_complete"),
-    PING_MODE("settings.ping_mode"),
+    PING_STRATEGY("settings.ping_mode"),
     HIDE_COMMAND("settings.hide_command"),
     CLEAR_CHAT_FALLBACK("settings.clear_chat.fallback"),
     CLEAR_CHAT_SERVER_SWITCH("settings.clear_chat.server_switch"),
@@ -15,7 +15,8 @@ public enum VelocityConfig {
     CLEAR_CHAT_RECONNECT_JOIN("settings.clear_chat.reconnect_join"),
 
     RECONNECT_MAX_TRIES("settings.auto_reconnect.max_tries"),
-    RECONNECT_TASK_DELAY("settings.auto_reconnect.ping_delay"),
+    RECONNECT_PING_DELAY("settings.auto_reconnect.ping_delay"),
+    RECONNECT_TASK_DELAY("settings.auto_reconnect.first_delay"),
     RECONNECT_PLAYER_COUNT_CHECK("settings.auto_reconnect.player_count_check"),
     RECONNECT_IGNORED_SERVERS("settings.auto_reconnect.ignored_servers"),
     RECONNECT_USE_FALLBACK("settings.auto_reconnect.player_sort"),

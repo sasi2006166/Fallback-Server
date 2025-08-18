@@ -18,12 +18,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class FallbackVelocityCommand implements SimpleCommand {
+public class SubCommandManager implements SimpleCommand {
 
     private final FallbackServerVelocity plugin;
     private final HashMap<String, ISubCommand> subCommands = Maps.newHashMap();
 
-    public FallbackVelocityCommand(FallbackServerVelocity fallbackServerVelocity, FallbackServerVelocity plugin) {
+    public SubCommandManager(FallbackServerVelocity fallbackServerVelocity, FallbackServerVelocity plugin) {
         this.plugin = plugin;
 
         subCommands.put("reload", new ReloadCommand(fallbackServerVelocity));

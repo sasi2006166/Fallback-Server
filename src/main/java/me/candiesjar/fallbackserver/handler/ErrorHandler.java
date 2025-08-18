@@ -2,6 +2,7 @@ package me.candiesjar.fallbackserver.handler;
 
 import com.google.common.collect.Lists;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
@@ -24,6 +25,9 @@ public class ErrorHandler {
 
     @Getter
     private final List<Diagnostic> diagnostics = Lists.newArrayList();
+
+    @Getter
+    private ScheduledTask scheduledTask;
 
     public void deleteLogFile() {
         File logDir = new File("plugins/fallbackservervelocity/logs");
@@ -51,15 +55,12 @@ public class ErrorHandler {
         writeToFile();
     }
 
+    public void clear() {
+        diagnostics.clear();
+    }
+
     public void schedule() {
-        proxyServer.getScheduler().buildTask(fallbackServerVelocity, () -> {
-                    if (diagnostics.isEmpty()) {
-                        return;
-                    }
-                    writeToFile();
-                    diagnostics.clear();
-                }).delay(0, TimeUnit.MINUTES)
-                .repeat(2, TimeUnit.MINUTES)
+        scheduledTask = proxyServer.getScheduler().buildTask(fallbackServerVelocity, ErrorHandler::handle).repeat(3, TimeUnit.HOURS)
                 .schedule();
     }
 

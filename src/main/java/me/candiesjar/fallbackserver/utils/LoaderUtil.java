@@ -4,6 +4,8 @@ import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerVelocity;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handler.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import org.simpleyaml.configuration.ConfigurationSection;
 
@@ -19,7 +21,7 @@ public class LoaderUtil {
     public void loadServers(ConfigurationSection section) {
         if (section == null) {
             Utils.printDebug("§7[§c!§7] There is an error in your configuration", true);
-            Utils.printDebug("§7[§c!§7] Please check the 'settings.fallback' section", true);
+            Utils.printDebug("§7[§c!§7] Please check the 'settings.fallback' section, plugin will now disable.", true);
             return;
         }
 
@@ -29,31 +31,36 @@ public class LoaderUtil {
             }
 
             if (key.equalsIgnoreCase("default")) {
-                List<String> servers = section.getStringList(key + ".servers");
+                List<String> lobbies = section.getStringList(key + ".servers");
 
-                if (servers.isEmpty()) {
+                if (lobbies.isEmpty()) {
+                    ErrorHandler.add(Severity.ERROR, "[LOADER] Default lobbies are missing");
                     Utils.printDebug("§7[§c!§7] There are no default lobbies", true);
                     Utils.printDebug("§7[§c!§7] Please add your lobbies to the 'default' section", true);
                     break;
                 }
 
-                ServerType serverType = new ServerType(key, null, servers, false);
-                serverTypeManager.put(key, serverType);
-                onlineLobbiesManager.firstLoad(key);
+                loadServerType(key, null, lobbies, false);
                 continue;
             }
 
             List<String> servers = section.getStringList(key + ".servers");
 
-            if (servers.isEmpty()) {
-                Utils.printDebug("§7[§c!§7] There are no servers", true);
-                Utils.printDebug("§7[§c!§7] Please add your servers to the '" + key + "' section", true);
-                break;
+            if (checkEmpty(servers)) {
+                ErrorHandler.add(Severity.ERROR, "[LOADER] Group " + key + " is missing servers");
+                Utils.printDebug("[LOADER] There are no server inside '" + key + "' section", true);
+                continue;
             }
 
             List<String> lobbies = section.getStringList(key + ".lobbies");
-            String mode = section.getString(key + ".mode");
-            boolean reconnect = false;
+
+            if (checkEmpty(lobbies)) {
+                ErrorHandler.add(Severity.ERROR, "[LOADER] Group " + key + " is missing lobbies");
+                continue;
+            }
+
+            String mode = section.getString(key + ".mode", "DEFAULT");
+            boolean reconnect = "RECONNECT".equalsIgnoreCase(mode);
 
             switch (mode) {
                 case "RECONNECT":
@@ -71,9 +78,18 @@ public class LoaderUtil {
                     break;
             }
 
-            ServerType serverType = new ServerType(key, servers, lobbies, reconnect);
-            serverTypeManager.put(key, serverType);
-            onlineLobbiesManager.firstLoad(key);
+            loadServerType(key, servers, lobbies, reconnect);
         }
     }
+
+    private boolean checkEmpty(List<String> list) {
+        return list == null || list.isEmpty();
+    }
+
+    private void loadServerType(String key, List<String> servers, List<String> lobbies, boolean reconnect) {
+        ServerType serverType = new ServerType(key, servers, lobbies, reconnect);
+        serverTypeManager.put(key, serverType);
+        onlineLobbiesManager.firstLoad(key);
+    }
+
 }

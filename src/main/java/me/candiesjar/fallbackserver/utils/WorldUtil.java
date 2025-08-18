@@ -123,25 +123,24 @@ public class WorldUtil {
 
         String fileName = schematic.getName();
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
-        WorldFile worldFile;
-        switch (fileExtension) {
-            case "SCHEMATIC":
+        WorldFile worldFile = switch (fileExtension) {
+            case "SCHEMATIC" -> {
                 fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading as a SCHEMATIC file"));
-                worldFile = factory.openWorldFile(BuiltInWorldFileType.SCHEMATIC, path);
-                break;
-            case "SCHEM":
+                yield factory.openWorldFile(BuiltInWorldFileType.SCHEMATIC, path);
+            }
+            case "SCHEM" -> {
                 fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading as a WORLDEDIT_SCHEM file"));
-                worldFile = factory.openWorldFile(BuiltInWorldFileType.WORLDEDIT_SCHEM, path);
-                break;
-            case "STRUCTURE":
+                yield factory.openWorldFile(BuiltInWorldFileType.WORLDEDIT_SCHEM, path);
+            }
+            case "STRUCTURE" -> {
                 fallbackServerVelocity.getComponentLogger().info(fallbackServerVelocity.getMiniMessage().deserialize("<gray>[<aqua>!<gray>] Loading as a STRUCTURE file"));
-                worldFile = factory.openWorldFile(BuiltInWorldFileType.STRUCTURE, path);
-                break;
-            default:
-                fallbackServerVelocity.getComponentLogger().error("Invalid schematic file, check if corrupted", true);
-                worldFile = null;
-                break;
-        }
+                yield factory.openWorldFile(BuiltInWorldFileType.STRUCTURE, path);
+            }
+            default -> {
+                fallbackServerVelocity.getComponentLogger().error("Invalid schematic file, check if corrupted");
+                yield null;
+            }
+        };
 
         if (worldFile != null) {
             int schematicX = VelocityConfig.RECONNECT_SCHEMATIC_X.get(Integer.class);
