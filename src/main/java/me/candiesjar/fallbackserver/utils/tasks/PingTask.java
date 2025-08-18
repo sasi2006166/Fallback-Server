@@ -47,8 +47,8 @@ public class PingTask {
         int delay = BungeeConfig.PING_DELAY.getInt();
 
         if (delay < 1) {
-            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 5 seconds.");
-            delay = 5;
+            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 8 seconds.");
+            delay = 8;
         }
 
         if (fallbackServerBungee.isDebug()) {
@@ -59,10 +59,12 @@ public class PingTask {
 
         switch (mode) {
             case "DEFAULT":
+                ErrorHandler.add(Severity.INFO, "[PING] Using default ping mode.");
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(false), 2, delay, TimeUnit.SECONDS);
                 break;
             case "SOCKET":
-                fallbackServerBungee.getLogger().info("§7[§b!§7] Using socket ping mode.");
+                ErrorHandler.add(Severity.INFO, "[PING] Using socket ping mode.");
+                fallbackServerBungee.getLogger().info("§7[§b!§7] Using socket ping mode, this mode will not check the player count.");
                 task = proxyServer.getScheduler().schedule(fallbackServerBungee, () -> pingServers(true), 2, delay, TimeUnit.SECONDS);
                 break;
             default:

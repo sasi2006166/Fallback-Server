@@ -42,6 +42,7 @@ public class GeneralPlayerListener implements Listener {
 
         if (!ErrorHandler.getDiagnostics().isEmpty()) {
             BungeeMessages.ERRORS_FOUND.send(player);
+            ErrorHandler.handle();
         }
 
         if (Utils.isUpdateAvailable()) {

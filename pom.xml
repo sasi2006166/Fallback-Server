@@ -6,7 +6,7 @@
 
     <groupId>me.candiesjar</groupId>
     <artifactId>FallBackServer</artifactId>
-    <version>3.2.0-Dev_5</version>
+    <version>3.2.0</version>
     <packaging>jar</packaging>
 
     <name>FallBackServer</name>

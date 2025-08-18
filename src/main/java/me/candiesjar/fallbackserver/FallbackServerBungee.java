@@ -110,6 +110,7 @@ public final class FallbackServerBungee extends Plugin {
         checkDebug();
 
         ErrorHandler.deleteLogFile();
+        ErrorHandler.schedule();
 
         startPinging();
     }

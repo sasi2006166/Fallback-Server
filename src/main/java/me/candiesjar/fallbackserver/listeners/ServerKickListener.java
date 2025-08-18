@@ -66,6 +66,8 @@ public class ServerKickListener implements Listener {
             Utils.printDebug("Server type: " + serverType, false);
         }
 
+        ErrorHandler.add(Severity.ERROR, "[KICK] Server " + kickedName + " kicked player " + player.getName() + " for reason: " + reason);
+
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
             handleFallback(event, kickedFrom, player, reason, kickedName);
             return;

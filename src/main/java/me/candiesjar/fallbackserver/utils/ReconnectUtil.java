@@ -56,5 +56,7 @@ public class ReconnectUtil {
         if (task.getConnectTask() != null) {
             task.getConnectTask().cancel();
         }
+
+        ErrorHandler.add(Severity.INFO, "[RECONNECT] Reconnect task for player " + uuid + " has been cancelled.");
     }
 }

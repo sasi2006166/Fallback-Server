@@ -33,8 +33,8 @@ settings:
   ping_mode: DEFAULT
 
   # In seconds, will check your lobbies every X seconds, defined under here.
-  # On first start / reboot, let the plugin settle down for X seconds (defined under here) before start using fallback.
-  # Recommended value is around 10, especially in case of not stable spigot instances.
+  # On first start / reboot, let the plugin settle down for X seconds (defined under here) before starting using fallback.
+  # The Recommended value is around 10, especially in case of not stable spigot instances.
   ping_delay: 8
 
   # Choose if you want to enable the updater.
@@ -81,7 +81,7 @@ settings:
 
   # Those values will clear the chat on reconnect (after success) or when players
   # get fallback-ed to another server.
-  # reconnect_join will clear player chat when the reconnect phase starts.
+  # Reconnect_join will clear player chat when the reconnect phase starts.
   clear_chat:
     fallback: true
     server_switch: false
@@ -89,7 +89,7 @@ settings:
     reconnect_join: true
 
   # Default is on false to prevent any issues with the first join.
-  # True: the plugin will automatically choose best lobby when connecting and balance all players.
+  # True: the plugin will automatically choose the best lobby when connecting and balance all players.
   # WARNING: Join will TOTALLY stop working if you didn't set up the balancing group and the groups under it.
   # WARNING 2: I'll NOT provide any support if you didn't properly configure the plugin.
   join_balancing: false
@@ -102,12 +102,12 @@ settings:
   # Customize titles, delays, and other values here.
   # Remember that your group has to be set on RECONNECT mode.
   auto_reconnect:
-    # Tries before disconnecting or moving player to lobbies.
+    # Tries before disconnecting or moving player(s) to chosen lobby.
     max_tries: 8
 
     # Time before pinging the server during reconnect phase.
     # Don't put values under 1, they will NOT work.
-    # Recommended value is around 20 seconds.
+    # The Recommended value is around 20 seconds.
     ping_delay: 20
 
     # This option is used by the addon ping system
@@ -123,7 +123,7 @@ settings:
       enabled: false
       server: "reconnectsv"
 
-    # This option will trigger normal kicking procedure.
+    # This option will trigger the normal kicking procedure.
     # If set on false, the plugin will disconnect the player instead of kicking.
     player_sort: true
 
@@ -150,7 +150,7 @@ settings:
     clear_tab-list: true
 
     # Ignored reasons for reconnecting.
-    # If players gets kicked for one of those reasons
+    # If players get kicked for one of those reasons
     # they will not be reconnected, instead they will be
     # disconnected from the proxy itself.
     ignored_reasons:
@@ -167,7 +167,7 @@ settings:
       - "maintenance"
 
     # Ignored servers for reconnecting.
-    # If players gets kicked from one of those servers
+    # If players get kicked from one of those servers,
     # they will not be reconnected, instead they will be
     # moved to a fallback lobby.
     # Add event servers, such as minigames, here.
@@ -186,9 +186,9 @@ settings:
       # You can customize it in messages.yml
       mode: NORMAL
 
-  # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817
-  # By default this setting is set on "true" to help me improve the plugin.
-  # Obviously you can disable it if you want, feel free to do so.
+  # Checks if stats should be enabled -> https://bstats.org/plugin/bungeecord/FallbackServer/11817,
+  # By default, this setting is set on "true" to help me improve the plugin.
+  # Obviously, you can disable it if you want, feel free to do so.
   telemetry: true
 
   # Administrator will be notified which server goes down and the complete reason of shutdown.
@@ -224,7 +224,7 @@ settings:
     - hub
     - lobby
 
-  # Enable server blacklist feature, such for authentication servers.
+  # Enable server blocklist feature, such for authentication servers.
   ignored_servers: true
 
   # WARNING: Works only if "use_ignored_servers" is set on true.

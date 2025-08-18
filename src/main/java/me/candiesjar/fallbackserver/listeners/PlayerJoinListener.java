@@ -5,6 +5,8 @@ import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -63,6 +65,8 @@ public class PlayerJoinListener implements Listener {
         if (plugin.isDebug()) {
             Utils.printDebug("[JOIN SORTING] Player " + player.getName() + " is being sent to " + serverInfo.getName(), false);
         }
+
+        ErrorHandler.add(Severity.INFO, "[JOIN SORTING] Player " + player.getName() + " is being sent to " + serverInfo.getName());
 
         event.setTarget(serverInfo);
     }

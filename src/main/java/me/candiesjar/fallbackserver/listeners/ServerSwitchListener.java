@@ -6,6 +6,8 @@ import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -68,6 +70,8 @@ public class ServerSwitchListener implements Listener {
         if (plugin.isDebug()) {
             Utils.printDebug("[SWITCH] Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), false);
         }
+
+        ErrorHandler.add(Severity.INFO, "[SWITCH] Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName());
 
         FallbackBridge fallbackBridge = new FallbackBridge(proxyServer, user, server);
         channelWrapper.getHandle().pipeline().get(HandlerBoss.class).setHandler(fallbackBridge);

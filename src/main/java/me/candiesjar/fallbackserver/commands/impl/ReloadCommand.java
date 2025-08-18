@@ -31,19 +31,19 @@ public class ReloadCommand implements ISubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] arguments) {
-        boolean wasCommandEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
+        boolean wasEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
         PingTask.getTask().cancel();
         TextFile.reloadAll();
 
-        boolean isCommandEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
+        boolean isEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
-        if (wasCommandEnabled != isCommandEnabled) {
+        if (wasEnabled != isEnabled) {
             HubCommand hubCommand = new HubCommand(plugin);
 
-            ErrorHandler.add(Severity.INFO, "Hub command status has changed to " + isCommandEnabled);
+            ErrorHandler.add(Severity.INFO, "[RELOAD] Hub command status has changed to " + isEnabled);
 
-            if (isCommandEnabled) {
+            if (isEnabled) {
                 plugin.getProxy().getPluginManager().registerCommand(plugin, hubCommand);
             } else {
                 plugin.getProxy().getPluginManager().unregisterCommand(hubCommand);
@@ -55,7 +55,7 @@ public class ReloadCommand implements ISubCommand {
 
         plugin.getServerTypeManager().clear();
         plugin.getOnlineLobbiesManager().clear();
-        ErrorHandler.getDiagnostics().clear();
+        ErrorHandler.clear();
 
         plugin.loadServers();
         plugin.reloadTask();

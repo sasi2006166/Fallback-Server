@@ -8,6 +8,7 @@ import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.objects.text.Diagnostic;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,6 +25,9 @@ public class ErrorHandler {
 
     @Getter
     private final List<Diagnostic> diagnostics = Lists.newArrayList();
+
+    @Getter
+    private ScheduledTask deleteLogTask;
 
     public void deleteLogFile() {
         File logDir = new File("plugins/FallbackServer/logs");
@@ -52,13 +56,11 @@ public class ErrorHandler {
     }
 
     public void schedule() {
-        proxyServer.getScheduler().schedule(fallbackServerBungee, () -> {
-            if (diagnostics.isEmpty()) {
-                return;
-            }
-            writeToFile();
-            diagnostics.clear();
-        }, 0, 2, TimeUnit.HOURS);
+        deleteLogTask = proxyServer.getScheduler().schedule(fallbackServerBungee, ErrorHandler::handle, 0, 3, TimeUnit.HOURS);
+    }
+
+    public void clear() {
+        diagnostics.clear();
     }
 
     private void writeToFile() {
@@ -66,6 +68,8 @@ public class ErrorHandler {
         if (!logDir.exists()) logDir.mkdirs();
 
         File logFile = new File(logDir, "diagnostics.txt");
+
+        // TODO: Check file size and replace if too large
 
         try (FileWriter writer = new FileWriter(logFile, false)) {
             writer.write("==== FALLBACKSERVER DIAGNOSTIC ====\n");
@@ -75,5 +79,7 @@ public class ErrorHandler {
         } catch (IOException ignored) {
             Utils.printDebug("§7[ERROR] Failed to write diagnostics to file.", true);
         }
+
+        diagnostics.clear();
     }
 }
