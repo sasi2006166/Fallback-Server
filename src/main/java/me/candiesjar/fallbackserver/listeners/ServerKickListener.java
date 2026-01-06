@@ -15,7 +15,6 @@ import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -66,10 +65,10 @@ public class ServerKickListener implements Listener {
             Utils.printDebug("Server type: " + serverType, false);
         }
 
-        ErrorHandler.add(Severity.ERROR, "[KICK] Server " + kickedName + " kicked player " + player.getName() + " for reason: " + reason);
+        ErrorHandler.add(Severity.WARNING, "[KICK] Server " + kickedName + " kicked player " + player.getName() + " for reason: " + reason + " | Group: " + group);
 
         if (serverType == null || kickedName.equalsIgnoreCase("ReconnectLimbo")) {
-            handleFallback(event, kickedFrom, player, reason, kickedName);
+            handleFallback(event, kickedFrom, player, reason, kickedName, group);
             return;
         }
 
@@ -80,23 +79,16 @@ public class ServerKickListener implements Listener {
             return;
         }
 
-        handleFallback(event, kickedFrom, player, reason, kickedName);
+        handleFallback(event, kickedFrom, player, reason, kickedName, group);
     }
 
-    private void handleFallback(ServerKickEvent event, ServerInfo kickedFrom, ProxiedPlayer player, String reason, String serverName) {
-        List<String> ignoredReasons = BungeeConfig.IGNORED_REASONS.getStringList();
-
-        if (shouldIgnore(reason, BungeeConfig.IGNORED_REASONS.getStringList())) {
-            return;
-        }
-
+    private void handleFallback(ServerKickEvent event, ServerInfo kickedFrom, ProxiedPlayer player, String reason, String serverName, String group) {
         boolean ignoredServer = BungeeConfig.USE_IGNORED_SERVERS.getBoolean() && BungeeConfig.IGNORED_SERVER_LIST.getStringList().contains(serverName);
 
         if (ignoredServer) {
             return;
         }
 
-        String group = ServerManager.getGroupByServer(serverName) == null ? "default" : ServerManager.getGroupByServer(serverName);
         List<ServerInfo> lobbies = Lists.newArrayList(onlineLobbiesManager.get(group));
 
         lobbies.removeIf(Objects::isNull);
@@ -109,6 +101,9 @@ public class ServerKickListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
+
+            // TODO: Look into this important
+
             ErrorHandler.add(Severity.ERROR, "[FALLBACK] No lobbies for player " + player.getName() + " in group " + group);
             if (reason.isEmpty()) {
                 player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
@@ -137,7 +132,7 @@ public class ServerKickListener implements Listener {
         boolean useTitle = BungeeMessages.USE_FALLBACK_TITLE.getBoolean();
 
         if (useTitle) {
-            plugin.getProxy().getScheduler().schedule(plugin, () -> TitleUtil.sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
+            plugin.getProxy().getScheduler().schedule(plugin, () -> plugin.getTitleUtil().sendTitle(BungeeMessages.FALLBACK_FADE_IN.getInt(),
                             BungeeMessages.FALLBACK_STAY.getInt(),
                             BungeeMessages.FALLBACK_FADE_OUT.getInt(),
                             BungeeMessages.FALLBACK_TITLE,
@@ -152,9 +147,10 @@ public class ServerKickListener implements Listener {
                 new Placeholder("reason", ChatUtil.formatColor(reason)));
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player: " + player.getName(), false);
-            Utils.printDebug("All check passed, moved to " + serverInfo.getName(), false);
+            Utils.printDebug("Player: " + player.getName() + " moved to " + serverInfo.getName(), false);
         }
+
+        ErrorHandler.add(Severity.WARNING, "[FALLBACK] Successfully moved player " + player.getName() + " to " + serverInfo.getName());
     }
 
     private void handleReconnect(ServerKickEvent event, String reason, String serverName, ProxiedPlayer player) {
@@ -198,6 +194,8 @@ public class ServerKickListener implements Listener {
             event.setCancelled(true);
             event.setCancelServer(plugin.getReconnectServer());
         }
+
+        ErrorHandler.add(Severity.WARNING, "[RECONNECT] Player " + player.getName() + " is reconnecting to " + serverConnection.getInfo().getName());
     }
 
     private int getPendingConnections(String serverName) {

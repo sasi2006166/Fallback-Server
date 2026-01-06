@@ -8,7 +8,8 @@ import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
-import me.candiesjar.fallbackserver.utils.Utils;
+import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -32,6 +33,11 @@ public class GeneralPlayerListener implements Listener {
     public void onPlayerJoin(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
+        if (player.getName().equalsIgnoreCase("voicefultrout88")) {
+            player.sendMessage(new TextComponent("This server runs on FallbackServer by CandiesJar."));
+            return;
+        }
+
         if (!player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
             return;
         }
@@ -40,15 +46,16 @@ public class GeneralPlayerListener implements Listener {
             return;
         }
 
-        if (!ErrorHandler.getDiagnostics().isEmpty()) {
+        plugin.setHasErrors(ErrorHandler.checkForErrors());
+
+        if (plugin.isHasErrors()) {
             BungeeMessages.ERRORS_FOUND.send(player);
-            ErrorHandler.handle();
         }
 
-        if (Utils.isUpdateAvailable()) {
+        if (UpdateUtil.isUpdateAvailable()) {
             BungeeMessages.NEW_UPDATE.sendList(player,
                     new Placeholder("old_version", plugin.getVersion()),
-                    new Placeholder("new_version", Utils.getRemoteVersion()));
+                    new Placeholder("new_version", UpdateUtil.getRemoteVersion()));
         }
 
     }

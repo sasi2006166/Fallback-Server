@@ -21,15 +21,15 @@ import java.util.Objects;
 
 public class HubCommand extends Command {
 
-    private final FallbackServerBungee fallbackServerBungee;
+    private final FallbackServerBungee plugin;
     private final ServerTypeManager serverTypeManager;
     private final OnlineLobbiesManager onlineLobbiesManager;
 
-    public HubCommand(FallbackServerBungee fallbackServerBungee) {
+    public HubCommand(FallbackServerBungee plugin) {
         super(BungeeConfig.LOBBY_ALIASES.getStringList().get(0), null, BungeeConfig.LOBBY_ALIASES.getStringList().toArray(new String[0]));
-        this.fallbackServerBungee = fallbackServerBungee;
-        this.serverTypeManager = fallbackServerBungee.getServerTypeManager();
-        this.onlineLobbiesManager = fallbackServerBungee.getOnlineLobbiesManager();
+        this.plugin = plugin;
+        this.serverTypeManager = plugin.getServerTypeManager();
+        this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
     }
 
     public void execute(CommandSender sender, String[] args) {
@@ -45,7 +45,7 @@ public class HubCommand extends Command {
             boolean useTitle = BungeeMessages.USE_ALREADY_IN_LOBBY_TITLE.getBoolean();
 
             if (useTitle) {
-                TitleUtil.sendTitle(BungeeMessages.ALREADY_IN_LOBBY_FADE_IN.getInt(),
+                plugin.getTitleUtil().sendTitle(BungeeMessages.ALREADY_IN_LOBBY_FADE_IN.getInt(),
                         BungeeMessages.ALREADY_IN_LOBBY_STAY.getInt(),
                         BungeeMessages.ALREADY_IN_LOBBY_FADE_OUT.getInt(),
                         BungeeMessages.ALREADY_IN_LOBBY_TITLE,
@@ -62,7 +62,7 @@ public class HubCommand extends Command {
         List<ServerInfo> lobbies = Lists.newArrayList(onlineLobbiesManager.get(group));
         lobbies.removeIf(Objects::isNull);
 
-        boolean hasMaintenance = fallbackServerBungee.isMaintenance();
+        boolean hasMaintenance = plugin.isMaintenance();
 
         if (hasMaintenance) {
             lobbies.removeIf(ServerManager::checkMaintenance);
@@ -81,7 +81,7 @@ public class HubCommand extends Command {
         boolean useTitle = BungeeMessages.USE_HUB_TITLE.getBoolean();
 
         if (useTitle) {
-            TitleUtil.sendTitle(BungeeMessages.HUB_TITLE_FADE_IN.getInt(),
+            plugin.getTitleUtil().sendTitle(BungeeMessages.HUB_TITLE_FADE_IN.getInt(),
                     BungeeMessages.HUB_TITLE_STAY.getInt(),
                     BungeeMessages.HUB_TITLE_FADE_OUT.getInt(),
                     BungeeMessages.HUB_TITLE,
@@ -99,7 +99,7 @@ public class HubCommand extends Command {
 
         if (group == null) {
 
-            if (fallbackServerBungee.isDebug()) {
+            if (plugin.isDebug()) {
                 Utils.printDebug("[HUB COMMAND] The server " + server.getName() + " does not exist!", true);
                 Utils.printDebug("[HUB COMMAND] Please add it to default lobbies and run /fs reload.", true);
             }

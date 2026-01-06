@@ -64,9 +64,7 @@ public class SubCommandManager extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        boolean tabComplete = BungeeConfig.TAB_COMPLETE.getBoolean();
-
-        if (!tabComplete) {
+        if (!BungeeConfig.TAB_COMPLETE.getBoolean()) {
             return Collections.emptyList();
         }
 

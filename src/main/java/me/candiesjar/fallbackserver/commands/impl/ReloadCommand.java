@@ -10,7 +10,7 @@ import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
-import me.candiesjar.fallbackserver.utils.tasks.PingTask;
+import me.candiesjar.fallbackserver.tasks.PingTask;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -33,8 +33,8 @@ public class ReloadCommand implements ISubCommand {
     public void perform(CommandSender sender, String[] arguments) {
         boolean wasEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
-        PingTask.getTask().cancel();
         TextFile.reloadAll();
+        ErrorHandler.add(Severity.INFO, "[RELOAD] Reloading plugin...");
 
         boolean isEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 

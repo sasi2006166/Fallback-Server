@@ -54,6 +54,7 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
+            // TODO: Look into this important
             player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)
                     .replace("%prefix%", ChatUtil.getFormattedString(BungeeMessages.PREFIX))));
             return;

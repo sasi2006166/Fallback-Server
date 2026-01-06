@@ -4,6 +4,8 @@ import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
 import net.md_5.bungee.api.CommandSender;
 
 @Getter
@@ -79,18 +81,19 @@ public enum BungeeMessages {
     private final String path;
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
+    private final BungeeAudiences adventure = fallbackServerBungee.adventure();
 
     BungeeMessages(String path) {
         this.path = path;
     }
 
     public void send(CommandSender commandSender, Placeholder... placeholders) {
-
-        if (ChatUtil.getString(this).isEmpty()) {
+        if (ChatUtil.getString(this).isEmpty() || ChatUtil.getString(this) == null) {
             return;
         }
 
-        commandSender.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeholders).replace("%prefix%", ChatUtil.getFormattedString(PREFIX))));
+        Audience audience = adventure.sender(commandSender);
+        audience.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeholders).replace("%prefix%", ChatUtil.getFormattedString(PREFIX))));
     }
 
     public void sendList(CommandSender commandSender, Placeholder... placeHolder) {

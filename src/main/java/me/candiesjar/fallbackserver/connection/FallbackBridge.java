@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.connection;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -14,6 +15,8 @@ import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.packet.Kick;
 import net.md_5.bungee.protocol.packet.LoginSuccess;
+
+import java.util.List;
 
 public class FallbackBridge extends DownstreamBridge {
 
@@ -34,6 +37,10 @@ public class FallbackBridge extends DownstreamBridge {
     public void disconnected(ChannelWrapper channel) {
         server.getInfo().removePlayer(userConnection);
 
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Disconnected from server: " + server.getInfo().getName(), true);
+        }
+
         if (proxyServer.getReconnectHandler() != null) {
             proxyServer.getReconnectHandler().setServer(userConnection);
         }
@@ -45,7 +52,7 @@ public class FallbackBridge extends DownstreamBridge {
         server.setObsolete(true);
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Disconnected from server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Now obsolete: " + server.getInfo().getName(), true);
         }
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
@@ -63,7 +70,9 @@ public class FallbackBridge extends DownstreamBridge {
 
     @Override
     public void exception(Throwable t) {
-        String reason = proxyServer.getTranslation("lost_connection");
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Exception on server: " + server.getInfo().getName(), true);
+        }
 
         if (server.isObsolete()) {
             return;
@@ -71,10 +80,7 @@ public class FallbackBridge extends DownstreamBridge {
 
         server.setObsolete(true);
 
-        if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Exception on server: " + server.getInfo().getName(), true);
-        }
-
+        String reason = proxyServer.getTranslation("lost_connection");
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
         ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), TextComponent.fromLegacy(reason), nextServer, ServerKickEvent.State.CONNECTED));
 
@@ -93,6 +99,18 @@ public class FallbackBridge extends DownstreamBridge {
 
     @Override
     public void handle(Kick kick) {
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Kicking player from server: " + server.getInfo().getName() + " for reason: " + kick.getMessage().toLegacyText(), true);
+        }
+
+        List<String> ignoredReasons = BungeeConfig.IGNORED_REASONS.getStringList();
+
+        if (shouldIgnore(kick.getMessage().toLegacyText(), BungeeConfig.IGNORED_REASONS.getStringList())) {
+            userConnection.disconnect(kick.getMessage());
+            server.setObsolete(true);
+            throw CancelSendSignal.INSTANCE;
+        }
+
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
         ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, server.getInfo(), kick.getMessage(), nextServer, ServerKickEvent.State.CONNECTED));
 
@@ -100,11 +118,22 @@ public class FallbackBridge extends DownstreamBridge {
             userConnection.connect(serverKickEvent.getCancelServer());
         }
 
-        if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Kick from server: " + server.getInfo().getName(), true);
-        }
-
         server.setObsolete(true);
         throw CancelSendSignal.INSTANCE;
+    }
+
+    private boolean shouldIgnore(String reason, List<String> ignoredReasons) {
+        if (reason == null || ignoredReasons == null) {
+            return false;
+        }
+
+        for (String word : ignoredReasons) {
+
+            if (reason.contains(word)) {
+                return true;
+            }
+
+        }
+        return false;
     }
 }

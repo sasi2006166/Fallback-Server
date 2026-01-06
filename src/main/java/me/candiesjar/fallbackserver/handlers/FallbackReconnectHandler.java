@@ -10,11 +10,11 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.channel.BasicChannelInitializer;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
+import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.enums.TitleDisplayMode;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -40,7 +40,7 @@ public class FallbackReconnectHandler {
     private final AtomicInteger tries = new AtomicInteger(0);
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
-    private final ProxyServer proxyServer = ProxyServer.getInstance();
+    private final ProxyServer proxyServer = fallbackServerBungee.getProxy();
     private final TaskScheduler taskScheduler = proxyServer.getScheduler();
     private final TextComponent lostConnection = new TextComponent(proxyServer.getTranslation("lost_connection"));
     private final Random random = new Random();
@@ -78,6 +78,7 @@ public class FallbackReconnectHandler {
 
         if (hasReachedMaxTries) {
             boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
+            ErrorHandler.add(Severity.INFO, "[RECONNECT] Player " + userConnection.getName() + " failed to reconnect to " + targetServerInfo.getName() + " after " + tries.get() + " tries" + (fallback ? ", falling back to fallback server." : "."));
 
             if (fallback) {
                 handleFallback();
@@ -118,7 +119,7 @@ public class FallbackReconnectHandler {
     private void handleConnection() {
         titleTask.cancel();
 
-        TitleUtil.clearPlayerTitle(userConnection);
+        fallbackServerBungee.getTitleUtil().clearPlayerTitle(userConnection);
 
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, false);
         Bootstrap bootstrap = new Bootstrap()
@@ -151,6 +152,8 @@ public class FallbackReconnectHandler {
         if (fallbackServerBungee.isDebug()) {
             Utils.printDebug("Reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName() + " after " + tries.get() + " tries", true);
         }
+
+        ErrorHandler.add(Severity.INFO, "[RECONNECT] Successfully reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName() + " after " + tries.get() + " tries");
     }
 
     private void sendConnectedTitle() {
@@ -160,7 +163,7 @@ public class FallbackReconnectHandler {
         int delay = BungeeMessages.CONNECTED_DELAY.getInt();
 
         taskScheduler.schedule(fallbackServerBungee,
-                () -> TitleUtil.sendTitle(fadeIn, stay, fadeOut, BungeeMessages.CONNECTED_TITLE, BungeeMessages.CONNECTED_SUB_TITLE, targetServerInfo, userConnection),
+                () -> fallbackServerBungee.getTitleUtil().sendTitle(fadeIn, stay, fadeOut, BungeeMessages.CONNECTED_TITLE, BungeeMessages.CONNECTED_SUB_TITLE, targetServerInfo, userConnection),
                 delay, TimeUnit.SECONDS);
     }
 
@@ -172,7 +175,7 @@ public class FallbackReconnectHandler {
 
     private void handleFallback() {
         userConnection.getPendingConnects().remove(targetServerInfo);
-        TitleUtil.clearPlayerTitle(userConnection);
+        fallbackServerBungee.getTitleUtil().clearPlayerTitle(userConnection);
         ReconnectUtil.cancelReconnect(uuid);
 
         ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, null, lostConnection, null, ServerKickEvent.State.CONNECTED));
@@ -194,13 +197,13 @@ public class FallbackReconnectHandler {
 
         switch (titleDisplayMode) {
             case NORMAL:
-                TitleUtil.sendReconnectingTitle(0, 1 + 20, currentDots, title, subTitle, userConnection);
+                fallbackServerBungee.getTitleUtil().sendReconnectingTitle(0, 1 + 20, currentDots, title, subTitle, userConnection);
                 break;
             case STATIC:
-                TitleUtil.sendTitle(0, 1 + 20, 0, title, subTitle, targetServerInfo, userConnection);
+                fallbackServerBungee.getTitleUtil().sendTitle(0, 1 + 20, 0, title, subTitle, targetServerInfo, userConnection);
                 break;
             case PULSE:
-                TitleUtil.sendTitle(1, 1 + 20, BungeeMessages.RECONNECT_TITLE_PULSE.getInt(), title, subTitle, targetServerInfo, userConnection);
+                fallbackServerBungee.getTitleUtil().sendTitle(1, 1 + 20, BungeeMessages.RECONNECT_TITLE_PULSE.getInt(), title, subTitle, targetServerInfo, userConnection);
                 break;
         }
     }

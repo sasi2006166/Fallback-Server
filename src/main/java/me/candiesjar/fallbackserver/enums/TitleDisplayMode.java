@@ -22,7 +22,7 @@ public enum TitleDisplayMode {
             case "NORMAL":
                 return NORMAL;
             default:
-                ErrorHandler.add(Severity.WARNING, "[RECONNECT TITLE] Invalid title display mode: " + value);
+                ErrorHandler.add(Severity.ERROR, "[RECONNECT TITLE] Invalid title display mode: " + value);
                 return NORMAL;
         }
     }

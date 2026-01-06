@@ -4,7 +4,6 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.api.ISubCommand;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.pastebin.builders.Pastebin;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -54,7 +53,7 @@ public class DebugCommand implements ISubCommand {
     }
 
     private void handleHelp(CommandSender sender) {
-        String devKey = "BPMf3G8q44u1PiJIEM_B4wrExp-Bhcss";
+        String devKey = "TBD";
         StringBuilder builder = new StringBuilder();
 
         for (Plugin plugin : plugin.getProxy().getPluginManager().getPlugins()) {
@@ -121,7 +120,7 @@ public class DebugCommand implements ISubCommand {
             return;
         }
 
-        ErrorHandler.handle();
+        ErrorHandler.save();
         sender.sendMessage(new TextComponent("§aDiagnostics file created!"));
     }
 }

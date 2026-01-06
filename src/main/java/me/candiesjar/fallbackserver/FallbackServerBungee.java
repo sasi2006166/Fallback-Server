@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
@@ -14,13 +15,15 @@ import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
-import me.candiesjar.fallbackserver.utils.FilesUtils;
+import me.candiesjar.fallbackserver.tasks.PingTask;
 import me.candiesjar.fallbackserver.utils.FallbackGroupsLoader;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
-import me.candiesjar.fallbackserver.utils.UpdateUtil;
-import me.candiesjar.fallbackserver.utils.tasks.PingTask;
+import me.candiesjar.fallbackserver.utils.io.FilesUtils;
+import me.candiesjar.fallbackserver.utils.player.TitleUtil;
+import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
 import net.byteflux.libby.BungeeLibraryManager;
 import net.byteflux.libby.Library;
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -29,7 +32,6 @@ import ru.vyarus.yaml.updater.util.FileUtils;
 
 import java.io.File;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public final class FallbackServerBungee extends Plugin {
 
@@ -43,6 +45,9 @@ public final class FallbackServerBungee extends Plugin {
     private String version;
 
     @Getter
+    private final File logDir = new File("plugins/FallbackServer/logs");
+
+    @Getter
     private PlayerCacheManager playerCacheManager;
 
     @Getter
@@ -52,7 +57,10 @@ public final class FallbackServerBungee extends Plugin {
     private OnlineLobbiesManager onlineLobbiesManager;
 
     @Getter
-    private Pattern pattern;
+    private PingTask pingTask;
+
+    @Getter
+    private TitleUtil titleUtil;
 
     @Getter
     @Setter
@@ -72,7 +80,13 @@ public final class FallbackServerBungee extends Plugin {
 
     @Getter
     @Setter
+    private boolean hasErrors = false;
+
+    @Getter
+    @Setter
     private boolean isDebug = false;
+
+    private BungeeAudiences adventure;
 
     public void onEnable() {
         instance = this;
@@ -80,7 +94,8 @@ public final class FallbackServerBungee extends Plugin {
         playerCacheManager = PlayerCacheManager.getInstance();
         serverTypeManager = ServerTypeManager.getInstance();
         onlineLobbiesManager = OnlineLobbiesManager.getInstance();
-        pattern = Pattern.compile("&#([a-fA-F0-9]{6})");
+        titleUtil = new TitleUtil(this);
+        this.adventure = BungeeAudiences.create(this);
 
         getLogger().info("\n" +
                 "  _____     _ _ _                _     ____                           \n" +
@@ -88,13 +103,12 @@ public final class FallbackServerBungee extends Plugin {
                 " | |_ / _` | | | '_ \\ / _` |/ __| |/ /\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|\n" +
                 " |  _| (_| | | | |_) | (_| | (__|   <  ___) |  __/ |   \\ V /  __/ |   \n" +
                 " |_|  \\__,_|_|_|_.__/ \\__,_|\\___|_|\\_\\|____/ \\___|_|    \\_/ \\___|_|   \n" +
+                " by CandiesJar \n" +
                 "                                                                      ");
 
         loadDependencies();
         loadConfiguration();
         updateConfiguration();
-
-        checkPlugins();
 
         loadServers();
 
@@ -109,16 +123,20 @@ public final class FallbackServerBungee extends Plugin {
         getLogger().info("§7[§b!§7] Plugin loaded successfully");
         checkDebug();
 
-        ErrorHandler.deleteLogFile();
-        ErrorHandler.schedule();
-
         startPinging();
+        hasErrors = ErrorHandler.checkForErrors();
+        ErrorHandler.save();
     }
 
     public void onDisable() {
         if (needsUpdate) {
             getLogger().info("§7[§b!§7] §7Installing new update..");
             FilesUtils.deleteFile(getFile().getName(), getDataFolder());
+        }
+
+        if (adventure != null) {
+            adventure.close();
+            adventure = null;
         }
 
         getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling..");
@@ -142,6 +160,10 @@ public final class FallbackServerBungee extends Plugin {
         messagesTextFile = new TextFile(this, "messages.yml");
         serversTextFile = new TextFile(this, "servers.yml");
         versionTextFile = new TextFile(this, "version.yml");
+
+        if (logDir.mkdirs()) {
+            getLogger().info("§7[§b!§7] Created log directory at " + logDir.getPath());
+        }
     }
 
     private void updateConfiguration() {
@@ -160,24 +182,6 @@ public final class FallbackServerBungee extends Plugin {
         versionTextFile.save();
 
         loadConfiguration();
-    }
-
-    private void checkPlugins() {
-        if (getProxy().getPluginManager().getPlugin("ajQueue") != null) {
-            getLogger().info("§7[§b!§7] Hooked in ajQueue");
-            setAjQueue(true);
-        }
-
-        if (getProxy().getPluginManager().getPlugin("Maintenance") != null) {
-            String author = getProxy().getPluginManager().getPlugin("Maintenance").getDescription().getAuthor();
-
-            if (!author.equals("kennytv")) {
-                return;
-            }
-
-            getLogger().info("§7[§b!§7] Hooked in Maintenance");
-            setMaintenance(true);
-        }
     }
 
     private void loadListeners() {
@@ -240,7 +244,8 @@ public final class FallbackServerBungee extends Plugin {
 
     private void startPinging() {
         String strategy = BungeeConfig.PING_STRATEGY.getString();
-        PingTask.start(strategy);
+        pingTask = new PingTask(this);
+        pingTask.start(strategy);
     }
 
     private void checkDebug() {
@@ -255,6 +260,14 @@ public final class FallbackServerBungee extends Plugin {
             getLogger().warning(" ");
         }
 
+    }
+
+    @NonNull
+    public BungeeAudiences adventure() {
+        if (this.adventure == null) {
+            throw new IllegalStateException("Cannot retrieve audience provider while plugin is not enabled");
+        }
+        return this.adventure;
     }
 
     public void loadServers() {
@@ -281,7 +294,7 @@ public final class FallbackServerBungee extends Plugin {
     }
 
     public void reloadTask() {
-        PingTask.reload();
+        pingTask.reload();
     }
 
 }

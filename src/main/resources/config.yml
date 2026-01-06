@@ -17,30 +17,34 @@
 
 settings:
 
-  # Debug mode, useful for bug reports.
-  # Will enable the use for /fs debug command and some
-  # additional logs inside the console.
+  # Enables debug mode, useful for bug reports.
+  # /fs debug will be enabled and addition logs will
+  # be printed inside the console.
   debug: false
 
-  # Player with admin permission only will be able to use /fs tab complete.
+  # Only players with admin permission will be able to use tab-complete for /fs.
   command_tab_complete: true
 
   # Choose if you want to use a different ping strategy for your lobbies.
-  # DEFAULT: Normal ping strategy, the plugin will ping the server and check if it's online.
+  # DEFAULT: Normal strategy uses standard BungeeCord pinging method, checking online players too.
   # SOCKET: This mode will use a socket connection to check if the server is online.
   # WARNING: Change it only if you're encountering issues.
-  # WARNING 2: Socket mode will not check if your lobbies are full!
+  # WARNING (2): Socket mode will NOT check for online players.
   ping_mode: DEFAULT
 
-  # In seconds, will check your lobbies every X seconds, defined under here.
-  # On first start / reboot, let the plugin settle down for X seconds (defined under here) before starting using fallback.
-  # The Recommended value is around 10, especially in case of not stable spigot instances.
+  # Defined in seconds, will check your lobbies' status each X seconds.
+  # On start or reboot, let the plugin settle down for the defined time before starting using fallback.
+  # There are no recommended values, but avoid putting too low values.
   ping_delay: 8
 
   # Choose if you want to enable the updater.
   updater: true
 
   # Add here your groups with their servers and lobbies.
+  # Each group can be set in different modes.
+  # AVAILABLE MODES:
+  # FALLBACK, DEFAULT: Players will be moved to a random server inside the group when kicked.
+  # RECONNECT: Players will enter reconnect phase when kicked from any server inside the group.
   fallback:
     bedwars:
       servers:
@@ -60,7 +64,7 @@ settings:
         - lobby2
         - lobby3
       mode: RECONNECT
-    default: # DON'T delete this default group.
+    default: # This is the default group used for join balancing and fallback if no group is specified, so make sure to have it.
       servers:
         - lobby1
         - lobby2
@@ -77,37 +81,34 @@ settings:
     - "packets"
     - "full"
     - "afk"
+    - "outdated"
+    - "timeout"
     - "maintenance"
 
-  # Those values will clear the chat on reconnect (after success) or when players
-  # get fallback-ed to another server.
-  # Reconnect_join will clear player chat when the reconnect phase starts.
+  # Settings for clearing chat when moving players.
   clear_chat:
     fallback: true
     server_switch: false
     reconnect: false
     reconnect_join: true
 
-  # Default is on false to prevent any issues with the first join.
-  # True: the plugin will automatically choose the best lobby when connecting and balance all players.
-  # WARNING: Join will TOTALLY stop working if you didn't set up the balancing group and the groups under it.
-  # WARNING 2: I'll NOT provide any support if you didn't properly configure the plugin.
+  # This option enables join balancing, which by default is disabled to prevent misconfiguration.
+  # WARNING: Make sure to properly configure the plugin before enabling this option, otherwise it may
+  # cause issues with player joining.
   join_balancing: false
 
-  # If join_balancing is set on true, you can choose here the balancing group.
-  # You can find it under the "fallback" section.
+  # Works if "join_balancing" is set on true.
+  # Choose here the group used to join balancing.
   join_balancing_group: "default"
 
-  # Those are the values for reconnect mode.
-  # Customize titles, delays, and other values here.
-  # Remember that your group has to be set on RECONNECT mode.
+  # Customize options such as max tries, delays, ignored reasons and more.
+  # This will only work if the group mode is set to RECONNECT.
   auto_reconnect:
-    # Tries before disconnecting or moving player(s) to chosen lobby.
+    # Maximum number of tries before moving the player to a fallback lobby.
     max_tries: 8
 
-    # Time before pinging the server during reconnect phase.
-    # Don't put values under 1, they will NOT work.
-    # The Recommended value is around 20 seconds.
+    # This delay is used before starting the pinging process, defined in seconds.
+    # WARNING: Change the value only if you're encountering issues.
     ping_delay: 20
 
     # This option is used by the addon ping system
