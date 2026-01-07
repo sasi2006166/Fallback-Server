@@ -2,15 +2,14 @@ package me.candiesjar.fallbackserver.commands.impl;
 
 import lombok.RequiredArgsConstructor;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
-import me.candiesjar.fallbackserver.commands.core.HubCommand;
 import me.candiesjar.fallbackserver.commands.api.ISubCommand;
+import me.candiesjar.fallbackserver.commands.core.HubCommand;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
-import me.candiesjar.fallbackserver.tasks.PingTask;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -55,10 +54,13 @@ public class ReloadCommand implements ISubCommand {
 
         plugin.getServerTypeManager().clear();
         plugin.getOnlineLobbiesManager().clear();
-        ErrorHandler.clear();
 
         plugin.loadServers();
         plugin.reloadTask();
+
+        ErrorHandler.add(Severity.INFO, "[RELOAD] Plugin reloaded successfully.");
+        ErrorHandler.save();
+        ErrorHandler.clear();
 
         BungeeMessages.RELOAD.send(sender);
     }

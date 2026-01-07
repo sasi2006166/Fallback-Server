@@ -3,9 +3,9 @@ package me.candiesjar.fallbackserver.listeners;
 import lombok.SneakyThrows;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
-import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
+import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
@@ -28,13 +28,15 @@ import java.util.UUID;
 public class ServerSwitchListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ChatUtil chatUtil;
     private final PlayerCacheManager playerCacheManager;
     private final ProxyServer proxyServer;
 
     public ServerSwitchListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.chatUtil = plugin.getChatUtil();
         this.playerCacheManager = plugin.getPlayerCacheManager();
-        this.proxyServer = ProxyServer.getInstance();
+        this.proxyServer = plugin.getProxy();
     }
 
     @SneakyThrows
@@ -64,7 +66,7 @@ public class ServerSwitchListener implements Listener {
         boolean clearChat = BungeeConfig.CLEAR_CHAT_SERVER_SWITCH.getBoolean();
 
         if (clearChat) {
-            ChatUtil.clearChat(user);
+            chatUtil.clearChat(user);
         }
 
         if (plugin.isDebug()) {

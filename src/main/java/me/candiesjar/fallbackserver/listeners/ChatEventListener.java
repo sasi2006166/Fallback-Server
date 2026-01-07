@@ -1,5 +1,6 @@
 package me.candiesjar.fallbackserver.listeners;
 
+import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -11,9 +12,14 @@ import net.md_5.bungee.event.EventPriority;
 
 public class ChatEventListener implements Listener {
 
+    private final ChatUtil chatUtil;
+
+    public ChatEventListener(FallbackServerBungee plugin) {
+        this.chatUtil = plugin.getChatUtil();
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(ChatEvent event) {
-
         if (!(event.getSender() instanceof ProxiedPlayer)) {
             return;
         }
@@ -36,7 +42,7 @@ public class ChatEventListener implements Listener {
             message = args[0];
         }
 
-        boolean checkMessage = ChatUtil.checkMessage(message, playerServer);
+        boolean checkMessage = chatUtil.checkMessage(message, playerServer);
 
         if (checkMessage) {
             event.setCancelled(true);

@@ -9,7 +9,7 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -33,12 +33,14 @@ import java.util.concurrent.atomic.LongAdder;
 public class ServerKickListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ChatUtil chatUtil;
     private final ServerTypeManager serverTypeManager;
     private final OnlineLobbiesManager onlineLobbiesManager;
     private final Map<String, LongAdder> pendingConnections;
 
     public ServerKickListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.chatUtil = plugin.getChatUtil();
         this.serverTypeManager = plugin.getServerTypeManager();
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
         this.pendingConnections = Maps.newConcurrentMap();
@@ -106,7 +108,7 @@ public class ServerKickListener implements Listener {
 
             ErrorHandler.add(Severity.ERROR, "[FALLBACK] No lobbies for player " + player.getName() + " in group " + group);
             if (reason.isEmpty()) {
-                player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
+                player.disconnect(new TextComponent(chatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
                 return;
             }
             player.disconnect(new TextComponent(reason));
@@ -126,7 +128,7 @@ public class ServerKickListener implements Listener {
         boolean clearChat = BungeeConfig.CLEAR_CHAT_FALLBACK.getBoolean();
 
         if (clearChat) {
-            ChatUtil.clearChat(player);
+            chatUtil.clearChat(player);
         }
 
         boolean useTitle = BungeeMessages.USE_FALLBACK_TITLE.getBoolean();
@@ -142,9 +144,10 @@ public class ServerKickListener implements Listener {
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
 
+        // TODO: Fix placeholders here
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", serverInfo.getName()),
-                new Placeholder("reason", ChatUtil.formatColor(reason)));
+                new Placeholder("reason", ""));
 
         if (plugin.isDebug()) {
             Utils.printDebug("Player: " + player.getName() + " moved to " + serverInfo.getName(), false);
@@ -168,10 +171,10 @@ public class ServerKickListener implements Listener {
 
         UserConnection userConnection = (UserConnection) player;
         ServerConnection serverConnection = userConnection.getServer();
-        FallbackReconnectHandler task = plugin.getPlayerCacheManager().get(player.getUniqueId());
+        ReconnectHandler task = plugin.getPlayerCacheManager().get(player.getUniqueId());
 
         if (task == null) {
-            plugin.getPlayerCacheManager().addIfAbsent(player.getUniqueId(), task = new FallbackReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
+            plugin.getPlayerCacheManager().addIfAbsent(player.getUniqueId(), task = new ReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
         }
 
         boolean clearTab = BungeeConfig.RECONNECT_CLEAR_TABLIST.getBoolean();
@@ -183,7 +186,7 @@ public class ServerKickListener implements Listener {
         boolean clearChat = BungeeConfig.CLEAR_CHAT_RECONNECT_JOIN.getBoolean();
 
         if (clearChat) {
-            ChatUtil.clearChat(player);
+            chatUtil.clearChat(player);
         }
 
         task.onJoin();

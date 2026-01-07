@@ -2,6 +2,8 @@ package me.candiesjar.fallbackserver.connection;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -38,7 +40,7 @@ public class FallbackBridge extends DownstreamBridge {
         server.getInfo().removePlayer(userConnection);
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Disconnected from server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Disconnected from server: " + server.getInfo().getName(), false);
         }
 
         if (proxyServer.getReconnectHandler() != null) {
@@ -52,7 +54,7 @@ public class FallbackBridge extends DownstreamBridge {
         server.setObsolete(true);
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Now obsolete: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Now obsolete: " + server.getInfo().getName(), false);
         }
 
         ServerInfo nextServer = userConnection.updateAndGetNextServer(server.getInfo());
@@ -71,7 +73,7 @@ public class FallbackBridge extends DownstreamBridge {
     @Override
     public void exception(Throwable t) {
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Exception on server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Exception on server: " + server.getInfo().getName(), false);
         }
 
         if (server.isObsolete()) {
@@ -92,7 +94,7 @@ public class FallbackBridge extends DownstreamBridge {
     @Override
     public void handle(LoginSuccess loginSuccess) throws Exception {
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Login success on server: " + server.getInfo().getName(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Login success on server: " + server.getInfo().getName(), false);
         }
         super.handle(loginSuccess);
     }
@@ -100,7 +102,7 @@ public class FallbackBridge extends DownstreamBridge {
     @Override
     public void handle(Kick kick) {
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[DOWNSTREAMBRIDGE] Kicking player from server: " + server.getInfo().getName() + " for reason: " + kick.getMessage().toLegacyText(), true);
+            Utils.printDebug("[DOWNSTREAMBRIDGE] Kicking player from server: " + server.getInfo().getName() + " for reason: " + kick.getMessage().toLegacyText(), false);
         }
 
         List<String> ignoredReasons = BungeeConfig.IGNORED_REASONS.getStringList();
@@ -108,6 +110,7 @@ public class FallbackBridge extends DownstreamBridge {
         if (shouldIgnore(kick.getMessage().toLegacyText(), BungeeConfig.IGNORED_REASONS.getStringList())) {
             userConnection.disconnect(kick.getMessage());
             server.setObsolete(true);
+            ErrorHandler.add(Severity.INFO, "[DOWNSTREAMBRIDGE] Kicking player " + userConnection.getName() + " from server: " + server.getInfo().getName() + " for ignored reason: " + kick.getMessage().toLegacyText());
             throw CancelSendSignal.INSTANCE;
         }
 

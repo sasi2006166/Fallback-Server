@@ -1,6 +1,6 @@
 package me.candiesjar.fallbackserver.cache;
 
-import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,17 +20,17 @@ public class PlayerCacheManager {
 
     }
 
-    private final ConcurrentHashMap<UUID, FallbackReconnectHandler> reconnectMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, ReconnectHandler> reconnectMap = new ConcurrentHashMap<>();
 
-    public FallbackReconnectHandler get(UUID key) {
+    public ReconnectHandler get(UUID key) {
         return reconnectMap.get(key);
     }
 
-    public FallbackReconnectHandler remove(UUID key) {
+    public ReconnectHandler remove(UUID key) {
         return reconnectMap.remove(key);
     }
 
-    public void addIfAbsent(UUID key, FallbackReconnectHandler value) {
+    public void addIfAbsent(UUID key, ReconnectHandler value) {
         reconnectMap.putIfAbsent(key, value);
     }
 

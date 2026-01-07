@@ -75,7 +75,7 @@ public class ErrorHandler {
             writer.write("Proxy Version: " + proxyVersion + "\n");
             writer.write("Java Version: " + javaVersion + "\n");
             writer.write("Plugin Version: " + pluginVersion + "\n");
-            writer.write("Date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+            writer.write("Log date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
             writer.write("Online mode: " + proxyServer.getConfig().isOnlineMode() + "\n");
             writer.write("===================================\n\n");
             for (Diagnostic diagnostic : diagnostics) {

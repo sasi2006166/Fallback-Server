@@ -1,6 +1,5 @@
 package me.candiesjar.fallbackserver.utils.player;
 
-import lombok.experimental.UtilityClass;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -13,52 +12,34 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@UtilityClass
 public class ChatUtil {
 
-    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
+    private final FallbackServerBungee plugin;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
 
-    public String getString(BungeeMessages bungeeMessages) {
-        return fallbackServerBungee.getMessagesConfig().getString(bungeeMessages.getPath());
+    public ChatUtil(FallbackServerBungee plugin) {
+        this.plugin = plugin;
     }
 
-    public String getString(BungeeMessages bungeeMessages, Placeholder... placeholders) {
-        return applyPlaceholders(getString(bungeeMessages), placeholders);
+    public String getString(BungeeMessages msg) {
+        return plugin.getMessagesConfig().getString(msg.getPath());
+    }
+
+    public String getString(BungeeMessages msg, Placeholder... placeholders) {
+        return applyPlaceholders(getString(msg), placeholders);
+    }
+
+    public List<String> getStringList(BungeeMessages msg) {
+        return plugin.getMessagesConfig().getStringList(msg.getPath());
     }
 
     public String getFormattedString(BungeeMessages bungeeMessages, Placeholder... placeholders) {
-        return formatColor(getString(bungeeMessages, placeholders));
+        return getString(bungeeMessages, placeholders);
     }
 
-    public List<String> getStringList(BungeeMessages bungeeMessages) {
-        return fallbackServerBungee.getMessagesConfig().getStringList(bungeeMessages.getPath());
-    }
-
-    public List<String> getStringList(BungeeMessages bungeeMessages, Placeholder... placeholders) {
-        return getStringList(bungeeMessages).stream()
+    public List<String> getStringList(BungeeMessages msg, Placeholder... placeholders) {
+        return getStringList(msg).stream()
                 .map(s -> applyPlaceholders(s, placeholders))
-                .collect(Collectors.toList());
-    }
-
-    public void sendList(CommandSender commandSender, List<String> stringList) {
-        Audience audience = fallbackServerBungee.adventure().sender(commandSender);
-        stringList.forEach(message -> {
-            audience.sendMessage(asComponent(message));
-        });
-    }
-
-    public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, Placeholder... placeholders) {
-        sendList(commandSender, formatColor(getStringList(bungeeMessages, placeholders)));
-    }
-
-    public String formatColor(String s) {
-        return miniMessage.serialize(miniMessage.deserialize(s));
-    }
-
-    public List<String> formatColor(List<String> s) {
-        return s.stream()
-                .map(ChatUtil::formatColor)
                 .collect(Collectors.toList());
     }
 
@@ -66,29 +47,36 @@ public class ChatUtil {
         return miniMessage.deserialize(s);
     }
 
-    public String applyPlaceholders(String s, Placeholder... placeholders) {
-        for (Placeholder placeholder : placeholders) {
-            s = s.replace(placeholder.getKey(), placeholder.getValue());
-        }
-        return s;
+    public void sendList(CommandSender sender, List<String> messages) {
+        Audience audience = plugin.adventure().sender(sender);
+        messages.forEach(m -> audience.sendMessage(asComponent(m)));
+    }
+
+    public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, Placeholder... placeholders) {
+        sendList(commandSender, getStringList(bungeeMessages, placeholders));
     }
 
     public void clearChat(ProxiedPlayer player) {
-        Audience audience = fallbackServerBungee.adventure().sender(player);
+        Audience audience = plugin.adventure().sender(player);
         for (int i = 0; i < 100; i++) {
             audience.sendMessage(Component.empty());
         }
     }
 
     public boolean checkMessage(String message, String name) {
-        List<String> blockedCommands = fallbackServerBungee.getConfig()
+        List<String> blocked = plugin.getConfig()
                 .getStringList("settings.command_blocker_list." + name)
                 .stream()
                 .map(cmd -> "/" + cmd)
                 .collect(Collectors.toList());
 
-        return blockedCommands.stream()
-                .anyMatch(blockedCmd -> blockedCmd.equalsIgnoreCase(message));
+        return blocked.stream().anyMatch(message::equalsIgnoreCase);
     }
 
+    public String applyPlaceholders(String s, Placeholder... placeholders) {
+        for (Placeholder p : placeholders) {
+            s = s.replace(p.getKey(), p.getValue());
+        }
+        return s;
+    }
 }

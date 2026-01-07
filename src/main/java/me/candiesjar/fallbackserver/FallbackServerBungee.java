@@ -19,6 +19,7 @@ import me.candiesjar.fallbackserver.tasks.PingTask;
 import me.candiesjar.fallbackserver.utils.FallbackGroupsLoader;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.io.FilesUtils;
+import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
 import net.byteflux.libby.BungeeLibraryManager;
@@ -63,6 +64,9 @@ public final class FallbackServerBungee extends Plugin {
     private TitleUtil titleUtil;
 
     @Getter
+    private ChatUtil chatUtil;
+
+    @Getter
     @Setter
     private ServerInfo reconnectServer = null;
 
@@ -94,6 +98,7 @@ public final class FallbackServerBungee extends Plugin {
         playerCacheManager = PlayerCacheManager.getInstance();
         serverTypeManager = ServerTypeManager.getInstance();
         onlineLobbiesManager = OnlineLobbiesManager.getInstance();
+        chatUtil = new ChatUtil(this);
         titleUtil = new TitleUtil(this);
         this.adventure = BungeeAudiences.create(this);
 
@@ -198,7 +203,7 @@ public final class FallbackServerBungee extends Plugin {
         boolean joinSorting = BungeeConfig.JOIN_BALANCING.getBoolean();
 
         if (disabledServers) {
-            getProxy().getPluginManager().registerListener(this, new ChatEventListener());
+            getProxy().getPluginManager().registerListener(this, new ChatEventListener(this));
         }
 
         if (checkUpdates) {

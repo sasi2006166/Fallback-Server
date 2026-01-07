@@ -6,7 +6,7 @@ import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.handlers.FallbackReconnectHandler;
+import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.UUID;
@@ -25,11 +25,12 @@ public class ReconnectUtil {
 
             if (reconnectServer == null) {
                 ErrorHandler.add(Severity.ERROR, "[RECONNECT] The server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!");
-                Utils.printDebug("The server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!", true);
+                Utils.printDebug("Server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!", true);
                 Utils.printDebug("Check config.yml for typos, then restart your proxy.", true);
-                Utils.printDebug("Default to limbo mode.", true);
+                Utils.printDebug("Using limbo mode.", true);
                 return null;
             }
+
             return reconnectServer;
         }
 
@@ -37,7 +38,7 @@ public class ReconnectUtil {
     }
 
     public void cancelReconnect(UUID uuid) {
-        FallbackReconnectHandler task = playerCacheManager.remove(uuid);
+        ReconnectHandler task = playerCacheManager.remove(uuid);
 
         if (task == null) {
             return;

@@ -9,7 +9,6 @@ import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
-import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -91,7 +90,6 @@ public class HubCommand extends Command {
         }
 
         BungeeMessages.MOVED_TO_HUB.send(player, new Placeholder("server", serverInfo.getName()));
-
     }
 
     private boolean isHub(ServerInfo server) {

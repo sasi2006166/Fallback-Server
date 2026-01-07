@@ -25,11 +25,13 @@ import java.util.Objects;
 public class PlayerJoinListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ChatUtil chatUtil;
     private final OnlineLobbiesManager onlineLobbiesManager;
     private final ServerTypeManager serverTypeManager;
 
     public PlayerJoinListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.chatUtil = plugin.getChatUtil();
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
         this.serverTypeManager = plugin.getServerTypeManager();
     }
@@ -55,8 +57,8 @@ public class PlayerJoinListener implements Listener {
 
         if (lobbies.isEmpty()) {
             // TODO: Look into this important
-            player.disconnect(new TextComponent(ChatUtil.getFormattedString(BungeeMessages.NO_SERVER)
-                    .replace("%prefix%", ChatUtil.getFormattedString(BungeeMessages.PREFIX))));
+            player.disconnect(new TextComponent(chatUtil.getFormattedString(BungeeMessages.NO_SERVER)
+                    .replace("%prefix%", chatUtil.getFormattedString(BungeeMessages.PREFIX))));
             return;
         }
 

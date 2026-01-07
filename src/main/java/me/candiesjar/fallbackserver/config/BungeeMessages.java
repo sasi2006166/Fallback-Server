@@ -82,22 +82,23 @@ public enum BungeeMessages {
 
     private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
     private final BungeeAudiences adventure = fallbackServerBungee.adventure();
+    private final ChatUtil chatUtil = fallbackServerBungee.getChatUtil();
 
     BungeeMessages(String path) {
         this.path = path;
     }
 
     public void send(CommandSender commandSender, Placeholder... placeholders) {
-        if (ChatUtil.getString(this).isEmpty() || ChatUtil.getString(this) == null) {
+        if (chatUtil.getString(this).isEmpty() || chatUtil.getString(this) == null) {
             return;
         }
 
         Audience audience = adventure.sender(commandSender);
-        audience.sendMessage(ChatUtil.asComponent(ChatUtil.getFormattedString(this, placeholders).replace("%prefix%", ChatUtil.getFormattedString(PREFIX))));
+        audience.sendMessage(chatUtil.asComponent(chatUtil.getFormattedString(this, placeholders).replace("%prefix%", chatUtil.getFormattedString(PREFIX))));
     }
 
     public void sendList(CommandSender commandSender, Placeholder... placeHolder) {
-        ChatUtil.sendFormattedList(this, commandSender, placeHolder);
+        chatUtil.sendFormattedList(this, commandSender, placeHolder);
     }
 
     public String getString() {

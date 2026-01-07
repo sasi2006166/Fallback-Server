@@ -34,6 +34,9 @@ public class PingTask {
     private final OnlineLobbiesManager onlineLobbiesManager;
     private final List<ServerInfo> lobbyServers;
 
+    @Getter
+    private ScheduledTask task;
+
     public PingTask(FallbackServerBungee plugin) {
         this.fallbackServerBungee = plugin;
         this.proxyServer = plugin.getProxy();
@@ -42,9 +45,6 @@ public class PingTask {
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
         this.lobbyServers = Lists.newArrayList();
     }
-
-    @Getter
-    private ScheduledTask task;
 
     public void start(String mode) {
         lobbyServers.clear();
@@ -56,14 +56,14 @@ public class PingTask {
         int delay = BungeeConfig.PING_DELAY.getInt();
 
         if (delay < 1) {
-            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 8 seconds.");
-            delay = 8;
+            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 15 seconds.");
+            delay = 15;
         }
 
         if (fallbackServerBungee.isDebug()) {
             Utils.printDebug("§7[PING] Ping task started with mode: " + mode, false);
             Utils.printDebug("§7[PING] Ping task delay: " + delay + " seconds", false);
-            Utils.printDebug("§7[PING] Ping task servers: " + lobbyServers.size(), false);
+            Utils.printDebug("§7[PING] Ping number of servers: " + lobbyServers.size(), false);
         }
 
         switch (mode) {
@@ -98,9 +98,9 @@ public class PingTask {
             int players = result.getPlayers().getOnline();
             int max = result.getPlayers().getMax();
 
-            boolean fullOrOffline = players >= max;
+            boolean isFull = players >= max;
 
-            updateServerStatus(serverInfo, fullOrOffline);
+            updateServerStatus(serverInfo, isFull);
         });
     }
 

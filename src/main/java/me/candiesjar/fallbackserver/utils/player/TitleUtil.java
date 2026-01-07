@@ -14,14 +14,16 @@ import java.time.Duration;
 public class TitleUtil {
 
     private final FallbackServerBungee fallbackServerBungee;
+    private final ChatUtil chatUtil;
 
     public TitleUtil(FallbackServerBungee fallbackServerBungee) {
         this.fallbackServerBungee = fallbackServerBungee;
+        this.chatUtil = fallbackServerBungee.getChatUtil();
     }
 
     private Title createNewTitle(String formattedTitle, String formattedSubTitle, int fadeIn, int stay, int fadeOut) {
-        Component mainTitle = ChatUtil.asComponent(formattedTitle);
-        Component subTitle = ChatUtil.asComponent(formattedSubTitle);
+        Component mainTitle = chatUtil.asComponent(formattedTitle);
+        Component subTitle = chatUtil.asComponent(formattedSubTitle);
 
         Title.Times times = Title.Times.times(Duration.ofSeconds(fadeIn), Duration.ofSeconds(stay), Duration.ofSeconds(fadeOut));
         return Title.title(mainTitle, subTitle, times);
@@ -40,7 +42,7 @@ public class TitleUtil {
     }
 
     private String formatMessage(BungeeMessages message, ServerInfo serverInfo, int dots) {
-        String formatted = ChatUtil.getFormattedString(message)
+        String formatted = chatUtil.getFormattedString(message)
                 .replace("%dots%", Utils.getDots(dots));
         if (serverInfo != null) {
             formatted = formatted.replace("%server%", serverInfo.getName());
