@@ -74,17 +74,17 @@ MESSAGES:
     - "<dark_gray><strikethrough>---------------------------</strikethrough>"
 
   servers_command:
-    online: "&aONLINE"
-    offline: "&cOFFLINE"
-    maintenance: "&eMAINTENANCE"
-    group: "&7GROUP: &7%group%"
-    servers: "&7%server% &8| &b%status%"
+    online: "<green>ONLINE</green>"
+    offline: "<red>OFFLINE</red>"
+    maintenance: "<yellow>MAINTENANCE</yellow>"
+    group: "<gray>GROUP: %group%<gray>"
+    servers: "<gray>%server%</gray> <dark_gray>|</dark_gray> <aqua>%status%</aqua>"
     header:
-      - "&8&m-----&8[&bSERVERS&8]&m-----"
+      - "<dark_gray><strikethrough>-----</strikethrough><dark_gray>[<aqua>SERVERS</aqua>]<dark_gray><strikethrough>-----</strikethrough>"
       - ""
     footer:
       - ""
-      - "&8&m------------------"
+      - "<dark_gray><strikethrough>------------------</strikethrough>"
 
 TITLES: # Everything under this configuration is in seconds.
   fallback:
@@ -93,37 +93,37 @@ TITLES: # Everything under this configuration is in seconds.
     fade_in: 1 # Seconds for making title appear
     fade_out: 1  # Seconds for making title disappear
     stay: 3 # Stay time of the title
-    fallback_title: "&c&lSERVER CRASHED!"
-    fallback_sub_title: "&7You've been moved to lobby."
+    fallback_title: "<bold><red>SERVER CRASHED!</bold>"
+    fallback_sub_title: "<gray>You've been moved to lobby."
 
   # Reconnect title values are automatic.
   # You can enable / disable it in config.yml
   reconnect:
-    reconnect_title: "&c&lReconnecting&7%dots%"
-    reconnect_sub_title: "&7Please wait!"
-    connecting_title: "&6&lConnecting&7%dots%"
-    connecting_sub_title: "&7Waiting for response from server."
+    reconnect_title: "<bold><red>RECONNECTING</bold><dark_gray>%dots%"
+    reconnect_sub_title: "<white>Please wait!"
+    connecting_title: "<bold><gold>CONNECTING</bold><dark_gray>%dots%"
+    connecting_sub_title: "<white>Waiting for response from server."
     title_beat: 1 # Used for simulation of heart beat for both reconnect and connecting titles.
     connected:
       delay: 3
       fade_in: 1
       fade_out: 1
       stay: 2
-      title: "&a&lCONNECTED!"
-      sub_title: "&7You've been connected to &b%server%"
+      title: "<bold><green>CONNECTED!</bold>"
+      sub_title: "<gray>You've been connected to <aqua>%server%"
 
   lobby:
     enabled: true
     fade_in: 1
     fade_out: 1
     stay: 3
-    title: "&a&lConnected to lobby."
-    sub_title: "&7Welcome back!"
+    title: "<bold><green>Connected to lobby.</bold>"
+    sub_title: "<gray>Welcome back!"
 
   already_in_lobby:
     enabled: true
     fade_in: 1
     fade_out: 1
     stay: 3
-    title: "&c&lAlready in lobby."
-    sub_title: "&7You're already in lobby."
+    title: "<bold><red>Already in lobby.</bold>"
+    sub_title: "<gray>You're already in lobby."

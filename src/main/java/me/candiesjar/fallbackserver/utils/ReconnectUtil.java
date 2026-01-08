@@ -45,7 +45,7 @@ public class ReconnectUtil {
         }
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Cancelling reconnect task for player " + uuid, true);
+            Utils.printDebug("Cancelling reconnect task for UUID " + uuid, true);
         }
 
         task.getReconnectTask().cancel();

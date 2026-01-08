@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class ErrorHandler {
@@ -69,6 +70,10 @@ public class ErrorHandler {
             Utils.printDebug("§7[INFO] Renamed existing diagnostics log file due to size limit.", false);
         }
 
+        List<String> pluginList = proxyServer.getPluginManager().getPlugins().stream()
+                .map(plugin -> plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion())
+                .collect(Collectors.toList());
+
         try (FileWriter writer = new FileWriter(logFile, false)) {
             writer.write("==== FALLBACKSERVER DIAGNOSTIC ====\n");
             writer.write("Proxy Name: " + proxyName + "\n");
@@ -77,6 +82,10 @@ public class ErrorHandler {
             writer.write("Plugin Version: " + pluginVersion + "\n");
             writer.write("Log date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
             writer.write("Online mode: " + proxyServer.getConfig().isOnlineMode() + "\n");
+            writer.write("Installed Plugins:\n");
+            for (String pluginInfo : pluginList) {
+                writer.write(" - " + pluginInfo + "\n");
+            }
             writer.write("===================================\n\n");
             for (Diagnostic diagnostic : diagnostics) {
                 writer.write("[" + diagnostic.getSeverity() + "] " + diagnostic.getMessage() + "\n");
@@ -87,6 +96,7 @@ public class ErrorHandler {
         }
 
         diagnostics.clear();
+        pluginList.clear();
     }
 
     private boolean checkForSize(Path logPath) {

@@ -10,7 +10,6 @@ import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -56,8 +55,8 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
-            // TODO: Look into this important
-            player.disconnect(new TextComponent(chatUtil.getFormattedString(BungeeMessages.NO_SERVER)
+            ErrorHandler.add(Severity.WARNING,"[JOIN SORTING] No available lobbies found for player " + player.getName());
+            player.disconnect(chatUtil.asBungeeComponents(chatUtil.getFormattedString(BungeeMessages.NO_SERVER)
                     .replace("%prefix%", chatUtil.getFormattedString(BungeeMessages.PREFIX))));
             return;
         }

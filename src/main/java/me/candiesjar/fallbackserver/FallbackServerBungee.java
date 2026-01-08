@@ -270,6 +270,7 @@ public final class FallbackServerBungee extends Plugin {
     @NonNull
     public BungeeAudiences adventure() {
         if (this.adventure == null) {
+            ErrorHandler.add(Severity.ERROR, "Tried to access Adventure audience provider while plugin is disabled");
             throw new IllegalStateException("Cannot retrieve audience provider while plugin is not enabled");
         }
         return this.adventure;

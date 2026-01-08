@@ -6,7 +6,9 @@ import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.List;
@@ -54,6 +56,11 @@ public class ChatUtil {
 
     public void sendFormattedList(BungeeMessages bungeeMessages, CommandSender commandSender, Placeholder... placeholders) {
         sendList(commandSender, getStringList(bungeeMessages, placeholders));
+    }
+
+    public BaseComponent[] asBungeeComponents(String s) {
+        Component component = miniMessage.deserialize(s);
+        return BungeeComponentSerializer.get().serialize(component);
     }
 
     public void clearChat(ProxiedPlayer player) {
