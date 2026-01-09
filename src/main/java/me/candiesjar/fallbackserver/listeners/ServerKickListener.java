@@ -15,6 +15,9 @@ import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -103,9 +106,6 @@ public class ServerKickListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
-
-            // TODO: Look into this important
-
             ErrorHandler.add(Severity.ERROR, "[FALLBACK] No lobbies for player " + player.getName() + " in group " + group);
             if (reason.isEmpty()) {
                 player.disconnect(new TextComponent(chatUtil.getFormattedString(BungeeMessages.NO_SERVER)));
@@ -144,10 +144,12 @@ public class ServerKickListener implements Listener {
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
 
-        // TODO: Fix placeholders here
+        Component legacy = LegacyComponentSerializer.legacySection().deserialize(reason);
+        String plain = PlainTextComponentSerializer.plainText().serialize(legacy);
+
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", serverInfo.getName()),
-                new Placeholder("reason", ""));
+                new Placeholder("reason", plain));
 
         if (plugin.isDebug()) {
             Utils.printDebug("Player: " + player.getName() + " moved to " + serverInfo.getName(), false);
