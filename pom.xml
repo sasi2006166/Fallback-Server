@@ -88,17 +88,17 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-bootstrap</artifactId>
-            <version>1.21-R0.3-SNAPSHOT</version>
+            <version>1.21-R0.5-SNAPSHOT</version>
             <type>jar</type>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/bungeecord-1.21-R0.3-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/libs/bungeecord-1.21-R0.5-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.21-R0.3-SNAPSHOT</version>
+            <version>1.21-R0.5-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/bungeecord-proxy-1.21-R0.3-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/libs/bungeecord-proxy-1.21-R0.5-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
