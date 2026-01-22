@@ -1,4 +1,4 @@
-package me.candiesjar.fallbackserver.handlers;
+package me.candiesjar.fallbackserver.reconnect.server;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -12,6 +12,7 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.enums.TitleDisplayMode;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;

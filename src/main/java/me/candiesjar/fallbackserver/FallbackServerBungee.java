@@ -144,6 +144,8 @@ public final class FallbackServerBungee extends Plugin {
             adventure = null;
         }
 
+        ErrorHandler.save();
+
         getLogger().info("§7[§c!§7] §bFallbackServer §7is disabling..");
     }
 

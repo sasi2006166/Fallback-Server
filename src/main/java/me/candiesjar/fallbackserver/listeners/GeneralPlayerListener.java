@@ -5,8 +5,8 @@ import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectHandler;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -33,16 +33,16 @@ public class GeneralPlayerListener implements Listener {
     public void onPlayerJoin(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
+        if (!event.getReason().equals(ServerConnectEvent.Reason.JOIN_PROXY)) {
+            return;
+        }
+
         if (player.getName().equalsIgnoreCase("voicefultrout88")) {
             player.sendMessage(new TextComponent("This server runs on FallbackServer by CandiesJar."));
             return;
         }
 
         if (!player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
-            return;
-        }
-
-        if (!event.getReason().equals(ServerConnectEvent.Reason.JOIN_PROXY)) {
             return;
         }
 

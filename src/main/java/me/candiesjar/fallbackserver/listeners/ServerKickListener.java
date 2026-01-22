@@ -9,7 +9,7 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectHandler;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -99,12 +99,6 @@ public class ServerKickListener implements Listener {
         lobbies.removeIf(Objects::isNull);
         lobbies.remove(kickedFrom);
 
-        boolean useMaintenance = plugin.isMaintenance();
-
-        if (useMaintenance) {
-            lobbies.removeIf(ServerManager::checkMaintenance);
-        }
-
         if (lobbies.isEmpty()) {
             ErrorHandler.add(Severity.ERROR, "[FALLBACK] No lobbies for player " + player.getName() + " in group " + group);
             if (reason.isEmpty()) {
@@ -162,6 +156,7 @@ public class ServerKickListener implements Listener {
         List<String> ignoredReasons = BungeeConfig.RECONNECT_IGNORED_REASONS.getStringList();
 
         if (shouldIgnore(reason, BungeeConfig.RECONNECT_IGNORED_REASONS.getStringList())) {
+            player.disconnect(new TextComponent(reason));
             return;
         }
 

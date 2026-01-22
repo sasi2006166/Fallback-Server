@@ -1,6 +1,6 @@
 package me.candiesjar.fallbackserver.cache;
 
-import me.candiesjar.fallbackserver.handlers.ReconnectHandler;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectHandler;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

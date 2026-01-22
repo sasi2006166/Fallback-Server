@@ -32,6 +32,8 @@ public class ReloadCommand implements ISubCommand {
     public void perform(CommandSender sender, String[] arguments) {
         boolean wasEnabled = BungeeConfig.LOBBY_COMMAND.getBoolean();
 
+        // TODO: if there are reconnecting players, cancel their tasks and move them to lobbies.
+
         TextFile.reloadAll();
         ErrorHandler.add(Severity.INFO, "[RELOAD] Reloading plugin...");
 
