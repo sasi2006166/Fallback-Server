@@ -35,7 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ReconnectHandler {
+public class ReconnectSession {
 
     private final AtomicInteger maxTries = new AtomicInteger(BungeeConfig.RECONNECT_TRIES.getInt());
     private final AtomicInteger dots = new AtomicInteger(0);
@@ -57,7 +57,7 @@ public class ReconnectHandler {
     @Getter
     private ScheduledTask reconnectTask, titleTask, connectTask;
 
-    public ReconnectHandler(UserConnection userConnection, ServerConnection serverConnection, UUID uuid) {
+    public ReconnectSession(UserConnection userConnection, ServerConnection serverConnection, UUID uuid) {
         this.serverConnection = serverConnection;
         this.userConnection = userConnection;
         this.targetServerInfo = serverConnection.getInfo();
@@ -69,7 +69,6 @@ public class ReconnectHandler {
         serverConnection.setObsolete(true);
 
         titleTask = scheduleTask(() -> sendTitles(BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE), 0, titleDisplayMode.getPeriod());
-        reconnectTask = scheduleTask(this::startReconnect, BungeeConfig.RECONNECT_DELAY.getInt(), BungeeConfig.RECONNECT_TASK_DELAY.getInt());
     }
 
     private void startReconnect() {
@@ -122,7 +121,6 @@ public class ReconnectHandler {
 
     private void handleConnection() {
         titleTask.cancel();
-
         titleUtil.clearPlayerTitle(userConnection);
 
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, false);

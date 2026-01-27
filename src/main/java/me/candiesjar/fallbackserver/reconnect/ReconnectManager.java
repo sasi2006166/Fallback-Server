@@ -25,13 +25,14 @@ public class ReconnectManager {
             queueMap.put(serverInfo.getName(), queue);
         }
 
-        queue.addPlayer(player.getUniqueId());
+        // TODO: Fixup with proper classes
+
+        // queue.addPlayer(player.getUniqueId());
 
         if (!workerMap.containsKey(serverName)) {
             ReconnectWorker worker = new ReconnectWorker(fallbackServerBungee, queue);
             worker.start();
             workerMap.put(serverInfo.getName(), worker);
         }
-
     }
 }

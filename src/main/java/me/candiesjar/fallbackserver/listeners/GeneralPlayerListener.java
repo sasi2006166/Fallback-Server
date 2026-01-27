@@ -6,7 +6,7 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
-import me.candiesjar.fallbackserver.reconnect.server.ReconnectHandler;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -65,9 +65,9 @@ public class GeneralPlayerListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        ReconnectHandler reconnectHandler = playerCacheManager.get(uuid);
+        ReconnectSession reconnectSession = playerCacheManager.get(uuid);
 
-        if (reconnectHandler != null) {
+        if (reconnectSession != null) {
             ReconnectUtil.cancelReconnect(uuid);
         }
     }

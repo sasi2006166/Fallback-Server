@@ -9,7 +9,7 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.reconnect.server.ReconnectHandler;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
@@ -168,10 +168,10 @@ public class ServerKickListener implements Listener {
 
         UserConnection userConnection = (UserConnection) player;
         ServerConnection serverConnection = userConnection.getServer();
-        ReconnectHandler task = plugin.getPlayerCacheManager().get(player.getUniqueId());
+        ReconnectSession task = plugin.getPlayerCacheManager().get(player.getUniqueId());
 
         if (task == null) {
-            plugin.getPlayerCacheManager().addIfAbsent(player.getUniqueId(), task = new ReconnectHandler(userConnection, serverConnection, userConnection.getUniqueId()));
+            plugin.getPlayerCacheManager().addIfAbsent(player.getUniqueId(), task = new ReconnectSession(userConnection, serverConnection, userConnection.getUniqueId()));
         }
 
         boolean clearTab = BungeeConfig.RECONNECT_CLEAR_TABLIST.getBoolean();

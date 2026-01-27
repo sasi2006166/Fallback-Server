@@ -30,12 +30,12 @@ public class ReconnectWorker {
     }
 
     private void ping() {
-        reconnectQueue.getTarget().ping((result, error) -> {
-            if (reconnectQueue.getPlayerQueue().isEmpty()) {
-                stop();
-                return;
-            }
+        if (reconnectQueue.getPlayerQueue().isEmpty()) {
+            stop();
+            return;
+        }
 
+        reconnectQueue.getTarget().ping((result, error) -> {
             if (error != null || result == null) {
                 return;
             }

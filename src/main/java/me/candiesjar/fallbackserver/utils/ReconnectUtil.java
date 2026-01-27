@@ -6,7 +6,7 @@ import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.reconnect.server.ReconnectHandler;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.UUID;
@@ -38,7 +38,7 @@ public class ReconnectUtil {
     }
 
     public void cancelReconnect(UUID uuid) {
-        ReconnectHandler task = playerCacheManager.remove(uuid);
+        ReconnectSession task = playerCacheManager.remove(uuid);
 
         if (task == null) {
             return;
