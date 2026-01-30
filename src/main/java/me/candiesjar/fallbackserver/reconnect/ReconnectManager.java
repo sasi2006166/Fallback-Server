@@ -3,36 +3,58 @@ package me.candiesjar.fallbackserver.reconnect;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.reconnect.api.ReconnectQueue;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.reconnect.task.ReconnectWorker;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class ReconnectManager {
 
-    private final FallbackServerBungee fallbackServerBungee = FallbackServerBungee.getInstance();
+    private final FallbackServerBungee fallbackServerBungee;
 
-    private final HashMap<String, ReconnectQueue> queueMap = Maps.newHashMap();
-    private final HashMap<String, ReconnectWorker> workerMap = Maps.newHashMap();
+    private final Map<String, ReconnectQueue> queueMap = Maps.newConcurrentMap();
+    private final Map<String, ReconnectWorker> workerMap = Maps.newConcurrentMap();
 
-    public void onKick(ProxiedPlayer player, ServerInfo serverInfo) {
+    public ReconnectManager(FallbackServerBungee fallbackServerBungee) {
+        this.fallbackServerBungee = fallbackServerBungee;
+    }
+
+    public void onKick(ReconnectSession reconnectSession, ServerInfo serverInfo) {
         String serverName = serverInfo.getName();
-        ReconnectQueue queue = queueMap.get(serverName);
+        ReconnectQueue queue = queueMap.computeIfAbsent(serverName, k -> new ReconnectQueue(serverInfo));
 
-        if (queue == null) {
-            queue = new ReconnectQueue(serverInfo);
-            queueMap.put(serverInfo.getName(), queue);
-        }
+        queue.addSession(reconnectSession);
 
-        // TODO: Fixup with proper classes
-
-        // queue.addPlayer(player.getUniqueId());
-
-        if (!workerMap.containsKey(serverName)) {
+        workerMap.computeIfAbsent(serverName, k -> {
             ReconnectWorker worker = new ReconnectWorker(fallbackServerBungee, queue);
             worker.start();
-            workerMap.put(serverInfo.getName(), worker);
-        }
+            return worker;
+        });
+    }
+
+    public void removeSession(ReconnectSession session) {
+        String name = session.getTargetServerInfo().getName();
+
+        queueMap.computeIfPresent(name, (serverName, queue) -> {
+            queue.removeSession(session);
+
+            if (queue.getPlayerQueue().isEmpty()) {
+                ReconnectWorker worker = workerMap.remove(serverName);
+
+                if (worker != null) {
+                    worker.stop();
+                }
+
+                return null;
+            }
+
+            return queue;
+        });
+    }
+
+    public void stopWorker(String serverName) {
+        workerMap.remove(serverName);
+        queueMap.remove(serverName);
     }
 }

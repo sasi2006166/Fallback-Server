@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReconnectSession {
 
-    private final AtomicInteger maxTries = new AtomicInteger(BungeeConfig.RECONNECT_TRIES.getInt());
     private final AtomicInteger dots = new AtomicInteger(0);
     private final AtomicInteger tries = new AtomicInteger(0);
 
@@ -47,15 +46,18 @@ public class ReconnectSession {
     private final TitleUtil titleUtil = fallbackServerBungee.getTitleUtil();
     private final TaskScheduler taskScheduler = proxyServer.getScheduler();
     private final TextComponent lostConnection = new TextComponent(proxyServer.getTranslation("lost_connection"));
-    private final Random random = new Random();
 
     private final ServerConnection serverConnection;
     private final UserConnection userConnection;
+
+    @Getter
     private final BungeeServerInfo targetServerInfo;
     private final UUID uuid;
 
+    private final Random random = new Random();
+
     @Getter
-    private ScheduledTask reconnectTask, titleTask, connectTask;
+    private ScheduledTask titleTask, connectTask, keepAliveTask;
 
     public ReconnectSession(UserConnection userConnection, ServerConnection serverConnection, UUID uuid) {
         this.serverConnection = serverConnection;
@@ -69,93 +71,36 @@ public class ReconnectSession {
         serverConnection.setObsolete(true);
 
         titleTask = scheduleTask(() -> sendTitles(BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE), 0, titleDisplayMode.getPeriod());
-    }
-
-    private void startReconnect() {
-        boolean hasReachedMaxTries = tries.incrementAndGet() == maxTries.get();
-        userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong()));
-
-        if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Reconnecting player " + userConnection.getName() + " to " + targetServerInfo.getName() + " (" + tries.get() + "/" + maxTries.get() + ")", true);
-        }
-
-        if (hasReachedMaxTries) {
-            boolean fallback = BungeeConfig.RECONNECT_SORT.getBoolean();
-            ErrorHandler.add(Severity.INFO, "[RECONNECT] Player " + userConnection.getName() + " failed to reconnect to " + targetServerInfo.getName() + " after " + tries.get() + " tries" + (fallback ? ", falling back to fallback server." : "."));
-
-            if (fallback) {
-                handleFallback();
-                return;
-            }
-
-            ReconnectUtil.cancelReconnect(uuid);
-            userConnection.disconnect(lostConnection);
-            return;
-        }
-
-        targetServerInfo.ping(((result, error) -> {
-            if (error != null || result == null) {
-                return;
-            }
-
-            int maxPlayers = result.getPlayers().getMax();
-            int connectedPlayers = result.getPlayers().getOnline();
-            int check = BungeeConfig.RECONNECT_PLAYER_COUNT_CHECK.getInt();
-
-            if (connectedPlayers == maxPlayers) {
-                tries.set(maxTries.get());
-                return;
-            }
-
-            if (maxPlayers != check) {
-                return;
-            }
-
-            titleTask.cancel();
-            reconnectTask.cancel();
-
-            titleTask = scheduleTask(() -> sendTitles(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 1, 1);
-            connectTask = scheduleTask(this::handleConnection, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), 0);
-        }));
+        keepAliveTask = scheduleTask(() -> userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong())), 1, 7);
     }
 
     private void handleConnection() {
         titleTask.cancel();
         titleUtil.clearPlayerTitle(userConnection);
 
-        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, false);
-        Bootstrap bootstrap = new Bootstrap()
-                .channel(PipelineUtils.getChannel(targetServerInfo.getAddress()))
-                .group(serverConnection.getCh().getHandle().eventLoop())
-                .handler(initializer)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeConfig.RECONNECT_PING_THRESHOLD.getInt())
-                .remoteAddress(targetServerInfo.getAddress());
+        titleTask = scheduleTask(() -> sendTitles(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 1, 1);
+        connectTask = scheduleTask(() -> {
+            pingServer(targetServerInfo, (result, error) -> {
+                if (error != null || result == null) {
+                    Utils.printDebug("[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName(), true);
+                    handleFallback(false);
+                }
+            });
 
-        if (userConnection.getPendingConnection().getListener().isSetLocalAddress() && userConnection.getPendingConnection().getListener().getSocketAddress() instanceof InetSocketAddress && !PlatformDependent.isWindows()) {
-            bootstrap.localAddress(((InetSocketAddress) userConnection.getPendingConnection().getListener().getSocketAddress()).getHostString(), 0);
-        }
+            runBootstrap();
 
-        pingServer(targetServerInfo, (result, error) -> {
-            if (error != null || result == null) {
-                Utils.printDebug("[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName(), true);
-                handleFallback();
+            if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
+                chatUtil.clearChat(userConnection);
             }
-        });
 
-        bootstrap.connect().addListener(channelFuture -> {
-            ReconnectUtil.cancelReconnect(uuid);
-            sendConnectedTitle();
-        });
+            if (fallbackServerBungee.isDebug()) {
+                Utils.printDebug("Reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName() + " after " + tries.get() + " tries", true);
+            }
 
-        if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
-            chatUtil.clearChat(userConnection);
-        }
+            ErrorHandler.add(Severity.INFO, "[RECONNECT] Successfully reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName() + " after " + tries.get() + " tries");
 
-        if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName() + " after " + tries.get() + " tries", true);
-        }
+        }, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), 0);
 
-        ErrorHandler.add(Severity.INFO, "[RECONNECT] Successfully reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName() + " after " + tries.get() + " tries");
     }
 
     private void sendConnectedTitle() {
@@ -169,27 +114,29 @@ public class ReconnectSession {
                 delay, TimeUnit.SECONDS);
     }
 
+    private void runBootstrap() {
+        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, false);
+        Bootstrap bootstrap = new Bootstrap()
+                .channel(PipelineUtils.getChannel(targetServerInfo.getAddress()))
+                .group(serverConnection.getCh().getHandle().eventLoop())
+                .handler(initializer)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeConfig.RECONNECT_PING_THRESHOLD.getInt())
+                .remoteAddress(targetServerInfo.getAddress());
+
+        if (userConnection.getPendingConnection().getListener().isSetLocalAddress() && userConnection.getPendingConnection().getListener().getSocketAddress() instanceof InetSocketAddress && !PlatformDependent.isWindows()) {
+            bootstrap.localAddress(((InetSocketAddress) userConnection.getPendingConnection().getListener().getSocketAddress()).getHostString(), 0);
+        }
+
+        bootstrap.connect().addListener(channelFuture -> {
+            ReconnectUtil.cancelReconnect(uuid);
+            sendConnectedTitle();
+        });
+    }
+
     private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, true);
         Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeConfig.RECONNECT_PING_THRESHOLD.getInt()).remoteAddress(target.getAddress());
         bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
-    }
-
-    private void handleFallback() {
-        userConnection.getPendingConnects().remove(targetServerInfo);
-        titleUtil.clearPlayerTitle(userConnection);
-        ReconnectUtil.cancelReconnect(uuid);
-
-        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, null, lostConnection, null, ServerKickEvent.State.CONNECTED));
-
-        if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
-            userConnection.connect(serverKickEvent.getCancelServer());
-        }
-
-        if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[RECONNECT] Player " + userConnection.getName() + " failed to reconnect to " + targetServerInfo.getName() + " after " + tries.get() + " tries", true);
-        }
-
     }
 
     private void sendTitles(BungeeMessages title, BungeeMessages subTitle) {
@@ -212,5 +159,26 @@ public class ReconnectSession {
 
     private ScheduledTask scheduleTask(Runnable task, int initialDelay, int period) {
         return taskScheduler.schedule(fallbackServerBungee, task, initialDelay, period, TimeUnit.SECONDS);
+    }
+
+    public void handleFallback(boolean kick) {
+        if (kick) {
+            userConnection.disconnect(lostConnection);
+            return;
+        }
+
+        userConnection.getPendingConnects().remove(targetServerInfo);
+        titleUtil.clearPlayerTitle(userConnection);
+        ReconnectUtil.cancelReconnect(uuid);
+
+        ServerKickEvent serverKickEvent = proxyServer.getPluginManager().callEvent(new ServerKickEvent(userConnection, null, lostConnection, null, ServerKickEvent.State.CONNECTED));
+
+        if (serverKickEvent.isCancelled() && serverKickEvent.getCancelServer() != null) {
+            userConnection.connect(serverKickEvent.getCancelServer());
+        }
+
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("[RECONNECT] Player " + userConnection.getName() + " failed to reconnect to " + targetServerInfo.getName() + " after " + tries.get() + " tries", true);
+        }
     }
 }

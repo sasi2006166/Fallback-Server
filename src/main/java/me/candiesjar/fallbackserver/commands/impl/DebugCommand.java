@@ -4,13 +4,10 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.commands.api.ISubCommand;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.pastebin.builders.Pastebin;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
-
-import java.util.Collections;
 
 public class DebugCommand implements ISubCommand {
 
@@ -75,14 +72,6 @@ public class DebugCommand implements ISubCommand {
         builder.append("Proxy Name: ").append(name).append("\n");
         builder.append("Plugin Version: ").append(pluginVersion).append("\n");
 
-        Pastebin pastebin = new Pastebin.PastebinBuilder()
-                .setDevKey(devKey)
-                .setText(Collections.singletonList(builder.toString()))
-                .setName("Fallback Debug Info")
-                .build();
-
-        String response = pastebin.send();
-        sender.sendMessage(new TextComponent("§a" + response));
     }
 
     private void handlePing(String[] arguments, CommandSender sender) {

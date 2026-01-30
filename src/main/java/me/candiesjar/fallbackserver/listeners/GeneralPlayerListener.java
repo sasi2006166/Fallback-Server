@@ -6,8 +6,10 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
+import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
+import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -22,10 +24,12 @@ import java.util.UUID;
 public class GeneralPlayerListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ReconnectManager reconnectManager;
     private final PlayerCacheManager playerCacheManager;
 
     public GeneralPlayerListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.reconnectManager = plugin.getReconnectManager();
         this.playerCacheManager = plugin.getPlayerCacheManager();
     }
 
@@ -67,8 +71,13 @@ public class GeneralPlayerListener implements Listener {
 
         ReconnectSession reconnectSession = playerCacheManager.get(uuid);
 
+        if (plugin.isDebug()) {
+            Utils.printDebug("Player " + player.getName() + " disconnected. Is Reconnect? " + reconnectSession, false);
+        }
+
         if (reconnectSession != null) {
             ReconnectUtil.cancelReconnect(uuid);
+            reconnectManager.removeSession(reconnectSession);
         }
     }
 }

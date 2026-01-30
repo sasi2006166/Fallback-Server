@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.reconnect.api;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import lombok.Getter;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -12,7 +13,7 @@ public class ReconnectQueue {
     @Getter
     private final ServerInfo target;
     @Getter
-    private final Queue<ReconnectSession> playerQueue = Lists.newLinkedList();
+    private final Queue<ReconnectSession> playerQueue = Queues.newConcurrentLinkedQueue();
 
     public ReconnectQueue(ServerInfo target) {
         this.target = target;
@@ -22,6 +23,10 @@ public class ReconnectQueue {
         if (!playerQueue.contains(reconnectSession)) {
             playerQueue.add(reconnectSession);
         }
+    }
+
+    public void removeSession(ReconnectSession reconnectSession) {
+        playerQueue.remove(reconnectSession);
     }
 
     public ReconnectSession pollPlayer() {

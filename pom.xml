@@ -34,6 +34,13 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>net.md-5:bungeecord-chat</exclude>
+                            <exclude>net.md-5:bungeecord-bootstrap</exclude>
+                            <exclude>net.md-5:bungeecord-proxy</exclude>
+                        </excludes>
+                    </artifactSet>
                     <relocations>
                         <relocation>
                             <pattern>net.byteflux.libby</pattern>
@@ -70,10 +77,6 @@
         <repository>
             <id>AlessioDP</id>
             <url>https://repo.alessiodp.com/releases/</url>
-        </repository>
-        <repository>
-            <id>CandiesJar</id>
-            <url>file://${project.basedir}/repository</url>
         </repository>
     </repositories>
 
@@ -137,11 +140,6 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-plain</artifactId>
             <version>4.25.0</version>
-        </dependency>
-        <dependency>
-            <groupId>me.candiesjar.pastebin</groupId>
-            <artifactId>PastebinJava</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

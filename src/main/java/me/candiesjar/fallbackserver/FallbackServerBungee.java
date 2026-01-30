@@ -15,6 +15,7 @@ import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.listeners.*;
 import me.candiesjar.fallbackserver.metrics.BungeeMetrics;
 import me.candiesjar.fallbackserver.objects.text.TextFile;
+import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
 import me.candiesjar.fallbackserver.tasks.PingTask;
 import me.candiesjar.fallbackserver.utils.FallbackGroupsLoader;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
@@ -67,12 +68,11 @@ public final class FallbackServerBungee extends Plugin {
     private ChatUtil chatUtil;
 
     @Getter
-    @Setter
-    private ServerInfo reconnectServer = null;
+    private ReconnectManager reconnectManager;
 
     @Getter
     @Setter
-    private boolean ajQueue = false;
+    private ServerInfo reconnectServer = null;
 
     @Getter
     @Setter
@@ -100,6 +100,7 @@ public final class FallbackServerBungee extends Plugin {
         onlineLobbiesManager = OnlineLobbiesManager.getInstance();
         chatUtil = new ChatUtil(this);
         titleUtil = new TitleUtil(this);
+        reconnectManager = new ReconnectManager(this);
         this.adventure = BungeeAudiences.create(this);
 
         getLogger().info("\n" +
@@ -196,20 +197,16 @@ public final class FallbackServerBungee extends Plugin {
 
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
         getProxy().getPluginManager().registerListener(this, new ServerKickListener(this));
+        getProxy().getPluginManager().registerListener(this, new GeneralPlayerListener(this));
 
         ServerInfo serverInfo = ReconnectUtil.checkForPhysicalServer();
         setReconnectServer(serverInfo);
 
         boolean disabledServers = BungeeConfig.USE_COMMAND_BLOCKER.getBoolean();
-        boolean checkUpdates = BungeeConfig.UPDATER.getBoolean();
         boolean joinSorting = BungeeConfig.JOIN_BALANCING.getBoolean();
 
         if (disabledServers) {
             getProxy().getPluginManager().registerListener(this, new ChatEventListener(this));
-        }
-
-        if (checkUpdates) {
-            getProxy().getPluginManager().registerListener(this, new GeneralPlayerListener(this));
         }
 
         if (joinSorting) {

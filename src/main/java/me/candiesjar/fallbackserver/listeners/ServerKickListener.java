@@ -4,15 +4,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.OnlineLobbiesManager;
+import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.cache.ServerTypeManager;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
-import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.managers.ServerManager;
 import me.candiesjar.fallbackserver.objects.ServerType;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
+import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
 import net.kyori.adventure.text.Component;
@@ -36,7 +38,9 @@ import java.util.concurrent.atomic.LongAdder;
 public class ServerKickListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ReconnectManager reconnectManager;
     private final ChatUtil chatUtil;
+    private final PlayerCacheManager playerCacheManager;
     private final ServerTypeManager serverTypeManager;
     private final OnlineLobbiesManager onlineLobbiesManager;
     private final Map<String, LongAdder> pendingConnections;
@@ -46,6 +50,8 @@ public class ServerKickListener implements Listener {
         this.chatUtil = plugin.getChatUtil();
         this.serverTypeManager = plugin.getServerTypeManager();
         this.onlineLobbiesManager = plugin.getOnlineLobbiesManager();
+        this.reconnectManager = plugin.getReconnectManager();
+        this.playerCacheManager = plugin.getPlayerCacheManager();
         this.pendingConnections = Maps.newConcurrentMap();
     }
 
@@ -168,11 +174,14 @@ public class ServerKickListener implements Listener {
 
         UserConnection userConnection = (UserConnection) player;
         ServerConnection serverConnection = userConnection.getServer();
-        ReconnectSession task = plugin.getPlayerCacheManager().get(player.getUniqueId());
+        ReconnectSession session = new ReconnectSession(userConnection, serverConnection, player.getUniqueId());
 
-        if (task == null) {
-            plugin.getPlayerCacheManager().addIfAbsent(player.getUniqueId(), task = new ReconnectSession(userConnection, serverConnection, userConnection.getUniqueId()));
+        if (!playerCacheManager.containsKey(player.getUniqueId())) {
+            playerCacheManager.addIfAbsent(player.getUniqueId(), session);
         }
+
+        session.onJoin();
+        reconnectManager.onKick(session, serverConnection.getInfo());
 
         boolean clearTab = BungeeConfig.RECONNECT_CLEAR_TABLIST.getBoolean();
 
@@ -185,8 +194,6 @@ public class ServerKickListener implements Listener {
         if (clearChat) {
             chatUtil.clearChat(player);
         }
-
-        task.onJoin();
 
         boolean usePhysicalServer = plugin.getReconnectServer() != null;
 

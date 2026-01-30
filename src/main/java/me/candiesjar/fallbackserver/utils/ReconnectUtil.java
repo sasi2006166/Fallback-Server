@@ -48,8 +48,6 @@ public class ReconnectUtil {
             Utils.printDebug("Cancelling reconnect task for UUID " + uuid, true);
         }
 
-        task.getReconnectTask().cancel();
-
         if (task.getTitleTask() != null) {
             task.getTitleTask().cancel();
         }
