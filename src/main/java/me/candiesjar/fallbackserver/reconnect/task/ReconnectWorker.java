@@ -1,10 +1,14 @@
 package me.candiesjar.fallbackserver.reconnect.task;
 
+import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
+import me.candiesjar.fallbackserver.enums.Severity;
+import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
 import me.candiesjar.fallbackserver.reconnect.api.ReconnectQueue;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
+import me.candiesjar.fallbackserver.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -22,7 +26,8 @@ public class ReconnectWorker {
     private final boolean kick = BungeeConfig.RECONNECT_SORT.getBoolean();
     private int tries = 0;
 
-    private ScheduledTask task;
+    @Getter
+    private ScheduledTask pingTask, connectTask;
 
     public ReconnectWorker(FallbackServerBungee fallbackServerBungee, ReconnectQueue reconnectQueue) {
         this.fallbackServerBungee = fallbackServerBungee;
@@ -35,13 +40,17 @@ public class ReconnectWorker {
         int delay = BungeeConfig.RECONNECT_DELAY.getInt();
         int period = BungeeConfig.RECONNECT_TASK_DELAY.getInt();
 
-        task = proxyServer.getScheduler().schedule(fallbackServerBungee, this::ping, delay, period, TimeUnit.SECONDS);
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("[RECONNECT] Starting reconnect worker for server " + reconnectQueue.getTarget().getName(), false);
+        }
+
+        pingTask = proxyServer.getScheduler().schedule(fallbackServerBungee, this::ping, delay, period, TimeUnit.SECONDS);
     }
 
     private void ping() {
         if (reconnectQueue.getPlayerQueue().isEmpty()) {
+            ErrorHandler.add(Severity.INFO, "[RECONNECT] No players left in queue for server " + reconnectQueue.getTarget().getName() + ". Stopping worker...");
             reconnectManager.stopWorker(reconnectQueue.getTarget().getName());
-            stop();
             return;
         }
 
@@ -51,13 +60,41 @@ public class ReconnectWorker {
 
                 if (tries >= maxTries) {
                     handleMaxTries();
-                    stop();
+                    reconnectManager.stopWorker(reconnectQueue.getTarget().getName());
                 }
 
                 return;
             }
 
+            tries = 0;
+            stopPing();
+            startConnect();
         });
+    }
+
+    private void startConnect() {
+        int period = BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt();
+        connectTask = proxyServer.getScheduler().schedule(fallbackServerBungee, this::connectPlayers, 0, period, TimeUnit.SECONDS);
+    }
+
+    private void connectPlayers() {
+        ReconnectSession session = reconnectQueue.pollPlayer();
+
+        if (session == null) {
+            reconnectManager.stopWorker(reconnectQueue.getTarget().getName());
+            return;
+        }
+
+        if (fallbackServerBungee.isDebug()) {
+            Utils.printDebug("[RECONNECT] Connecting player " + session.getUserConnection().getName() + " to server " + reconnectQueue.getTarget().getName(), true);
+        }
+
+        proxyServer.getScheduler().schedule(
+                fallbackServerBungee,
+                session::handleConnection,
+                0,
+                TimeUnit.MILLISECONDS
+        );
     }
 
     private void handleMaxTries() {
@@ -77,22 +114,28 @@ public class ReconnectWorker {
             return false;
         }
 
-        int online = result.getPlayers().getOnline();
         int max = result.getPlayers().getMax();
         int check = BungeeConfig.RECONNECT_PLAYER_COUNT_CHECK.getInt();
-
-        if (online >= max) {
-            return false;
-        }
 
         return max == check;
     }
 
-    public void stop() {
-        if (task != null) {
-            task.cancel();
+    private void stopPing() {
+        if (pingTask != null) {
+            pingTask.cancel();
+            pingTask = null;
         }
+    }
 
-        reconnectManager.stopWorker(reconnectQueue.getTarget().getName());
+    private void stopConnect() {
+        if (connectTask != null) {
+            connectTask.cancel();
+            connectTask = null;
+        }
+    }
+
+    public void stop() {
+        stopPing();
+        stopConnect();
     }
 }

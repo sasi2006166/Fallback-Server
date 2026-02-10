@@ -51,19 +51,32 @@ public class ReloadCommand implements ISubCommand {
             }
         }
 
+        boolean previousDebug = plugin.isDebug();
+        plugin.setDebug(BungeeConfig.USE_DEBUG.getBoolean());
+
+        if (previousDebug != plugin.isDebug()) {
+            ErrorHandler.add(Severity.INFO, "[RELOAD] Debug mode has been " + (plugin.isDebug() ? "enabled" : "disabled"));
+        }
+
         ServerInfo reconnectServer = ReconnectUtil.checkForPhysicalServer();
         plugin.setReconnectServer(reconnectServer);
 
-        plugin.getServerTypeManager().clear();
-        plugin.getOnlineLobbiesManager().clear();
-
-        plugin.loadServers();
-        plugin.reloadTask();
+        clearCache();
+        reloadTask();
 
         ErrorHandler.add(Severity.INFO, "[RELOAD] Plugin reloaded successfully.");
         ErrorHandler.save();
-        ErrorHandler.clear();
 
         BungeeMessages.RELOAD.send(sender);
+    }
+
+    private void clearCache() {
+        plugin.getServerTypeManager().clear();
+        plugin.getOnlineLobbiesManager().clear();
+    }
+
+    private void reloadTask() {
+        plugin.loadServers();
+        plugin.reloadTask();
     }
 }

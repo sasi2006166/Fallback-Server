@@ -1,20 +1,29 @@
 package me.candiesjar.fallbackserver.commands.impl;
 
 import me.candiesjar.fallbackserver.FallbackServerBungee;
+import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.commands.api.ISubCommand;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
+import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.UUID;
 
 public class DebugCommand implements ISubCommand {
 
     private final FallbackServerBungee plugin;
+    private final ReconnectManager reconnectManager;
+    private final PlayerCacheManager playerCacheManager;
 
     public DebugCommand(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.reconnectManager = plugin.getReconnectManager();
+        this.playerCacheManager = plugin.getPlayerCacheManager();
     }
 
     @Override
@@ -38,47 +47,68 @@ public class DebugCommand implements ISubCommand {
 
         switch (command.toLowerCase()) {
             case "help":
-                handleHelp(sender);
+                sendHelp(sender);
                 break;
             case "ping":
                 handlePing(arguments, sender);
                 break;
+            case "check":
+                checkPlayerReconnect(arguments, sender);
+                break;
             case "file":
                 handleFile(sender);
+                break;
+            default:
+                sender.sendMessage(new TextComponent("§cUnknown argument!"));
                 break;
         }
     }
 
-    private void handleHelp(CommandSender sender) {
-        String devKey = "TBD";
-        StringBuilder builder = new StringBuilder();
+    private void sendHelp(CommandSender sender) {
+        sender.sendMessage(new TextComponent("§7--- §aFallbackServer Internals §7---"));
+        sender.sendMessage(new TextComponent("§a/debug ping <server> §7- Ping a server"));
+        sender.sendMessage(new TextComponent("§a/debug check <player|active> §7- Check a player's reconnect session or list active sessions"));
+        sender.sendMessage(new TextComponent("§a/debug file §7- Generate diagnostics file"));
+    }
 
-        for (Plugin plugin : plugin.getProxy().getPluginManager().getPlugins()) {
-            String name = plugin.getDescription().getName();
+    private void checkPlayerReconnect(String[] arguments, CommandSender sender) {
+        if (checkArgumentsLength(sender, arguments, 3)) return;
 
-            if (name.startsWith("cmd") || name.startsWith("reconnect")) {
-                continue;
-            }
+        String name = arguments[2];
 
-            builder.append(name).append(", ");
+        if (name.equalsIgnoreCase("active")) {
+            sender.sendMessage(new TextComponent("Active worker servers: " + reconnectManager.getWorkerMap().keySet()));
+            sender.sendMessage(new TextComponent("Active queues: " + reconnectManager.getQueueMap().keySet()));
+            return;
         }
 
-        String proxyVersion = plugin.getProxy().getVersion();
-        String pluginVersion = plugin.getDescription().getVersion();
-        String name = plugin.getProxy().getName();
+        ProxiedPlayer player = plugin.getProxy().getPlayer(name);
 
-        builder.append("\n");
-        builder.append("Proxy Version: ").append(proxyVersion).append("\n");
-        builder.append("Proxy Name: ").append(name).append("\n");
-        builder.append("Plugin Version: ").append(pluginVersion).append("\n");
+        if (player == null) {
+            sender.sendMessage(new TextComponent("§cPlayer not found!"));
+            return;
+        }
 
+        UUID uuid = player.getUniqueId();
+        ReconnectSession session = playerCacheManager.get(uuid);
+
+        if (session == null) {
+            sender.sendMessage(new TextComponent("§cPlayer is not in a reconnect session!"));
+            return;
+        }
+
+        String serverName = session.getTargetServerInfo().getName();
+        sender.sendMessage(new TextComponent("Server map size: " + reconnectManager.getQueueMap().get(serverName).getSize()));
+
+        boolean activeWorker = reconnectManager.getWorkerMap().get(serverName).getPingTask() != null;
+        sender.sendMessage(new TextComponent("Active worker: " + activeWorker));
+
+        boolean activeTitleTask = session.getTitleTask() != null;
+        sender.sendMessage(new TextComponent("Active title task: " + activeTitleTask));
     }
 
     private void handlePing(String[] arguments, CommandSender sender) {
-        if (arguments.length < 3) {
-            sender.sendMessage(new TextComponent("§cNo server name provided!"));
-            return;
-        }
+        if (checkArgumentsLength(sender, arguments, 3)) return;
 
         String serverName = arguments[2];
         ServerInfo serverInfo = plugin.getProxy().getServerInfo(serverName);
@@ -111,5 +141,13 @@ public class DebugCommand implements ISubCommand {
 
         ErrorHandler.save();
         sender.sendMessage(new TextComponent("§aDiagnostics file created!"));
+    }
+
+    private boolean checkArgumentsLength(CommandSender sender, String[] arguments, int requiredLength) {
+        if (arguments.length < requiredLength) {
+            sender.sendMessage(new TextComponent("§cInsufficient arguments!"));
+            return false;
+        }
+        return true;
     }
 }

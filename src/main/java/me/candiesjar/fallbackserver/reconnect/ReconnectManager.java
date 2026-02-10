@@ -1,6 +1,7 @@
 package me.candiesjar.fallbackserver.reconnect;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.reconnect.api.ReconnectQueue;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
@@ -13,7 +14,9 @@ public class ReconnectManager {
 
     private final FallbackServerBungee fallbackServerBungee;
 
+    @Getter
     private final Map<String, ReconnectQueue> queueMap = Maps.newConcurrentMap();
+    @Getter
     private final Map<String, ReconnectWorker> workerMap = Maps.newConcurrentMap();
 
     public ReconnectManager(FallbackServerBungee fallbackServerBungee) {
@@ -40,12 +43,6 @@ public class ReconnectManager {
             queue.removeSession(session);
 
             if (queue.getPlayerQueue().isEmpty()) {
-                ReconnectWorker worker = workerMap.remove(serverName);
-
-                if (worker != null) {
-                    worker.stop();
-                }
-
                 return null;
             }
 
@@ -54,7 +51,10 @@ public class ReconnectManager {
     }
 
     public void stopWorker(String serverName) {
-        workerMap.remove(serverName);
+        ReconnectWorker worker = workerMap.remove(serverName);
+        if (worker != null) {
+            worker.stop();
+        }
         queueMap.remove(serverName);
     }
 }

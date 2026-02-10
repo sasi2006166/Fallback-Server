@@ -74,6 +74,7 @@ public class ServerKickListener implements Listener {
             Utils.printDebug("Reason: " + reason, false);
             Utils.printDebug("Player's group: " + group, false);
             Utils.printDebug("Server type: " + serverType, false);
+            Utils.printDebug("Is reconnect? " + (serverType != null && serverType.isReconnect()), false);
         }
 
         ErrorHandler.add(Severity.WARNING, "[KICK] Server " + kickedName + " kicked player " + player.getName() + " for reason: " + reason + " | Group: " + group);
@@ -155,7 +156,7 @@ public class ServerKickListener implements Listener {
             Utils.printDebug("Player: " + player.getName() + " moved to " + serverInfo.getName(), false);
         }
 
-        ErrorHandler.add(Severity.WARNING, "[FALLBACK] Successfully moved player " + player.getName() + " to " + serverInfo.getName());
+        ErrorHandler.add(Severity.INFO, "[FALLBACK] Successfully moved player " + player.getName() + " to " + serverInfo.getName());
     }
 
     private void handleReconnect(ServerKickEvent event, String reason, String serverName, ProxiedPlayer player) {
@@ -176,10 +177,7 @@ public class ServerKickListener implements Listener {
         ServerConnection serverConnection = userConnection.getServer();
         ReconnectSession session = new ReconnectSession(userConnection, serverConnection, player.getUniqueId());
 
-        if (!playerCacheManager.containsKey(player.getUniqueId())) {
-            playerCacheManager.addIfAbsent(player.getUniqueId(), session);
-        }
-
+        playerCacheManager.addIfAbsent(player.getUniqueId(), session);
         session.onJoin();
         reconnectManager.onKick(session, serverConnection.getInfo());
 
@@ -202,7 +200,7 @@ public class ServerKickListener implements Listener {
             event.setCancelServer(plugin.getReconnectServer());
         }
 
-        ErrorHandler.add(Severity.WARNING, "[RECONNECT] Player " + player.getName() + " is reconnecting to " + serverConnection.getInfo().getName());
+        ErrorHandler.add(Severity.INFO, "[RECONNECT] Player " + player.getName() + " is reconnecting to " + serverConnection.getInfo().getName());
     }
 
     private int getPendingConnections(String serverName) {

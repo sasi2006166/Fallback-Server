@@ -55,7 +55,7 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (lobbies.isEmpty()) {
-            ErrorHandler.add(Severity.WARNING,"[JOIN SORTING] No available lobbies found for player " + player.getName());
+            ErrorHandler.add(Severity.WARNING, "[JOIN SORTING] No available lobbies found for player " + player.getName());
             player.disconnect(chatUtil.asBungeeComponents(chatUtil.getFormattedString(BungeeMessages.NO_SERVER)
                     .replace("%prefix%", chatUtil.getFormattedString(BungeeMessages.PREFIX))));
             return;

@@ -8,6 +8,8 @@ import me.candiesjar.fallbackserver.config.BungeeMessages;
 import me.candiesjar.fallbackserver.connection.FallbackBridge;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
+import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
+import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
@@ -28,12 +30,14 @@ import java.util.UUID;
 public class ServerSwitchListener implements Listener {
 
     private final FallbackServerBungee plugin;
+    private final ReconnectManager reconnectManager;
     private final ChatUtil chatUtil;
     private final PlayerCacheManager playerCacheManager;
     private final ProxyServer proxyServer;
 
     public ServerSwitchListener(FallbackServerBungee plugin) {
         this.plugin = plugin;
+        this.reconnectManager = plugin.getReconnectManager();
         this.chatUtil = plugin.getChatUtil();
         this.playerCacheManager = plugin.getPlayerCacheManager();
         this.proxyServer = plugin.getProxy();
@@ -81,7 +85,15 @@ public class ServerSwitchListener implements Listener {
 
     private void removeFromReconnect(ProxiedPlayer player) {
         BungeeMessages.EXITING_RECONNECT.send(player);
-        ReconnectUtil.cancelReconnect(player.getUniqueId());
-    }
+        ReconnectSession session = playerCacheManager.get(player.getUniqueId());
 
+        if (plugin.isDebug()) {
+            Utils.printDebug("[SWITCH] Player " + player.getName() + " is being removed from reconnect sessions.", true);
+        }
+
+        if (session != null) {
+            ReconnectUtil.cancelReconnect(player.getUniqueId());
+            reconnectManager.removeSession(session);
+        }
+    }
 }

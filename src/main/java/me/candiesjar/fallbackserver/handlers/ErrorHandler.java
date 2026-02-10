@@ -95,7 +95,7 @@ public class ErrorHandler {
             Utils.printDebug("§7[ERROR] " + e.getMessage(), true);
         }
 
-        diagnostics.clear();
+        clear();
         pluginList.clear();
     }
 
