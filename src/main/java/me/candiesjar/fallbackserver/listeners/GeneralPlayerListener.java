@@ -11,7 +11,6 @@ import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.utils.ReconnectUtil;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.system.UpdateUtil;
-import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -20,7 +19,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
-import net.md_5.bungee.protocol.packet.Title;
 
 import java.util.UUID;
 
@@ -38,10 +36,19 @@ public class GeneralPlayerListener implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
+        /*
+        Clears any title that may be present for the player upon login.
+        This is important to ensure that players do not see outdated or irrelevant titles from previous sessions
+        especially if they were in the middle of a reconnect session when they disconnected.
+        By clearing the title on PostLoginEvent
+        we can provide a clean slate for any new titles that may be
+        set during the player's session.
+        There will be no issues with this as the title will be cleared immediately upon login,
+        and any new titles set during the session will override this cleared state without any problems.
+         */
+
         ProxiedPlayer player = event.getPlayer();
-        UserConnection connection = (UserConnection) player;
-        Title title = new Title(Title.Action.RESET);
-        connection.unsafe().sendPacket(title);
+        plugin.getTitleUtil().clearPlayerTitle(player);
 
         if (plugin.isDebug()) {
             Utils.printDebug("Resetting title for player " + player.getName() + " on PostLoginEvent.", true);

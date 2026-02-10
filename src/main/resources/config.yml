@@ -128,9 +128,8 @@ settings:
     # If set on false, the plugin will disconnect the player instead of kicking.
     player_sort: true
 
-    # Delay before actual connecting the player to the server, useful
-    # for preventing spigot instance overload.
-    # In seconds.
+    # This handles as an internal queue for reconnecting players
+    # and also as a delay for the backend to start up, defined in seconds.
     connection_delay: 7
 
     # This is the timeout for checking if the server
@@ -167,18 +166,15 @@ settings:
       - "packets"
       - "maintenance"
 
-    # Ignored servers for reconnecting.
-    # If players get kicked from one of those servers,
-    # they will not be reconnected, instead they will be
-    # moved to a fallback lobby.
-    # Add event servers, such as minigames, here.
+    # List of servers ignored by the reconnect system
+    # useful for authentication servers or pre-lobbies.
+    # Players kicked from those servers will be disconnected instead of being reconnected.
     ignored_servers:
       - lobby1
       - lobby2
       - lobby3
 
-    # Title can be customized into messages configuration.
-    # Available in messages.yml
+    # Title text can be customized inside messages.yml
     title:
       enable: true
       # NORMAL: The normal animated title with dots
@@ -193,7 +189,7 @@ settings:
   telemetry: true
 
   # Administrator will be notified which server goes down and the complete reason of shutdown.
-  # DISABLED.
+  # WIP.
   admin_notification: true
 
   # Enable the in-built command blocker functionality.

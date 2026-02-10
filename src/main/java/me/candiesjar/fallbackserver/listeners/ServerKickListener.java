@@ -176,10 +176,11 @@ public class ServerKickListener implements Listener {
         UserConnection userConnection = (UserConnection) player;
         ServerConnection serverConnection = userConnection.getServer();
         ReconnectSession session = new ReconnectSession(userConnection, serverConnection, player.getUniqueId());
+        ServerInfo serverInfo = serverConnection.getInfo();
 
         playerCacheManager.addIfAbsent(player.getUniqueId(), session);
         session.onJoin();
-        reconnectManager.onKick(session, serverConnection.getInfo());
+        reconnectManager.onKick(session, serverInfo);
 
         boolean clearTab = BungeeConfig.RECONNECT_CLEAR_TABLIST.getBoolean();
 
@@ -200,15 +201,11 @@ public class ServerKickListener implements Listener {
             event.setCancelServer(plugin.getReconnectServer());
         }
 
-        ErrorHandler.add(Severity.INFO, "[RECONNECT] Player " + player.getName() + " is reconnecting to " + serverConnection.getInfo().getName());
+        ErrorHandler.add(Severity.INFO, "[RECONNECT] Player " + player.getName() + " is reconnecting to " + serverInfo.getName());
     }
 
     private int getPendingConnections(String serverName) {
-        if (pendingConnections.get(serverName) == null) {
-            return 0;
-        }
-
-        return pendingConnections.get(serverName).intValue();
+        return pendingConnections.getOrDefault(serverName, new LongAdder()).intValue();
     }
 
     private void incrementPendingConnections(String serverName) {

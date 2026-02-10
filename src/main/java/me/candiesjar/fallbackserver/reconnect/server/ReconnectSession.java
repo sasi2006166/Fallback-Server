@@ -46,6 +46,7 @@ public class ReconnectSession {
     private final TitleUtil titleUtil = fallbackServerBungee.getTitleUtil();
     private final TaskScheduler taskScheduler = proxyServer.getScheduler();
     private final TextComponent lostConnection = new TextComponent(proxyServer.getTranslation("lost_connection"));
+    private final boolean kick = BungeeConfig.RECONNECT_SORT.getBoolean();
 
     private final ServerConnection serverConnection;
     @Getter
@@ -79,14 +80,7 @@ public class ReconnectSession {
         titleTask.cancel();
 
         titleTask = scheduleTask(() -> sendTitles(BungeeMessages.CONNECTING_TITLE, BungeeMessages.CONNECTING_SUB_TITLE), 1, 1);
-        connectTask = scheduleTask(() -> {
-            runBootstrap();
-
-            if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
-                chatUtil.clearChat(userConnection);
-            }
-
-        }, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), 0);
+        connectTask = scheduleTask(this::runBootstrap, BungeeConfig.RECONNECT_CONNECTION_DELAY.getInt(), 0);
     }
 
     public void handleFallback(boolean kick) {
@@ -129,14 +123,14 @@ public class ReconnectSession {
 
         bootstrap.connect().addListener(channelFuture -> {
             if (!channelFuture.isSuccess()) {
-                handleFallback(false);
+                handleFallback(kick);
                 return;
             }
 
             pingServer(targetServerInfo, (result, error) -> {
                 if (error != null || result == null) {
                     Utils.printDebug("[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName(), true);
-                    handleFallback(false);
+                    handleFallback(kick);
                 }
             });
 
@@ -149,6 +143,10 @@ public class ReconnectSession {
             userConnection.getPendingConnects().remove(targetServerInfo);
             ReconnectUtil.cancelReconnect(uuid);
             sendConnectedTitle();
+
+            if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
+                chatUtil.clearChat(userConnection);
+            }
         });
     }
 
