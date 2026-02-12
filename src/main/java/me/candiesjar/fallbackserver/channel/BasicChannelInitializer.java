@@ -24,13 +24,13 @@ public class BasicChannelInitializer extends ChannelInitializer<Channel> {
 
     @Override
     protected void initChannel(Channel channel) {
-        BungeeCord.getInstance()
-                .unsafe()
-                .getBackendChannelInitializer()
-                .getChannelAcceptor()
-                .accept(channel);
-
         if (!ping) {
+            BungeeCord.getInstance()
+                    .unsafe()
+                    .getBackendChannelInitializer()
+                    .getChannelAcceptor()
+                    .accept(channel);
+
             channel.pipeline().get(HandlerBoss.class)
                     .setHandler(new FallbackServerConnector(proxyServer, userConnection, bungeeServerInfo));
         }

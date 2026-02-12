@@ -56,7 +56,7 @@ public class PingTask {
         int delay = BungeeConfig.PING_DELAY.getInt();
 
         if (delay < 1) {
-            ErrorHandler.add(Severity.WARNING, "[PING] Ping delay must be greater than 0. Defaulting to 15 seconds.");
+            ErrorHandler.add(Severity.ERROR, "[PING] Ping delay must be greater than 0. Defaulting to 15 seconds.");
             delay = 15;
         }
 

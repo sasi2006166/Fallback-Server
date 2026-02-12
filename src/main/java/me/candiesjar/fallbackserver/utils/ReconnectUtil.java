@@ -7,7 +7,6 @@ import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.enums.Severity;
 import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
-import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.UUID;
@@ -45,8 +44,6 @@ public class ReconnectUtil {
             return;
         }
 
-        session.resetTitle();
-
         if (fallbackServerBungee.isDebug()) {
             Utils.printDebug("Cancelling reconnect session for UUID " + uuid, true);
         }
@@ -61,6 +58,12 @@ public class ReconnectUtil {
 
         if (session.getKeepAliveTask() != null) {
             session.getKeepAliveTask().cancel();
+        }
+
+        fallbackServerBungee.getTitleUtil().clearPlayerTitle(session.getUserConnection());
+
+        if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
+            fallbackServerBungee.getChatUtil().clearChat(session.getUserConnection());
         }
 
         ErrorHandler.add(Severity.INFO, "[RECONNECT] Reconnect session for player " + uuid + " has been cancelled.");

@@ -4,7 +4,6 @@ import me.candiesjar.fallbackserver.FallbackServerBungee;
 import me.candiesjar.fallbackserver.cache.PlayerCacheManager;
 import me.candiesjar.fallbackserver.config.BungeeConfig;
 import me.candiesjar.fallbackserver.config.BungeeMessages;
-import me.candiesjar.fallbackserver.handlers.ErrorHandler;
 import me.candiesjar.fallbackserver.objects.text.Placeholder;
 import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
@@ -40,18 +39,13 @@ public class GeneralPlayerListener implements Listener {
         Clears any title that may be present for the player upon login.
         This is important to ensure that players do not see outdated or irrelevant titles from previous sessions
         especially if they were in the middle of a reconnect session when they disconnected.
-        By clearing the title on PostLoginEvent
-        we can provide a clean slate for any new titles that may be
-        set during the player's session.
-        There will be no issues with this as the title will be cleared immediately upon login,
-        and any new titles set during the session will override this cleared state without any problems.
          */
 
         ProxiedPlayer player = event.getPlayer();
         plugin.getTitleUtil().clearPlayerTitle(player);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Resetting title for player " + player.getName() + " on PostLoginEvent.", true);
+            Utils.printDebug("Clearing title for player " + player.getName() + " on PostLoginEvent.", true);
         }
     }
 
@@ -71,8 +65,6 @@ public class GeneralPlayerListener implements Listener {
         if (!player.hasPermission(BungeeConfig.ADMIN_PERMISSION.getString())) {
             return;
         }
-
-        plugin.setHasErrors(ErrorHandler.checkForErrors());
 
         if (plugin.isHasErrors()) {
             BungeeMessages.ERRORS_FOUND.send(player);

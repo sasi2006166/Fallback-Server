@@ -9,15 +9,8 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
 
 public class FallbackServerConnector extends ServerConnector {
 
-    private final ProxyServer proxyServer;
-    private final UserConnection userConnection;
-    private final BungeeServerInfo bungeeServerInfo;
-
     public FallbackServerConnector(ProxyServer bungee, UserConnection user, BungeeServerInfo target) {
         super(bungee, user, target);
-        this.proxyServer = bungee;
-        this.userConnection = user;
-        this.bungeeServerInfo = target;
     }
 
     @Override
@@ -33,14 +26,5 @@ public class FallbackServerConnector extends ServerConnector {
     @Override
     public void handle(LoginSuccess loginSuccess) throws Exception {
         super.handle(loginSuccess);
-    }
-
-    @Override
-    public String toString() {
-        return "FallbackServerConnector{" +
-                "proxyServer=" + proxyServer +
-                ", userConnection=" + userConnection +
-                ", bungeeServerInfo=" + bungeeServerInfo +
-                '}';
     }
 }

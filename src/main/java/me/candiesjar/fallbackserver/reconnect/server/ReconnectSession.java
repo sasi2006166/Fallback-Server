@@ -20,7 +20,6 @@ import me.candiesjar.fallbackserver.utils.player.TitleUtil;
 import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -28,7 +27,6 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.packet.KeepAlive;
-import net.md_5.bungee.protocol.packet.Title;
 
 import java.net.InetSocketAddress;
 import java.util.Random;
@@ -71,6 +69,7 @@ public class ReconnectSession {
     public void onJoin() {
         TitleDisplayMode titleDisplayMode = TitleDisplayMode.fromString(BungeeConfig.RECONNECT_TITLE_MODE.getString());
         serverConnection.setObsolete(true);
+        serverConnection.getInfo().removePlayer(userConnection);
 
         titleTask = scheduleTask(() -> sendTitles(BungeeMessages.RECONNECT_TITLE, BungeeMessages.RECONNECT_SUB_TITLE), 0, titleDisplayMode.getPeriod());
         keepAliveTask = scheduleTask(() -> userConnection.unsafe().sendPacket(new KeepAlive(random.nextLong())), 0, 10);
@@ -103,11 +102,6 @@ public class ReconnectSession {
         }
     }
 
-    public void resetTitle() {
-        Title title = new Title(Title.Action.RESET);
-        userConnection.unsafe().sendPacket(title);
-    }
-
     private void runBootstrap() {
         ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, false);
         Bootstrap bootstrap = new Bootstrap()
@@ -127,13 +121,6 @@ public class ReconnectSession {
                 return;
             }
 
-            pingServer(targetServerInfo, (result, error) -> {
-                if (error != null || result == null) {
-                    Utils.printDebug("[RECONNECT] Failed to ping server during connect phase: " + targetServerInfo.getName(), true);
-                    handleFallback(kick);
-                }
-            });
-
             if (fallbackServerBungee.isDebug()) {
                 Utils.printDebug("Reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName(), true);
             }
@@ -143,10 +130,6 @@ public class ReconnectSession {
             userConnection.getPendingConnects().remove(targetServerInfo);
             ReconnectUtil.cancelReconnect(uuid);
             sendConnectedTitle();
-
-            if (BungeeConfig.CLEAR_CHAT_RECONNECT.getBoolean()) {
-                chatUtil.clearChat(userConnection);
-            }
         });
     }
 
@@ -159,12 +142,6 @@ public class ReconnectSession {
         taskScheduler.schedule(fallbackServerBungee,
                 () -> titleUtil.sendTitle(fadeIn, stay, fadeOut, BungeeMessages.CONNECTED_TITLE, BungeeMessages.CONNECTED_SUB_TITLE, targetServerInfo, userConnection),
                 delay, TimeUnit.SECONDS);
-    }
-
-    private void pingServer(BungeeServerInfo target, Callback<Boolean> callback) {
-        ChannelInitializer<Channel> initializer = new BasicChannelInitializer(proxyServer, userConnection, targetServerInfo, true);
-        Bootstrap bootstrap = new Bootstrap().channel(PipelineUtils.getChannel(target.getAddress())).group(serverConnection.getCh().getHandle().eventLoop()).handler(initializer).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeConfig.RECONNECT_PING_THRESHOLD.getInt()).remoteAddress(target.getAddress());
-        bootstrap.connect().addListener(future -> callback.done(future.isSuccess(), future.cause()));
     }
 
     private void sendTitles(BungeeMessages title, BungeeMessages subTitle) {

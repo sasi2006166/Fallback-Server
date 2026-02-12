@@ -34,6 +34,12 @@ public class ErrorHandler {
         String time = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
         String date = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         String formattedMessage = String.format("[%s] [%s] %s", date, time, message);
+
+        if (severity == Severity.ERROR) {
+            fallbackServerBungee.setHasErrors(true);
+            // TODO: Notify online players with permission about the error in real-time
+        }
+
         diagnostics.add(new Diagnostic(severity, formattedMessage));
     }
 
@@ -103,5 +109,9 @@ public class ErrorHandler {
         File logFile = logPath.toFile();
         long maxSizeBytes = 5 * 1024 * 1024; // 5 MB
         return logFile.exists() && logFile.length() >= maxSizeBytes;
+    }
+
+    private void notifyForError(String message) {
+        // TODO: Implement a method to notify online players with permission about the error in real-time
     }
 }

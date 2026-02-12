@@ -47,7 +47,7 @@ public final class FallbackServerBungee extends Plugin {
     private String version;
 
     @Getter
-    private final File logDir = new File("plugins/FallbackServer/logs");
+    private final File logDir = new File("plugins/FallBackServer/logs/");
 
     @Getter
     private PlayerCacheManager playerCacheManager;
