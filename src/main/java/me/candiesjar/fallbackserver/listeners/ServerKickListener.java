@@ -17,11 +17,9 @@ import me.candiesjar.fallbackserver.reconnect.ReconnectManager;
 import me.candiesjar.fallbackserver.reconnect.server.ReconnectSession;
 import me.candiesjar.fallbackserver.utils.Utils;
 import me.candiesjar.fallbackserver.utils.player.ChatUtil;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -145,8 +143,7 @@ public class ServerKickListener implements Listener {
                     BungeeMessages.FALLBACK_DELAY.getInt(), 0, TimeUnit.SECONDS);
         }
 
-        Component legacy = LegacyComponentSerializer.legacySection().deserialize(reason);
-        String plain = PlainTextComponentSerializer.plainText().serialize(legacy);
+        String plain = ChatColor.stripColor(reason);
 
         BungeeMessages.KICKED_TO_LOBBY.sendList(player,
                 new Placeholder("server", serverInfo.getName()),
