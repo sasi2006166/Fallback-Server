@@ -73,7 +73,7 @@ public class ErrorHandler {
 
         if (checkForSize(logFile.toPath())) {
             FilesUtils.renameFile("diagnostics.txt", "diagnostics_old.txt", logDir);
-            Utils.printDebug("§7[INFO] Renamed existing diagnostics log file due to size limit.", false);
+            Utils.log("§7[INFO] Renamed existing diagnostics log file due to size limit.", false);
         }
 
         List<String> pluginList = proxyServer.getPluginManager().getPlugins().stream()
@@ -97,8 +97,8 @@ public class ErrorHandler {
                 writer.write("[" + diagnostic.getSeverity() + "] " + diagnostic.getMessage() + "\n");
             }
         } catch (IOException e) {
-            Utils.printDebug("§7[ERROR] Failed to write diagnostics to file.", true);
-            Utils.printDebug("§7[ERROR] " + e.getMessage(), true);
+            Utils.log("§7[ERROR] Failed to write diagnostics to file.", true);
+            Utils.log("§7[ERROR] " + e.getMessage(), true);
         }
 
         clear();

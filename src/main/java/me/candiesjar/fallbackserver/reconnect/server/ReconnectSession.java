@@ -98,7 +98,7 @@ public class ReconnectSession {
         }
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[RECONNECT] Player " + userConnection.getName() + " failed to reconnect to " + targetServerInfo.getName(), true);
+            Utils.log("[RECONNECT] Player " + userConnection.getName() + " failed to reconnect to " + targetServerInfo.getName(), true);
         }
     }
 
@@ -122,7 +122,7 @@ public class ReconnectSession {
             }
 
             if (fallbackServerBungee.isDebug()) {
-                Utils.printDebug("Reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName(), true);
+                Utils.log("Reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName(), true);
             }
 
             ErrorHandler.add(Severity.INFO, "[RECONNECT] Successfully reconnected player " + userConnection.getName() + " to " + targetServerInfo.getName());

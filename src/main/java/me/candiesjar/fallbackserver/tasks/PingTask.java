@@ -61,9 +61,9 @@ public class PingTask {
         }
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("§7[PING] Ping task started with mode: " + mode, false);
-            Utils.printDebug("§7[PING] Ping task delay: " + delay + " seconds", false);
-            Utils.printDebug("§7[PING] Ping number of servers: " + lobbyServers.size(), false);
+            Utils.log("§7[PING] Ping task started with mode: " + mode, false);
+            Utils.log("§7[PING] Ping task delay: " + delay + " seconds", false);
+            Utils.log("§7[PING] Ping number of servers: " + lobbyServers.size(), false);
         }
 
         switch (mode) {

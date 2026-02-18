@@ -19,6 +19,7 @@ public enum BungeeConfig {
     RECONNECT_DELAY("settings.auto_reconnect.ping_delay"),
     RECONNECT_PLAYER_COUNT_CHECK("settings.auto_reconnect.player_count_check"),
     RECONNECT_PING_THRESHOLD("settings.auto_reconnect.ping_threshold"),
+    RECONNECT_PLAYERS_PER_TICK("settings.auto_reconnect.players_per_tick"),
     RECONNECT_CONNECTION_DELAY("settings.auto_reconnect.connection_delay"),
     RECONNECT_SORT("settings.auto_reconnect.player_sort"),
     RECONNECT_TASK_DELAY("settings.auto_reconnect.task_delay"),

@@ -46,10 +46,6 @@
                             <pattern>net.byteflux.libby</pattern>
                             <shadedPattern>me.candiesjar.fallbackserver.libs.net.byteflux.libby</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>me.candiesjar.pastebin</pattern>
-                            <shadedPattern>me.candiesjar.fallbackserver.libs.me.candiesjar.pastebin</shadedPattern>
-                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>

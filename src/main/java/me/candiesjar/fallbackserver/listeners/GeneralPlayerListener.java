@@ -45,7 +45,7 @@ public class GeneralPlayerListener implements Listener {
         plugin.getTitleUtil().clearPlayerTitle(player);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Clearing title for player " + player.getName() + " on PostLoginEvent.", true);
+            Utils.log("Clearing title for player " + player.getName() + " on PostLoginEvent.", false);
         }
     }
 
@@ -68,6 +68,7 @@ public class GeneralPlayerListener implements Listener {
 
         if (plugin.isHasErrors()) {
             BungeeMessages.ERRORS_FOUND.send(player);
+            plugin.setHasErrors(false);
         }
 
         if (UpdateUtil.isUpdateAvailable()) {
@@ -86,7 +87,7 @@ public class GeneralPlayerListener implements Listener {
         ReconnectSession reconnectSession = playerCacheManager.get(uuid);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player " + player.getName() + " disconnected. Is Reconnect? " + reconnectSession, false);
+            Utils.log("Player " + player.getName() + " disconnected. Is Reconnect? " + reconnectSession, false);
         }
 
         if (reconnectSession != null) {

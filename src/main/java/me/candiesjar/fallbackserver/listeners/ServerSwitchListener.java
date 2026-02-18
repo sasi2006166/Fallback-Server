@@ -74,7 +74,7 @@ public class ServerSwitchListener implements Listener {
         }
 
         if (plugin.isDebug()) {
-            Utils.printDebug("[SWITCH] Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), false);
+            Utils.log("[SWITCH] Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName(), false);
         }
 
         ErrorHandler.add(Severity.INFO, "[SWITCH] Player " + user.getName() + " switched from " + event.getFrom().getName() + " to " + event.getPlayer().getServer().getInfo().getName());
@@ -88,7 +88,7 @@ public class ServerSwitchListener implements Listener {
         ReconnectSession session = playerCacheManager.get(player.getUniqueId());
 
         if (plugin.isDebug()) {
-            Utils.printDebug("[SWITCH] Player " + player.getName() + " is being removed from reconnect sessions.", true);
+            Utils.log("[SWITCH] Player " + player.getName() + " is being removed from reconnect sessions.", true);
         }
 
         if (session != null) {

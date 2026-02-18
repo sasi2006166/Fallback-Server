@@ -24,6 +24,8 @@ public class ReconnectWorker {
 
     private final int maxTries = BungeeConfig.RECONNECT_TRIES.getInt();
     private final boolean kick = BungeeConfig.RECONNECT_SORT.getBoolean();
+
+    private int playersToConnect = 2;
     private int tries = 0;
 
     @Getter
@@ -39,9 +41,16 @@ public class ReconnectWorker {
     public void start() {
         int delay = BungeeConfig.RECONNECT_DELAY.getInt();
         int period = BungeeConfig.RECONNECT_TASK_DELAY.getInt();
+        int configured = BungeeConfig.RECONNECT_PLAYERS_PER_TICK.getInt();
+
+        if (configured <= 0) {
+            ErrorHandler.add(Severity.ERROR, "[RECONNECT] Invalid players per tick value: " + configured + ". Defaulting to 2.");
+        }
+
+        playersToConnect = configured > 0 ? configured : 2;
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[RECONNECT] Starting reconnect worker for server " + reconnectQueue.getTarget().getName(), false);
+            Utils.log("[RECONNECT] Starting reconnect worker for server " + reconnectQueue.getTarget().getName(), false);
         }
 
         pingTask = proxyServer.getScheduler().schedule(fallbackServerBungee, this::ping, delay, period, TimeUnit.SECONDS);
@@ -78,23 +87,15 @@ public class ReconnectWorker {
     }
 
     private void connectPlayers() {
-        ReconnectSession session = reconnectQueue.pollPlayer();
-
-        if (session == null) {
-            reconnectManager.stopWorker(reconnectQueue.getTarget().getName());
-            return;
+        for (int i = 0; i < playersToConnect; i++) {
+            ReconnectSession session = reconnectQueue.pollPlayer();
+            if (session == null) break;
+            session.handleConnection();
         }
 
-        if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("[RECONNECT] Connecting player " + session.getUserConnection().getName() + " to server " + reconnectQueue.getTarget().getName(), true);
+        if (reconnectQueue.getPlayerQueue().isEmpty()) {
+            stop();
         }
-
-        proxyServer.getScheduler().schedule(
-                fallbackServerBungee,
-                session::handleConnection,
-                0,
-                TimeUnit.MILLISECONDS
-        );
     }
 
     private void handleMaxTries() {

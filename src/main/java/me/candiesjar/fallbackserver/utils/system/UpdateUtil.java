@@ -39,7 +39,7 @@ public class UpdateUtil {
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
-                    Utils.printDebug("Cannot fetch updates. HTTP response code: " + responseCode, true);
+                    Utils.log("Cannot fetch updates. HTTP response code: " + responseCode, true);
                     return;
                 }
 
@@ -49,7 +49,7 @@ public class UpdateUtil {
 
                 updateAvailable = !fallbackServerBungee.getDescription().getVersion().equals(remoteVersion);
             } catch (IOException e) {
-                Utils.printDebug("Cannot fetch updates", true);
+                Utils.log("Cannot fetch updates", true);
             }
         });
     }

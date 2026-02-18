@@ -68,11 +68,11 @@ public class ServerKickListener implements Listener {
         ServerType serverType = serverTypeManager.get(group);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player " + player.getName() + " was kicked from " + kickedName, false);
-            Utils.printDebug("Reason: " + reason, false);
-            Utils.printDebug("Player's group: " + group, false);
-            Utils.printDebug("Server type: " + serverType, false);
-            Utils.printDebug("Is reconnect? " + (serverType != null && serverType.isReconnect()), false);
+            Utils.log("Player " + player.getName() + " was kicked from " + kickedName, false);
+            Utils.log("Reason: " + reason, false);
+            Utils.log("Player's group: " + group, false);
+            Utils.log("Server type: " + serverType, false);
+            Utils.log("Is reconnect? " + (serverType != null && serverType.isReconnect()), false);
         }
 
         ErrorHandler.add(Severity.WARNING, "[KICK] Server " + kickedName + " kicked player " + player.getName() + " for reason: " + reason + " | Group: " + group);
@@ -150,7 +150,7 @@ public class ServerKickListener implements Listener {
                 new Placeholder("reason", plain));
 
         if (plugin.isDebug()) {
-            Utils.printDebug("Player: " + player.getName() + " moved to " + serverInfo.getName(), false);
+            Utils.log("Player: " + player.getName() + " moved to " + serverInfo.getName(), false);
         }
 
         ErrorHandler.add(Severity.INFO, "[FALLBACK] Successfully moved player " + player.getName() + " to " + serverInfo.getName());

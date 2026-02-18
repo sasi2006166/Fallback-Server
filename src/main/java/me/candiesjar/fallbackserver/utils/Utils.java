@@ -29,9 +29,9 @@ public class Utils {
         fallbackServerBungee.getServersTextFile().reload();
     }
 
-    public void printDebug(String s, boolean exception) {
+    public void log(String s, boolean exception) {
         if (!exception) {
-            fallbackServerBungee.getLogger().warning("[DEBUG] " + s);
+            fallbackServerBungee.getLogger().info("[DEBUG] " + s);
         } else {
             fallbackServerBungee.getLogger().severe("[ERROR] " + s);
         }

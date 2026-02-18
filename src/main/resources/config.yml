@@ -128,6 +128,11 @@ settings:
     # If set on false, the plugin will disconnect the player instead of kicking.
     player_sort: true
 
+    # Number of players to reconnect per cycle when the target server becomes available.
+    # Increasing this value reconnects players faster but may cause connection spikes.
+    # Decreasing it makes reconnection smoother but slower.
+    players_per_tick: 3
+
     # This handles as an internal queue for reconnecting players
     # and also as a delay for the backend to start up, defined in seconds.
     connection_delay: 7

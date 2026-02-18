@@ -25,9 +25,9 @@ public class ReconnectUtil {
 
             if (reconnectServer == null) {
                 ErrorHandler.add(Severity.ERROR, "[RECONNECT] The server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!");
-                Utils.printDebug("Server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!", true);
-                Utils.printDebug("Check config.yml for typos, then restart your proxy.", true);
-                Utils.printDebug("Using limbo mode.", true);
+                Utils.log("Server " + BungeeConfig.RECONNECT_SERVER.getString() + " does not exist!", true);
+                Utils.log("Check config.yml for typos, then restart your proxy.", true);
+                Utils.log("Using limbo mode.", true);
                 return null;
             }
 
@@ -45,7 +45,7 @@ public class ReconnectUtil {
         }
 
         if (fallbackServerBungee.isDebug()) {
-            Utils.printDebug("Cancelling reconnect session for UUID " + uuid, true);
+            Utils.log("Cancelling reconnect session for UUID " + uuid, true);
         }
 
         if (session.getTitleTask() != null) {

@@ -98,8 +98,8 @@ public class HubCommand extends Command {
         if (group == null) {
 
             if (plugin.isDebug()) {
-                Utils.printDebug("[HUB COMMAND] The server " + server.getName() + " does not exist!", true);
-                Utils.printDebug("[HUB COMMAND] Please add it to default lobbies and run /fs reload.", true);
+                Utils.log("[HUB COMMAND] The server " + server.getName() + " does not exist!", true);
+                Utils.log("[HUB COMMAND] Please add it to default lobbies and run /fs reload.", true);
             }
 
             return false;

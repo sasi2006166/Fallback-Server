@@ -57,8 +57,8 @@ public class FallbackGroupsLoader {
     }
 
     private void printError() {
-        Utils.printDebug("[LOADER] There is an error in your configuration", true);
-        Utils.printDebug("[LOADER] Please check the 'settings.fallback' section", true);
+        Utils.log("[LOADER] There is an error in your configuration", true);
+        Utils.log("[LOADER] Please check the 'settings.fallback' section", true);
     }
 
     private void loadDefaultGroup(Configuration section) {
@@ -66,8 +66,8 @@ public class FallbackGroupsLoader {
 
         if (checkEmpty(lobbies)) {
             ErrorHandler.add(Severity.ERROR, "[LOADER] Default lobbies are missing");
-            Utils.printDebug("[LOADER] There are no default lobbies", true);
-            Utils.printDebug("[LOADER] Please add some servers to the 'default' section", true);
+            Utils.log("[LOADER] There are no default lobbies", true);
+            Utils.log("[LOADER] Please add some servers to the 'default' section", true);
             return;
         }
 
@@ -79,7 +79,7 @@ public class FallbackGroupsLoader {
 
         if (checkEmpty(servers)) {
             ErrorHandler.add(Severity.ERROR, "[LOADER] Group " + key + " is missing servers");
-            Utils.printDebug("[LOADER] There are no server inside '" + key + "' section", true);
+            Utils.log("[LOADER] There are no server inside '" + key + "' section", true);
             return;
         }
 

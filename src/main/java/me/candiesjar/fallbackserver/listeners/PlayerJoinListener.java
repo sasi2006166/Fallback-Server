@@ -65,7 +65,7 @@ public class PlayerJoinListener implements Listener {
         ServerInfo serverInfo = lobbies.get(0);
 
         if (plugin.isDebug()) {
-            Utils.printDebug("[JOIN SORTING] Player " + player.getName() + " is being sent to " + serverInfo.getName(), false);
+            Utils.log("[JOIN SORTING] Player " + player.getName() + " is being sent to " + serverInfo.getName(), false);
         }
 
         ErrorHandler.add(Severity.INFO, "[JOIN SORTING] Player " + player.getName() + " is being sent to " + serverInfo.getName());
